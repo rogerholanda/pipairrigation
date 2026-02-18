@@ -153,8 +153,8 @@ export default function PivotCalculator() {
       // Equivalent length
       const Leq = parseFloat((Lp / (1 - gr) ** 0.5).toFixed(1));
 
-      // Net slope = aclive - declive (% => fraction per meter)
-      const netSlope = aclv - dclv;
+      // Slope: only aclive is used for lateral pressure calc (matches original VBA)
+      // dclv is kept as input but does not affect Ho/Hpp in the analytical method
 
       const expm = 2;
       const segments: Seg[] = [];
@@ -288,7 +288,8 @@ export default function PivotCalculator() {
       }
 
       // Pressão no início da lateral (usando netSlope = aclive - declive)
-      const Hin = parseFloat((hfin + Hftotal + (netSlope * Lp / 100) - Hvel).toFixed(2));
+      // Original VBA: Ho = Hfin + Hftotal + (Aclv * Lp / 100) - Hvel (only aclive, not net)
+      const Hin = parseFloat((hfin + Hftotal + (aclv * Lp / 100) - Hvel).toFixed(2));
 
       // Perda de carga no tubo de subida
       const diu2 = parseFloat(Diu);
