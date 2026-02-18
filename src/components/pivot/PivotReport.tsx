@@ -249,7 +249,7 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                       <tr>
                         <th>Emissor</th><th>Ri (m)</th><th>Trecho</th><th>Di (mm)</th>
                         <th>qi (m³/h)</th><th>Q trecho (m³/h)</th><th>V (m/s)</th>
-                        <th>NR</th><th>f</th><th>Hf (m)</th><th>H (m.c.a.)</th>
+                        <th>NR</th><th>f</th><th>Hf (m)</th><th>Hi Aclive (m.c.a.)</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -258,7 +258,7 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                           <td>{row.emissor}</td><td>{row.Ri}</td><td>{row.trecho}</td><td>{row.Di}</td>
                           <td>{row.qi}</td><td>{row.QTrecho}</td><td>{row.v}</td>
                           <td>{row.NR}</td><td>{row.f}</td><td>{row.hf}</td>
-                          <td style={{fontWeight: 600, color: "#1f5e38"}}>{row.Hpress}</td>
+                          <td style={{fontWeight: 600, color: "#1f5e38"}}>{row.HiAclive}</td>
                         </tr>
                       ))}
                     </tbody>
