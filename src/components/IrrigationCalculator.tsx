@@ -124,10 +124,12 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
           else tubeType = "Tubo Hidraulicamente Misto";
         }
 
+        // Usa f arredondado para 4 casas decimais — igual ao VBA original
+        const fRounded = parseFloat(f.toFixed(4));
         if (flowUnit === "m3h") {
-          hf = 6.376e6 * f * Q ** 2 * L / Di ** 5;
+          hf = 6.376e6 * fRounded * Q ** 2 * L / Di ** 5;
         } else {
-          hf = 6.376 * f * Q ** 2 * L / Di ** 5;
+          hf = 6.376 * fRounded * Q ** 2 * L / Di ** 5;
         }
       }
 
