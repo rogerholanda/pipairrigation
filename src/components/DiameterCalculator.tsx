@@ -84,39 +84,39 @@ export default function DiameterCalculator() {
       const c2 = 6375.527 * Q ** 2 * (Ke + Ks + KRg + Kc);
 
       // Iterative loop to find diameter
+      // VBA uses Log (natural log) * 0.434294482 = log10. Here we use log10 directly.
       let oldDi = 1;
+      let last_x1 = 1, last_y1 = 1;
 
       for (let iter = 0; iter < 1000; iter++) {
         const V1 = 353.6776 * Q / oldDi ** 2;
         const NR1 = mespa * V1 * (oldDi / 1000) / u;
-        const s1 = 0.12363 * NR1 * (rug / oldDi) + 2.3 * log10(0.3984 * NR1) * 0.434294482;
+        const s1 = 0.12363 * NR1 * (rug / oldDi) + 2.3 * log10(0.3984 * NR1);
         const x1 = 0.3984 * NR1;
         const y1 = (0.8686 * s1) ** ((s1 - 0.645) / (s1 + 0.39));
-        const f1 = (2 * log10(x1 / y1) * 0.434294482) ** -2;
+        const f1 = (2 * log10(x1 / y1)) ** -2;
+
+        last_x1 = x1;
+        last_y1 = y1;
 
         const newDi = ((c1 * (f1 / oldDi) + c2) / dz) ** 0.25;
         const deltaDi = newDi - oldDi;
+        oldDi = newDi;
 
-        if (Math.abs(deltaDi / oldDi) < 0.001) {
-          oldDi = newDi;
+        if (Math.abs(deltaDi / newDi) < 0.001) {
           break;
         }
-        oldDi = newDi;
       }
 
       const D = oldDi;
 
-      // Final calculations
+      // Final calculations — VBA uses TextBox6 rounded to 2dp for V
       const V = parseFloat((353.67765 * Q / D ** 2).toFixed(2));
       // VBA: TextBox7 = Format(mespa * V * (D/1000) / u, "0") → integer
       const NR = Math.round(mespa * V * (D / 1000) / u);
 
-      // Compute s, x, y for friction factor (VBA uses x1/y1 from last iteration)
-      // Recompute with final D
-      const s_f = 0.12363 * NR * (rug / D) + 2.3 * log10(0.3984 * NR) * 0.434294482;
-      const x_f = 0.3984 * NR;
-      const y_f = (0.8686 * s_f) ** ((s_f - 0.645) / (s_f + 0.39));
-      const f = (2 * log10(x_f / y_f) * 0.434294482) ** -2;
+      // VBA TextBox8 uses x1/y1 from last loop iteration (not recomputed with final NR)
+      const f = (2 * log10(last_x1 / last_y1)) ** -2;
 
       // Head loss: VBA uses TextBox8 (f rounded to 4 dp) and D
       const fRounded = parseFloat(f.toFixed(4));
