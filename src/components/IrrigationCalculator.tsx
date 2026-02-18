@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { X, Calculator, Droplets } from "lucide-react";
+import { X, Calculator, Droplets, Ruler } from "lucide-react";
+import DiameterCalculator from "./DiameterCalculator";
 
 interface CalcResults {
   velocity: string;
@@ -27,6 +28,7 @@ const PIPE_MATERIALS = [
 ];
 
 export default function IrrigationCalculator({ open, onClose }: IrrigationCalculatorProps) {
+  const [activeTab, setActiveTab] = useState<"colebrook" | "diameter">("colebrook");
   const [flowUnit, setFlowUnit] = useState<"m3h" | "Lh">("m3h");
   const [flow, setFlow] = useState("");
   const [length, setLength] = useState("");
@@ -170,10 +172,10 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
             <Calculator className="text-primary-foreground" size={24} />
             <div>
               <h2 className="font-display text-lg font-semibold text-primary-foreground leading-tight">
-                Calculadora Hidráulica
+                Calculadoras Hidráulicas
               </h2>
               <p className="text-primary-foreground/80 text-xs font-body">
-                Perda de Carga — Darcy-Weisbach &amp; Colebrook-White
+                Darcy-Weisbach · Colebrook-White
               </p>
             </div>
           </div>
@@ -185,7 +187,37 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
           </button>
         </div>
 
-        <div className="p-6 space-y-5">
+        {/* Tabs */}
+        <div className="flex border-b border-border">
+          <button
+            onClick={() => setActiveTab("colebrook")}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
+              activeTab === "colebrook"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Droplets size={15} />
+            Colebrook
+          </button>
+          <button
+            onClick={() => setActiveTab("diameter")}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
+              activeTab === "diameter"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Ruler size={15} />
+            Diâmetro
+          </button>
+        </div>
+
+        {/* Diameter calculator tab */}
+        {activeTab === "diameter" && <DiameterCalculator />}
+
+        {/* Colebrook tab */}
+        {activeTab === "colebrook" && <div className="p-6 space-y-5">
           {/* Flow unit */}
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 font-body">
@@ -311,7 +343,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
               </div>
             </div>
           )}
-        </div>
+        </div>}
       </div>
     </div>
   );
