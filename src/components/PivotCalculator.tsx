@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Waves } from "lucide-react";
+import TrechoATrechoCalculator from "./pivot/TrechoATrechoCalculator";
+import PotenciaBombaCalculator from "./pivot/PotenciaBombaCalculator";
+import CustoEnergiaCalculator from "./pivot/CustoEnergiaCalculator";
 
 // ---- Types ----
 type DiamConfig = "1" | "2" | "3";
 type Material = "AGD" | "PVC";
+type PivotTab = "dados" | "analitico" | "trechotrecho" | "potencia" | "custo";
 
 interface Seg {
   label: string;
@@ -38,7 +42,7 @@ const ln = Math.log;
 function calcViscosity(Tempa: number) {
   const Tkelv = Tempa + 273.16;
   const Lgu = -11.73 + 1828 / Tkelv + 0.01966 * Tkelv - 0.00001466 * Tkelv ** 2;
-  return parseFloat(((10 ** Lgu) / 100).toFixed(5)); // m²/s cinematic
+  return parseFloat(((10 ** Lgu) / 100).toFixed(5));
 }
 
 function calcDensity(Tempa: number) {
@@ -62,8 +66,18 @@ const MATERIAL_RUG: Record<Material, number> = {
   PVC: 0.0015,
 };
 
+const PIVOT_TABS: { key: PivotTab; label: string }[] = [
+  { key: "dados", label: "Dados" },
+  { key: "analitico", label: "Método Analítico" },
+  { key: "trechotrecho", label: "Método Trecho a Trecho" },
+  { key: "potencia", label: "Potência da Bomba" },
+  { key: "custo", label: "Custo de Energia" },
+];
+
 // ---- Component ----
 export default function PivotCalculator() {
+  const [activeTab, setActiveTab] = useState<PivotTab>("dados");
+
   // Basic inputs
   const [Rut, setRut] = useState("");
   const [Clb, setClb] = useState("");
@@ -99,10 +113,39 @@ export default function PivotCalculator() {
   const [results, setResults] = useState<PivotResults | null>(null);
   const [error, setError] = useState("");
 
+  // Shared output for subsequent tabs
+  const [sharedQin, setSharedQin] = useState(0);
+  const [sharedHpp, setSharedHpp] = useState(0);
+  const [sharedPabsCV, setSharedPabsCV] = useState(0);
+
   const handleMaterialChange = (mat: Material) => {
     setMaterial(mat);
     setRug(MATERIAL_RUG[mat].toString());
   };
+
+  // Build shared data object for sub-calculators
+  const getShared = () => ({
+    Rut: parseFloat(Rut) || 0,
+    Clb: parseFloat(Clb) || 0,
+    Lap: parseFloat(Lap) || 0,
+    Tgi: parseFloat(Tgi) || 0,
+    efc: parseFloat(efc) || 0,
+    Tempag: parseFloat(Tempag) || 25,
+    rug: parseFloat(rug) || 0.15,
+    Qc: hasCanonSpray ? (parseFloat(Qc) || 0) : 0,
+    Hfin: parseFloat(Hfin) || 0,
+    Aclv: parseFloat(Aclv) || 0,
+    Dclv: parseFloat(Dclv) || 0,
+    LTs: parseFloat(LTs) || 0,
+    Alts: parseFloat(Alts) || 0,
+    Diu: parseFloat(Diu) || 0,
+    D2s: diamConfig === "2" ? (parseFloat(D2s) || 0) : diamConfig === "3" ? (parseFloat(D2s_3) || 0) : 0,
+    D3s: parseFloat(D3s_3) || 0,
+    Lseg1: diamConfig === "2" ? (parseFloat(Lseg1_2) || 0) : parseFloat(Lseg1_3) || 0,
+    Lseg2: parseFloat(Lseg2_3) || 0,
+    Lseg3: parseFloat(Lseg3_3) || 0,
+    diamConfig,
+  });
 
   const calculate = () => {
     setError("");
@@ -127,34 +170,17 @@ export default function PivotCalculator() {
         return;
       }
 
-      // Water properties
-      const u = calcViscosity(tempag);       // m²/s
-      const uc = parseFloat((u * 1000).toFixed(2)); // dynamic ×10⁻³
+      const u = calcViscosity(tempag);
+      const uc = parseFloat((u * 1000).toFixed(2));
       const mespag = calcDensity(tempag);
 
-      // Lateral length
       const Lp = rut + clb;
-
-      // Basic irrigated area (ha)
       const Ab = parseFloat((3.14159 * Lp ** 2 / 10000).toFixed(2));
-
-      // Irrigation efficiency
       const efir = parseFloat((efcN / 100).toFixed(2));
-
-      // Required flow (m³/h)
       const Qb = parseFloat((10 * Ab * lap / (efir * tgi)).toFixed(2));
-
-      // Flow at lateral start
       const Qin = parseFloat((qc + Qb).toFixed(2));
-
-      // Ratio γ = Qc/Qin
       const gr = parseFloat((qc / Qin).toFixed(4));
-
-      // Equivalent length
       const Leq = parseFloat((Lp / (1 - gr) ** 0.5).toFixed(1));
-
-      // Slope: only aclive is used for lateral pressure calc (matches original VBA)
-      // dclv is kept as input but does not affect Ho/Hpp in the analytical method
 
       const expm = 2;
       const segments: Seg[] = [];
@@ -167,13 +193,11 @@ export default function PivotCalculator() {
       if (diamConfig === "1") {
         if (isNaN(diu) || diu <= 0) { setError("Informe o diâmetro da lateral (mm)."); return; }
 
-        // F and f at full precision for calculation, rounded only for display
         const F_raw = 1 - (expm / 3) * (1 - gr) + ((expm - 1) / (7 - expm)) * (1 - gr) ** (3 - expm / 2);
         vs1 = parseFloat((353.67765 * Qin / diu ** 2).toFixed(2));
         const NRDU = Math.floor(mespag * vs1 * diu / uc);
         const fs1_raw = colebrook(NRDU, rugN, diu);
         const fs1_disp = parseFloat(fs1_raw.toFixed(4));
-        // VBA rounds f to 4dp before using in hf formula
         const Hfdu = parseFloat(((6.376e6) * fs1_disp * Qin ** 2 * Lp * F_raw / diu ** 5).toFixed(2));
         Hftotal = Hfdu;
 
@@ -295,17 +319,15 @@ export default function PivotCalculator() {
         Hvel = parseFloat(((vs1 ** 2 / 19.62) * (2 * (Lp / Leq) ** 2 - (Lp / Leq) ** 4)).toFixed(4));
       }
 
-      // Pressão no início da lateral (usando netSlope = aclive - declive)
-      // Original VBA: Ho = Hfin + Hftotal + (Aclv * Lp / 100) - Hvel (only aclive, not net)
       const Hin = parseFloat((hfin + Hftotal + (aclv * Lp / 100) - Hvel).toFixed(2));
 
-      // Perda de carga no tubo de subida
       const diu2 = parseFloat(Diu);
       const f_riser = parseFloat(colebrook(Math.floor(mespag * vs1 * diu2 / uc), rugN, diu2).toFixed(4));
       const Hfunit = parseFloat(((6.376e6) * f_riser * Qin ** 2 * lTs / diu2 ** 5).toFixed(2));
-
-      // Pressão no ponto do Pivô
       const Hpp = parseFloat((Hin + Hfunit + alts).toFixed(2));
+
+      setSharedQin(Qin);
+      setSharedHpp(Hpp);
 
       setResults({
         Lp: Lp.toFixed(2),
@@ -322,230 +344,283 @@ export default function PivotCalculator() {
         viscosity: uc.toFixed(2),
         density: mespag.toFixed(2),
       });
+
+      setActiveTab("analitico");
     } catch {
       setError("Erro no cálculo. Verifique os dados inseridos.");
     }
   };
 
   return (
-    <div className="p-6 space-y-5">
-
-      {/* Row 1 — Basic geometry */}
-      <div className="grid grid-cols-2 gap-4">
-        <PInput label="Raio útil — Rut (m)" value={Rut} onChange={setRut} placeholder="Ex: 400" />
-        <PInput label="Comprimento do balanço — Clb (m)" value={Clb} onChange={setClb} placeholder="Ex: 50" />
+    <div>
+      {/* Sub-tabs */}
+      <div className="flex border-b border-border overflow-x-auto">
+        {PIVOT_TABS.map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`flex-shrink-0 px-4 py-2.5 text-xs font-semibold font-body transition-colors border-b-2 whitespace-nowrap ${
+              activeTab === tab.key
+                ? "border-primary text-primary bg-primary/5"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      {/* Row 2 — Irrigation parameters */}
-      <div className="grid grid-cols-2 gap-4">
-        <PInput label="Lâmina aplicada — Lap (mm)" value={Lap} onChange={setLap} placeholder="Ex: 6" />
-        <PInput label="Tempo de irrigação — Tgi (h)" value={Tgi} onChange={setTgi} placeholder="Ex: 24" />
-      </div>
+      {/* Dados tab */}
+      {activeTab === "dados" && (
+        <div className="p-6 space-y-5">
+          <div className="grid grid-cols-2 gap-4">
+            <PInput label="Raio útil — Rut (m)" value={Rut} onChange={setRut} placeholder="Ex: 400" />
+            <PInput label="Comprimento do balanço — Clb (m)" value={Clb} onChange={setClb} placeholder="Ex: 50" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <PInput label="Lâmina aplicada — Lap (mm)" value={Lap} onChange={setLap} placeholder="Ex: 6" />
+            <PInput label="Tempo de irrigação — Tgi (h)" value={Tgi} onChange={setTgi} placeholder="Ex: 24" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <PInput label="Eficiência — Efc (%)" value={efc} onChange={setEfc} placeholder="Ex: 90" />
+            <PInput label="Temperatura da água (°C)" value={Tempag} onChange={setTempag} placeholder="Ex: 25" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <PInput label="Aclive lateral — Aclv (%)" value={Aclv} onChange={setAclv} placeholder="Ex: 0" />
+            <PInput label="Declive lateral — Dclv (%)" value={Dclv} onChange={setDclv} placeholder="Ex: 0" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <PInput label="Pressão no final — Hfin (m.c.a.)" value={Hfin} onChange={setHfin} placeholder="Ex: 25" />
+            <div />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <PInput label="Comp. tubo de subida — LTs (m)" value={LTs} onChange={setLTs} placeholder="Ex: 3" />
+            <PInput label="Desnível tubo de subida — Alts (m)" value={Alts} onChange={setAlts} placeholder="Ex: 3" />
+          </div>
 
-      {/* Row 3 */}
-      <div className="grid grid-cols-2 gap-4">
-        <PInput label="Eficiência — Efc (%)" value={efc} onChange={setEfc} placeholder="Ex: 90" />
-        <PInput label="Temperatura da água (°C)" value={Tempag} onChange={setTempag} placeholder="Ex: 25" />
-      </div>
+          {/* Material */}
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 font-body">
+              Material da Tubulação
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {(["AGD", "PVC"] as Material[]).map(mat => (
+                <button
+                  key={mat}
+                  onClick={() => handleMaterialChange(mat)}
+                  className={`py-2 px-3 rounded-lg text-sm font-semibold font-body transition-all border ${
+                    material === mat
+                      ? "gradient-primary text-primary-foreground border-transparent"
+                      : "bg-muted text-muted-foreground border-border hover:border-primary"
+                  }`}
+                >
+                  {mat === "AGD" ? "AGD° — Aço Galvanizado" : "PVC"}
+                </button>
+              ))}
+            </div>
+          </div>
 
-      {/* Row 4 — Slope */}
-      <div className="grid grid-cols-2 gap-4">
-        <PInput label="Aclive lateral — Aclv (%)" value={Aclv} onChange={setAclv} placeholder="Ex: 0" />
-        <PInput label="Declive lateral — Dclv (%)" value={Dclv} onChange={setDclv} placeholder="Ex: 0" />
-      </div>
+          <div className="grid grid-cols-2 gap-4">
+            <PInput label="Rugosidade abs. — rug (mm)" value={rug} onChange={setRug} placeholder="Ex: 0.15" />
+            <div />
+          </div>
 
-      {/* Row 5 — Pressure / end */}
-      <div className="grid grid-cols-2 gap-4">
-        <PInput label="Pressão no final — Hfin (m.c.a.)" value={Hfin} onChange={setHfin} placeholder="Ex: 25" />
-        <div /> {/* spacer */}
-      </div>
-
-      {/* Row 6 — Rising pipe */}
-      <div className="grid grid-cols-2 gap-4">
-        <PInput label="Comp. tubo de subida — LTs (m)" value={LTs} onChange={setLTs} placeholder="Ex: 3" />
-        <PInput label="Desnível tubo de subida — Alts (m)" value={Alts} onChange={setAlts} placeholder="Ex: 3" />
-      </div>
-
-      {/* Row 7 — Material */}
-      <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 font-body">
-          Material da Tubulação
-        </label>
-        <div className="grid grid-cols-2 gap-2">
-          {(["AGD", "PVC"] as Material[]).map(mat => (
+          {/* Cannon/Spray */}
+          <div className="flex items-center gap-3">
             <button
-              key={mat}
-              onClick={() => handleMaterialChange(mat)}
-              className={`py-2 px-3 rounded-lg text-sm font-semibold font-body transition-all border ${
-                material === mat
-                  ? "gradient-primary text-primary-foreground border-transparent"
-                  : "bg-muted text-muted-foreground border-border hover:border-primary"
+              type="button"
+              onClick={() => setHasCanonSpray(v => !v)}
+              className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                hasCanonSpray ? "gradient-primary border-transparent" : "border-border bg-background"
               }`}
             >
-              {mat === "AGD" ? "AGD° — Aço Galvanizado" : "PVC"}
+              {hasCanonSpray && (
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                  <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              )}
             </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Row 8 — Roughness */}
-      <div className="grid grid-cols-2 gap-4">
-        <PInput label="Rugosidade abs. — rug (mm)" value={rug} onChange={setRug} placeholder="Ex: 0.15" />
-        <div /> {/* spacer */}
-      </div>
-
-      {/* Row 9 — Cannon/Spray checkbox */}
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={() => setHasCanonSpray(v => !v)}
-          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-            hasCanonSpray
-              ? "gradient-primary border-transparent"
-              : "border-border bg-background"
-          }`}
-        >
+            <label onClick={() => setHasCanonSpray(v => !v)} className="text-sm font-body text-foreground cursor-pointer select-none">
+              Possui aspersor canhão/Spray
+            </label>
+          </div>
           {hasCanonSpray && (
-            <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-              <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <PInput label="Vazão canhão/spray — Qc (m³/h)" value={Qc} onChange={setQc} placeholder="Ex: 4.86" />
           )}
-        </button>
-        <label
-          onClick={() => setHasCanonSpray(v => !v)}
-          className="text-sm font-body text-foreground cursor-pointer select-none"
-        >
-          Possui aspersor canhão/Spray
-        </label>
-      </div>
 
-      {hasCanonSpray && (
-        <PInput label="Vazão canhão/spray — Qc (m³/h)" value={Qc} onChange={setQc} placeholder="Ex: 4.86" />
-      )}
-
-      {/* Diameter configuration */}
-      <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 font-body">
-          Configuração de Diâmetros
-        </label>
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          {(["1", "2", "3"] as DiamConfig[]).map(opt => (
-            <button
-              key={opt}
-              onClick={() => setDiamConfig(opt)}
-              className={`py-2 px-3 rounded-lg text-sm font-semibold font-body transition-all border ${
-                diamConfig === opt
-                  ? "gradient-primary text-primary-foreground border-transparent"
-                  : "bg-muted text-muted-foreground border-border hover:border-primary"
-              }`}
-            >
-              {opt === "1" ? "1 Diâmetro" : opt === "2" ? "2 Diâmetros" : "3 Diâmetros"}
-            </button>
-          ))}
-        </div>
-
-        {/* 1 diameter */}
-        {diamConfig === "1" && (
-          <PInput label="Diâmetro interno — Diu (mm)" value={Diu} onChange={setDiu} placeholder="Ex: 168" />
-        )}
-
-        {/* 2 diameters */}
-        {diamConfig === "2" && (
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <PInput label="Comp. seg. 1 — L1s (m)" value={Lseg1_2} onChange={setLseg1_2} placeholder="Ex: 250" />
-              <div /> {/* spacer */}
+          {/* Diameter configuration */}
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 font-body">
+              Configuração de Diâmetros
+            </label>
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              {(["1", "2", "3"] as DiamConfig[]).map(opt => (
+                <button
+                  key={opt}
+                  onClick={() => setDiamConfig(opt)}
+                  className={`py-2 px-3 rounded-lg text-sm font-semibold font-body transition-all border ${
+                    diamConfig === opt
+                      ? "gradient-primary text-primary-foreground border-transparent"
+                      : "bg-muted text-muted-foreground border-border hover:border-primary"
+                  }`}
+                >
+                  {opt === "1" ? "1 Diâmetro" : opt === "2" ? "2 Diâmetros" : "3 Diâmetros"}
+                </button>
+              ))}
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <PInput label="Diâm. seg. 1 — Ds1 (mm)" value={Diu} onChange={setDiu} placeholder="Ex: 168" />
-              <PInput label="Diâm. seg. 2 — Ds2 (mm)" value={D2s} onChange={setD2s} placeholder="Ex: 143" />
-            </div>
-          </div>
-        )}
 
-        {/* 3 diameters */}
-        {diamConfig === "3" && (
-          <div className="space-y-3">
-            <div className="grid grid-cols-3 gap-3">
-              <PInput label="Comp. seg. 1 — L1s (m)" value={Lseg1_3} onChange={setLseg1_3} placeholder="Ex: 150" />
-              <PInput label="Comp. seg. 2 — L2s (m)" value={Lseg2_3} onChange={setLseg2_3} placeholder="Ex: 150" />
-              <PInput label="Comp. seg. 3 — L3s (m)" value={Lseg3_3} onChange={setLseg3_3} placeholder="Ex: 150" />
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              <PInput label="Diâm. seg. 1 — Ds1 (mm)" value={Diu} onChange={setDiu} placeholder="Ex: 168" />
-              <PInput label="Diâm. seg. 2 — Ds2 (mm)" value={D2s_3} onChange={setD2s_3} placeholder="Ex: 143" />
-              <PInput label="Diâm. seg. 3 — Ds3 (mm)" value={D3s_3} onChange={setD3s_3} placeholder="Ex: 120" />
-            </div>
-          </div>
-        )}
-      </div>
+            {diamConfig === "1" && (
+              <PInput label="Diâmetro interno — Diu (mm)" value={Diu} onChange={setDiu} placeholder="Ex: 168" />
+            )}
 
-      {/* Error */}
-      {error && (
-        <div className="bg-destructive/10 text-destructive text-sm px-4 py-2 rounded-lg font-body">
-          ⚠ {error}
-        </div>
-      )}
-
-      {/* Calculate button */}
-      <button
-        onClick={calculate}
-        className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity"
-      >
-        <Waves size={18} />
-        Calcular Pivô Central
-      </button>
-
-      {/* Results */}
-      {results && (
-        <div className="space-y-4 pt-2">
-          <h3 className="font-display font-semibold text-foreground text-base">Resultados</h3>
-
-          {/* Basic results */}
-          <div className="grid grid-cols-2 gap-3">
-            <PResultCard label="Comprimento lateral (Lp)" value={`${results.Lp} m`} />
-            <PResultCard label="Área básica (Ab)" value={`${results.Ab} ha`} />
-            <PResultCard label="Vazão total (Qb)" value={`${results.Qb} m³/h`} />
-            <PResultCard label="Vazão início lateral (Qin)" value={`${results.Qin} m³/h`} />
-            <PResultCard label="Razão γ = Qc/Qin" value={results.gr} />
-            <PResultCard label="Comprimento equiv. (Leq)" value={`${results.Leq} m`} />
-          </div>
-
-          {/* Segments */}
-          {results.segments.map((seg, i) => (
-            <div key={i} className="equation-block rounded-xl p-4 space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-primary font-body">{seg.label} — Ø {seg.d} mm</p>
-              <div className="grid grid-cols-2 gap-2 text-xs font-body text-muted-foreground">
-                <span>Vazão (Q): <strong className="text-foreground">{seg.q} m³/h</strong></span>
-                <span>Velocidade (V): <strong className="text-foreground">{seg.v} m/s</strong></span>
-                <span>Reynolds (NR): <strong className="text-foreground">{seg.nr}</strong></span>
-                <span>Fator f: <strong className="text-foreground">{seg.f}</strong></span>
-                <span>Fator F: <strong className="text-foreground">{seg.F}</strong></span>
-                <span>Perda de carga (hf): <strong className="text-primary">{seg.hf} m.c.a.</strong></span>
+            {diamConfig === "2" && (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <PInput label="Comp. seg. 1 — L1s (m)" value={Lseg1_2} onChange={setLseg1_2} placeholder="Ex: 250" />
+                  <div />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <PInput label="Diâm. seg. 1 — Ds1 (mm)" value={Diu} onChange={setDiu} placeholder="Ex: 168" />
+                  <PInput label="Diâm. seg. 2 — Ds2 (mm)" value={D2s} onChange={setD2s} placeholder="Ex: 143" />
+                </div>
               </div>
+            )}
+
+            {diamConfig === "3" && (
+              <div className="space-y-3">
+                <div className="grid grid-cols-3 gap-3">
+                  <PInput label="Comp. seg. 1 — L1s (m)" value={Lseg1_3} onChange={setLseg1_3} placeholder="Ex: 150" />
+                  <PInput label="Comp. seg. 2 — L2s (m)" value={Lseg2_3} onChange={setLseg2_3} placeholder="Ex: 150" />
+                  <PInput label="Comp. seg. 3 — L3s (m)" value={Lseg3_3} onChange={setLseg3_3} placeholder="Ex: 150" />
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <PInput label="Diâm. seg. 1 — Ds1 (mm)" value={Diu} onChange={setDiu} placeholder="Ex: 168" />
+                  <PInput label="Diâm. seg. 2 — Ds2 (mm)" value={D2s_3} onChange={setD2s_3} placeholder="Ex: 143" />
+                  <PInput label="Diâm. seg. 3 — Ds3 (mm)" value={D3s_3} onChange={setD3s_3} placeholder="Ex: 120" />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {error && (
+            <div className="bg-destructive/10 text-destructive text-sm px-4 py-2 rounded-lg font-body">
+              ⚠ {error}
             </div>
-          ))}
+          )}
 
-          {/* Key pressures */}
-          <div className="grid grid-cols-2 gap-3">
-            <PResultCard label="Hf total lateral" value={`${results.Hftotal} m.c.a.`} highlight />
-            <PResultCard label="Carga cinética (Hvel)" value={`${results.Hvel} m`} />
-            <PResultCard label="Pressão início lateral (Hin)" value={`${results.Hin} m.c.a.`} />
-          </div>
-
-          {/* Main result: pressure at pivot point */}
-          <div className="equation-block px-5 py-4">
-            <p className="text-xs text-muted-foreground font-body mb-1">Pressão no ponto do Pivô (Hpp)</p>
-            <p className="font-display text-2xl font-bold text-primary">
-              {results.Hpp} <span className="text-base font-body font-normal">m.c.a.</span>
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 text-xs font-body text-muted-foreground">
-            <span>Viscosidade dinâmica: {results.viscosity} × 10⁻³ N.s/m²</span>
-            <span>Massa específica: {results.density} kg/m³</span>
-          </div>
+          <button
+            onClick={calculate}
+            className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity"
+          >
+            <Waves size={18} />
+            Calcular — Método Analítico
+          </button>
         </div>
+      )}
+
+      {/* Método Analítico tab */}
+      {activeTab === "analitico" && (
+        <div className="p-6 space-y-4">
+          {!results ? (
+            <div className="text-center py-12 text-muted-foreground font-body text-sm">
+              Preencha os dados na aba <strong>Dados</strong> e pressione Calcular.
+            </div>
+          ) : (
+            <>
+              <h3 className="font-display font-semibold text-foreground text-base">Resultados — Método Analítico</h3>
+
+              {/* Summary inputs display */}
+              <div className="grid grid-cols-2 gap-3 text-xs font-body">
+                <div className="bg-muted rounded-lg p-3">
+                  <span className="text-muted-foreground">Área básica (Ab)</span>
+                  <p className="font-semibold text-foreground">{results.Ab} ha</p>
+                </div>
+                <div className="bg-muted rounded-lg p-3">
+                  <span className="text-muted-foreground">Vazão na área básica (Qb)</span>
+                  <p className="font-semibold text-foreground">{results.Qb} m³/h</p>
+                </div>
+                <div className="bg-muted rounded-lg p-3">
+                  <span className="text-muted-foreground">Vazão no início da lateral (Qin)</span>
+                  <p className="font-semibold text-foreground">{results.Qin} m³/h</p>
+                </div>
+                <div className="bg-muted rounded-lg p-3">
+                  <span className="text-muted-foreground">Razão (Qc/Qin)</span>
+                  <p className="font-semibold text-foreground">{results.gr}</p>
+                </div>
+                <div className="bg-muted rounded-lg p-3">
+                  <span className="text-muted-foreground">Comp. equivalente da lateral (m)</span>
+                  <p className="font-semibold text-foreground">{results.Leq} m</p>
+                </div>
+                <div className="equation-block rounded-lg p-3">
+                  <span className="text-muted-foreground">Hf total (m)</span>
+                  <p className="font-semibold text-primary">{results.Hftotal} m</p>
+                </div>
+              </div>
+
+              {/* Pressure results */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="equation-block rounded-xl p-3 text-center">
+                  <p className="text-xs text-muted-foreground font-body">Ho (m)</p>
+                  <p className="font-display text-lg font-bold text-primary">{results.Hin}</p>
+                </div>
+                <div className="equation-block rounded-xl p-3 text-center col-span-2">
+                  <p className="text-xs text-muted-foreground font-body">Hpp (m)</p>
+                  <p className="font-display text-2xl font-bold text-primary">{results.Hpp} <span className="text-sm font-body font-normal">m.c.a.</span></p>
+                </div>
+              </div>
+
+              {/* Segments */}
+              {results.segments.map((seg, i) => (
+                <fieldset key={i} className="border border-border rounded-xl p-4 space-y-2">
+                  <legend className="text-xs font-semibold uppercase tracking-wider text-primary px-2 font-body">{`${i + 1}º Segmento — Ø ${seg.d} mm`}</legend>
+                  <div className="grid grid-cols-2 gap-2 text-xs font-body">
+                    <span className="text-muted-foreground">Fator de correção (F): <strong className="text-foreground">{seg.F}</strong></span>
+                    <span className="text-muted-foreground">Velocidade da água (m/s): <strong className="text-foreground">{seg.v}</strong></span>
+                    <span className="text-muted-foreground">Vazão (m³/h): <strong className="text-foreground">{seg.q}</strong></span>
+                    <span className="text-muted-foreground">Número de Reynolds: <strong className="text-foreground">{seg.nr}</strong></span>
+                    <span className="text-muted-foreground">Fator de atrito (f) Colebrook: <strong className="text-foreground">{seg.f}</strong></span>
+                    <span className="text-muted-foreground">Perda de carga (m): <strong className="text-primary">{seg.hf}</strong></span>
+                  </div>
+                </fieldset>
+              ))}
+
+              <div className="grid grid-cols-2 gap-3 text-xs font-body text-muted-foreground">
+                <span>Carga cinética (Hvel): {results.Hvel} m</span>
+                <span>Viscosidade: {results.viscosity} × 10⁻³ N.s/m²</span>
+                <span>Massa específica: {results.density} kg/m³</span>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Método Trecho a Trecho tab */}
+      {activeTab === "trechotrecho" && (
+        <TrechoATrechoCalculator
+          shared={getShared()}
+          onHpp={(hpp, h0, hfTotal) => {
+            setSharedHpp(hpp);
+          }}
+        />
+      )}
+
+      {/* Potência da Bomba tab */}
+      {activeTab === "potencia" && (
+        <PotenciaBombaCalculator
+          Qin={sharedQin || (parseFloat(results?.Qin ?? "0"))}
+          Hpp={sharedHpp || (parseFloat(results?.Hpp ?? "0"))}
+          rug={parseFloat(rug) || 0.15}
+          Tempag={parseFloat(Tempag) || 25}
+        />
+      )}
+
+      {/* Custo de Energia tab */}
+      {activeTab === "custo" && (
+        <CustoEnergiaCalculator
+          Qin={sharedQin || (parseFloat(results?.Qin ?? "0"))}
+          Tgi={parseFloat(Tgi) || 0}
+          PabsCV={sharedPabsCV}
+        />
       )}
     </div>
   );
@@ -566,15 +641,6 @@ function PInput({ label, value, onChange, placeholder }: { label: string; value:
         className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground"
         style={{ borderColor: "hsl(var(--border))" }}
       />
-    </div>
-  );
-}
-
-function PResultCard({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
-  return (
-    <div className={`rounded-xl p-3 ${highlight ? "equation-block" : "bg-muted"}`}>
-      <p className="text-xs font-body text-muted-foreground">{label}</p>
-      <p className={`font-semibold font-body mt-0.5 ${highlight ? "text-primary" : "text-foreground"}`}>{value}</p>
     </div>
   );
 }
