@@ -139,7 +139,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
         regime,
         frictionMethod,
         tubeType,
-        viscosity: Uc.toFixed(5),
+        viscosity: Uc.toFixed(2),
         density: mespa.toFixed(2),
       });
     } catch {

@@ -58,32 +58,6 @@ const irrigationTypes = [
   },
 ];
 
-const equations = [
-  {
-    title: "Equação de Darcy-Weisbach",
-    formula: "hf = f · (L / D) · (V² / 2g)",
-    vars: "hf = perda de carga (m) | f = fator de atrito | L = comprimento (m) | D = diâmetro (m) | V = velocidade (m/s) | g = 9,81 m/s²",
-    color: "primary",
-  },
-  {
-    title: "Equação de Colebrook-White",
-    formula: "1/√f = −2 · log₁₀(ε/(3,7·D) + 2,51/(Re·√f))",
-    vars: "f = fator de atrito | ε = rugosidade absoluta (mm) | D = diâmetro interno (mm) | Re = número de Reynolds",
-    color: "secondary",
-  },
-  {
-    title: "Número de Reynolds",
-    formula: "Re = ρ · V · D / μ",
-    vars: "ρ = massa específica (kg/m³) | V = velocidade (m/s) | D = diâmetro (m) | μ = viscosidade dinâmica (Pa·s)",
-    color: "accent",
-  },
-  {
-    title: "Regime de Escoamento",
-    formula: "Re < 2000 → Laminar | 2000 < Re < 4000 → Transição | Re > 4000 → Turbulento",
-    vars: "Hagen-Poiseuille: f = 64/Re (regime laminar)",
-    color: "primary",
-  },
-];
 
 export default function Index() {
   const [calcOpen, setCalcOpen] = useState(false);
@@ -102,7 +76,7 @@ export default function Index() {
           <div className="hidden md:flex items-center gap-6 text-sm font-body text-muted-foreground">
             <a href="#sobre" className="hover:text-primary transition-colors">Sobre</a>
             <a href="#sistemas" className="hover:text-primary transition-colors">Sistemas</a>
-            <a href="#equacoes" className="hover:text-primary transition-colors">Equações</a>
+            
             <a href="#autor" className="hover:text-primary transition-colors">Autor</a>
           </div>
           <div className="flex items-center gap-2">
@@ -256,60 +230,6 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ── EQUAÇÕES MATEMÁTICAS ── */}
-      <section id="equacoes" className="py-20 bg-card">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <span className="text-xs font-semibold uppercase tracking-widest text-primary font-body">Fundamentos</span>
-            <h2 className="font-display text-4xl font-bold text-foreground mt-2">Equações Matemáticas</h2>
-            <p className="text-muted-foreground mt-3 max-w-xl mx-auto text-sm font-body">
-              As principais equações utilizadas no dimensionamento hidráulico dos sistemas de irrigação.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            {equations.map((eq, i) => {
-              const borderColor = eq.color === "primary" ? "hsl(var(--primary))" : eq.color === "secondary" ? "hsl(var(--secondary))" : "hsl(var(--accent))";
-              const bgColor = eq.color === "primary" ? "hsl(var(--primary-muted))" : eq.color === "secondary" ? "hsl(var(--secondary-muted))" : "hsl(var(--accent-muted))";
-              const textColor = eq.color === "primary" ? "hsl(var(--primary))" : eq.color === "secondary" ? "hsl(var(--secondary))" : "hsl(var(--accent))";
-              return (
-                <div
-                  key={i}
-                  className="rounded-2xl border overflow-hidden shadow-card"
-                  style={{ borderColor: `${borderColor}40` }}
-                >
-                  <div className="px-5 py-3" style={{ backgroundColor: `${bgColor}` }}>
-                    <h3 className="font-display font-semibold text-sm" style={{ color: textColor }}>{eq.title}</h3>
-                  </div>
-                  <div className="bg-card px-5 py-5">
-                    <div
-                      className="font-mono text-lg font-bold mb-3 px-4 py-3 rounded-xl text-center overflow-x-auto"
-                      style={{ backgroundColor: bgColor, color: textColor }}
-                    >
-                      {eq.formula}
-                    </div>
-                    <p className="text-xs text-muted-foreground font-body leading-relaxed">{eq.vars}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Viscosity detail table */}
-          <div className="mt-10 bg-muted rounded-2xl p-6 border border-border">
-            <h3 className="font-display font-semibold text-foreground mb-4">Viscosidade Cinemática da Água (u)</h3>
-            <p className="text-xs text-muted-foreground font-body mb-3">Fórmula empírica para cálculo em função da temperatura:</p>
-            <div
-              className="font-mono text-sm px-5 py-3 rounded-xl text-center mb-4"
-              style={{ backgroundColor: "hsl(var(--primary-muted))", color: "hsl(var(--primary))" }}
-            >
-              log u = −11,73 + 1828/T + 0,01966·T − 0,00001466·T²
-            </div>
-            <p className="text-xs text-muted-foreground font-body">
-              onde T é a temperatura em Kelvin (T = T°C + 273,16). A viscosidade u é dada em m²/s × 10⁻⁶.
-            </p>
-          </div>
-        </div>
-      </section>
 
       {/* ── CALCULADORA CTA ── */}
       <section className="py-16 gradient-primary">
