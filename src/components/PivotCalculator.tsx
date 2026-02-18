@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Waves } from "lucide-react";
-import TrechoATrechoCalculator from "./pivot/TrechoATrechoCalculator";
-import PotenciaBombaCalculator from "./pivot/PotenciaBombaCalculator";
-import CustoEnergiaCalculator from "./pivot/CustoEnergiaCalculator";
+import { Waves, Printer } from "lucide-react";
+import TrechoATrechoCalculator, { TrechoState } from "./pivot/TrechoATrechoCalculator";
+import PotenciaBombaCalculator, { PotenciaState } from "./pivot/PotenciaBombaCalculator";
+import CustoEnergiaCalculator, { CustoState } from "./pivot/CustoEnergiaCalculator";
+import PivotReport from "./pivot/PivotReport";
 
 // ---- Types ----
 type DiamConfig = "1" | "2" | "3";
@@ -74,9 +75,38 @@ const PIVOT_TABS: { key: PivotTab; label: string }[] = [
   { key: "custo", label: "Custo de Energia" },
 ];
 
+// ---- Default states ----
+const defaultTrechoState = (): TrechoState => ({
+  Eem: "25", Cd: "0.98",
+  a: "", b: "", c: "", d: "", fParam: "", modelo: "",
+  rows: [], hfTotal: "", h0: "", hpp: "",
+});
+
+const defaultPotenciaState = (): PotenciaState => ({
+  Lad: "", Dad: "", Dbrec: "150", Dreg: "150", Zrec: "",
+  Ampc: "0.3", Rgv: "0.2", Vrt: "3", Curv: "0.4", Rex: "0.2", aplg: "0.1",
+  Lsuc: "", Dsuc: "", Zgsuc: "", Dbsuc: "150",
+  Rgs: "0.2", Vpc: "5.0", Csuc: "0.4",
+  nb: "", nM: "",
+  Hftadu: "", Vsuc_res: "", Vad_res: "", Hftsuc: "",
+  Hmt: "", Pb: "", Pabs: "",
+});
+
+const defaultCustoState = (): CustoState => ({
+  tarifaHoro: "Verde", bandeira: "Verde",
+  diasTrabalho: "", precoDemandaFP: "",
+  horasForaPonta: "", horasPonta: "",
+  potenciaComercial: "10", periodo: "Seco",
+  tarifaPonta: "", tarifaForaPonta: "", tarifaBandeira: "",
+  potDemanda: "", potAbsorvidaKW: "", volumeBombeado: "",
+  energiaTotal: "", custoEnergia: "", custoDemanda: "",
+  custoFinal: "", custoPorM3: "", custoPorMm: "",
+});
+
 // ---- Component ----
 export default function PivotCalculator() {
   const [activeTab, setActiveTab] = useState<PivotTab>("dados");
+  const [showReport, setShowReport] = useState(false);
 
   // Basic inputs
   const [Rut, setRut] = useState("");
@@ -95,35 +125,39 @@ export default function PivotCalculator() {
   const [LTs, setLTs] = useState("");
   const [Alts, setAlts] = useState("0");
 
-  // Diâmetro 1 (único)
+  // Diâmetros
   const [Diu, setDiu] = useState("");
-
-  // Diâmetro 2 (dois diâmetros)
   const [Lseg1_2, setLseg1_2] = useState("");
   const [D2s, setD2s] = useState("");
-
-  // Três diâmetros
   const [Lseg1_3, setLseg1_3] = useState("");
   const [Lseg2_3, setLseg2_3] = useState("");
   const [Lseg3_3, setLseg3_3] = useState("");
   const [D2s_3, setD2s_3] = useState("");
   const [D3s_3, setD3s_3] = useState("");
-
   const [diamConfig, setDiamConfig] = useState<DiamConfig>("1");
+
   const [results, setResults] = useState<PivotResults | null>(null);
   const [error, setError] = useState("");
 
-  // Shared output for subsequent tabs
+  // Shared output
   const [sharedQin, setSharedQin] = useState(0);
   const [sharedHpp, setSharedHpp] = useState(0);
   const [sharedPabsCV, setSharedPabsCV] = useState(0);
+
+  // ---- Elevated states for sub-tabs ----
+  const [trechoState, setTrechoState] = useState<TrechoState>(defaultTrechoState);
+  const [potenciaState, setPotenciaState] = useState<PotenciaState>(defaultPotenciaState);
+  const [custoState, setCustoState] = useState<CustoState>(defaultCustoState);
+
+  const updateTrecho = (s: Partial<TrechoState>) => setTrechoState(prev => ({ ...prev, ...s }));
+  const updatePotencia = (s: Partial<PotenciaState>) => setPotenciaState(prev => ({ ...prev, ...s }));
+  const updateCusto = (s: Partial<CustoState>) => setCustoState(prev => ({ ...prev, ...s }));
 
   const handleMaterialChange = (mat: Material) => {
     setMaterial(mat);
     setRug(MATERIAL_RUG[mat].toString());
   };
 
-  // Build shared data object for sub-calculators
   const getShared = () => ({
     Rut: parseFloat(Rut) || 0,
     Clb: parseFloat(Clb) || 0,
@@ -160,7 +194,6 @@ export default function PivotCalculator() {
       const qc = hasCanonSpray ? (parseFloat(Qc) || 0) : 0;
       const hfin = parseFloat(Hfin) || 0;
       const aclv = parseFloat(Aclv) || 0;
-      const dclv = parseFloat(Dclv) || 0;
       const lTs = parseFloat(LTs) || 0;
       const alts = parseFloat(Alts) || 0;
 
@@ -189,10 +222,8 @@ export default function PivotCalculator() {
       let Hvel = 0;
       let diu = parseFloat(Diu);
 
-      // ---- 1 diameter ----
       if (diamConfig === "1") {
         if (isNaN(diu) || diu <= 0) { setError("Informe o diâmetro da lateral (mm)."); return; }
-
         const F_raw = 1 - (expm / 3) * (1 - gr) + ((expm - 1) / (7 - expm)) * (1 - gr) ** (3 - expm / 2);
         vs1 = parseFloat((353.67765 * Qin / diu ** 2).toFixed(2));
         const NRDU = Math.floor(mespag * vs1 * diu / uc);
@@ -200,29 +231,14 @@ export default function PivotCalculator() {
         const fs1_disp = parseFloat(fs1_raw.toFixed(4));
         const Hfdu = parseFloat(((6.376e6) * fs1_disp * Qin ** 2 * Lp * F_raw / diu ** 5).toFixed(2));
         Hftotal = Hfdu;
-
-        segments.push({
-          label: "Diâmetro único",
-          d: diu.toFixed(1),
-          q: Qin.toFixed(2),
-          v: vs1.toFixed(2),
-          nr: NRDU.toString(),
-          f: fs1_disp.toFixed(4),
-          F: F_raw.toFixed(4),
-          hf: Hfdu.toFixed(2),
-        });
-
+        segments.push({ label: "Diâmetro único", d: diu.toFixed(1), q: Qin.toFixed(2), v: vs1.toFixed(2), nr: NRDU.toString(), f: fs1_disp.toFixed(4), F: F_raw.toFixed(4), hf: Hfdu.toFixed(2) });
         Hvel = parseFloat(((vs1 ** 2 / 19.62) * (2 * (Lp / Leq) ** 2 - (Lp / Leq) ** 4)).toFixed(4));
       }
 
-      // ---- 2 diameters ----
       if (diamConfig === "2") {
         const lseg1 = parseFloat(Lseg1_2);
         const d2s = parseFloat(D2s);
-        if (isNaN(diu) || diu <= 0 || isNaN(lseg1) || lseg1 <= 0 || isNaN(d2s) || d2s <= 0) {
-          setError("Informe os comprimentos e diâmetros dos segmentos."); return;
-        }
-
+        if (isNaN(diu) || diu <= 0 || isNaN(lseg1) || lseg1 <= 0 || isNaN(d2s) || d2s <= 0) { setError("Informe os comprimentos e diâmetros dos segmentos."); return; }
         const a1 = (lseg1 / Lp) - (2 / 3) * (lseg1 / Lp) ** 3 * (1 - gr);
         const b1 = ((expm - 1) / (7 - expm)) * (lseg1 / Lp) ** (7 - expm) * (1 - gr) ** (3 - expm / 2);
         const Fseg1_raw = a1 + b1;
@@ -231,13 +247,7 @@ export default function PivotCalculator() {
         const fs1_raw = colebrook(NRs1, rugN, diu);
         const fs1_disp = parseFloat(fs1_raw.toFixed(4));
         const Hfseg1 = parseFloat(((6.376e6) * fs1_disp * Qin ** 2 * Lp * Fseg1_raw / diu ** 5).toFixed(2));
-
-        segments.push({
-          label: "Segmento 1",
-          d: diu.toFixed(1), q: Qin.toFixed(2), v: vs1.toFixed(2),
-          nr: NRs1.toString(), f: fs1_disp.toFixed(4), F: Fseg1_raw.toFixed(5), hf: Hfseg1.toFixed(2),
-        });
-
+        segments.push({ label: "Segmento 1", d: diu.toFixed(1), q: Qin.toFixed(2), v: vs1.toFixed(2), nr: NRs1.toString(), f: fs1_disp.toFixed(4), F: Fseg1_raw.toFixed(5), hf: Hfseg1.toFixed(2) });
         const Ftot_raw = 1 - (expm / 3) * (1 - gr) + ((expm - 1) / (7 - expm)) * (1 - gr) ** (3 - expm / 2);
         const Fseg2_raw = Ftot_raw - Fseg1_raw;
         const Q2s = parseFloat((Qin * (1 - (lseg1 / Leq) ** 2)).toFixed(2));
@@ -246,28 +256,18 @@ export default function PivotCalculator() {
         const f2s_raw = colebrook(NR2s, rugN, d2s);
         const f2s_disp = parseFloat(f2s_raw.toFixed(4));
         const Hfseg2 = parseFloat(((6.376e6) * f2s_disp * Qin ** 2 * Lp * Fseg2_raw / d2s ** 5).toFixed(2));
-
-        segments.push({
-          label: "Segmento 2",
-          d: d2s.toFixed(1), q: Q2s.toFixed(2), v: v2s.toFixed(2),
-          nr: NR2s.toString(), f: f2s_disp.toFixed(4), F: Fseg2_raw.toFixed(5), hf: Hfseg2.toFixed(2),
-        });
-
+        segments.push({ label: "Segmento 2", d: d2s.toFixed(1), q: Q2s.toFixed(2), v: v2s.toFixed(2), nr: NR2s.toString(), f: f2s_disp.toFixed(4), F: Fseg2_raw.toFixed(5), hf: Hfseg2.toFixed(2) });
         Hftotal = parseFloat((Hfseg1 + Hfseg2).toFixed(2));
         Hvel = parseFloat(((vs1 ** 2 / 19.62) * (2 * (Lp / Leq) ** 2 - (Lp / Leq) ** 4)).toFixed(4));
       }
 
-      // ---- 3 diameters ----
       if (diamConfig === "3") {
         const lseg1 = parseFloat(Lseg1_3);
         const lseg2 = parseFloat(Lseg2_3);
         const lseg3 = parseFloat(Lseg3_3);
         const d2s = parseFloat(D2s_3);
         const d3s = parseFloat(D3s_3);
-        if ([diu, lseg1, lseg2, lseg3, d2s, d3s].some(v => isNaN(v) || v <= 0)) {
-          setError("Informe todos os comprimentos e diâmetros dos três segmentos."); return;
-        }
-
+        if ([diu, lseg1, lseg2, lseg3, d2s, d3s].some(v => isNaN(v) || v <= 0)) { setError("Informe todos os comprimentos e diâmetros dos três segmentos."); return; }
         const a1 = (lseg1 / Lp) - (2 / 3) * (lseg1 / Lp) ** 3 * (1 - gr);
         const b1 = ((expm - 1) / (7 - expm)) * (lseg1 / Lp) ** (7 - expm) * (1 - gr) ** (3 - expm / 2);
         const Fseg1_raw = a1 + b1;
@@ -276,13 +276,7 @@ export default function PivotCalculator() {
         const fs1_raw = colebrook(NRs1, rugN, diu);
         const fs1_disp = parseFloat(fs1_raw.toFixed(4));
         const Hfseg1 = parseFloat(((6.376e6) * fs1_disp * Qin ** 2 * Lp * Fseg1_raw / diu ** 5).toFixed(2));
-
-        segments.push({
-          label: "Segmento 1",
-          d: diu.toFixed(1), q: Qin.toFixed(2), v: vs1.toFixed(2),
-          nr: NRs1.toString(), f: fs1_disp.toFixed(4), F: Fseg1_raw.toFixed(4), hf: Hfseg1.toFixed(2),
-        });
-
+        segments.push({ label: "Segmento 1", d: diu.toFixed(1), q: Qin.toFixed(2), v: vs1.toFixed(2), nr: NRs1.toString(), f: fs1_disp.toFixed(4), F: Fseg1_raw.toFixed(4), hf: Hfseg1.toFixed(2) });
         const ax = (1 - lseg3 / Lp) - (2 / 3) * (1 - lseg3 / Lp) ** 3 * (1 - gr);
         const bx = ((expm - 1) / (7 - expm)) * (1 - lseg3 / Lp) ** (7 - expm) * (1 - gr) ** (3 - expm / 2);
         const Fx_raw = ax + bx;
@@ -293,13 +287,7 @@ export default function PivotCalculator() {
         const f2s_raw = colebrook(NR2s, rugN, d2s);
         const f2s_disp = parseFloat(f2s_raw.toFixed(4));
         const Hfseg2 = parseFloat(((6.376e6) * f2s_disp * Qin ** 2 * Lp * Fseg2_raw / d2s ** 5).toFixed(2));
-
-        segments.push({
-          label: "Segmento 2",
-          d: d2s.toFixed(1), q: Q2s.toFixed(2), v: v2s.toFixed(2),
-          nr: NR2s.toString(), f: f2s_disp.toFixed(4), F: Fseg2_raw.toFixed(4), hf: Hfseg2.toFixed(2),
-        });
-
+        segments.push({ label: "Segmento 2", d: d2s.toFixed(1), q: Q2s.toFixed(2), v: v2s.toFixed(2), nr: NR2s.toString(), f: f2s_disp.toFixed(4), F: Fseg2_raw.toFixed(4), hf: Hfseg2.toFixed(2) });
         const Ftot_raw = 1 - (expm / 3) * (1 - gr) + ((expm - 1) / (7 - expm)) * (1 - gr) ** (3 - expm / 2);
         const Fseg3_raw = Ftot_raw - Fx_raw;
         const Q3s = parseFloat((Qin * (1 - ((lseg1 + lseg2) / Leq) ** 2)).toFixed(2));
@@ -308,19 +296,12 @@ export default function PivotCalculator() {
         const f3s_raw = colebrook(NR3s, rugN, d3s);
         const f3s_disp = parseFloat(f3s_raw.toFixed(4));
         const Hfseg3 = parseFloat(((6.376e6) * f3s_disp * Qin ** 2 * Lp * Fseg3_raw / d3s ** 5).toFixed(2));
-
-        segments.push({
-          label: "Segmento 3",
-          d: d3s.toFixed(1), q: Q3s.toFixed(2), v: v3s.toFixed(2),
-          nr: NR3s.toString(), f: f3s_disp.toFixed(4), F: Fseg3_raw.toFixed(4), hf: Hfseg3.toFixed(2),
-        });
-
+        segments.push({ label: "Segmento 3", d: d3s.toFixed(1), q: Q3s.toFixed(2), v: v3s.toFixed(2), nr: NR3s.toString(), f: f3s_disp.toFixed(4), F: Fseg3_raw.toFixed(4), hf: Hfseg3.toFixed(2) });
         Hftotal = parseFloat((Hfseg1 + Hfseg2 + Hfseg3).toFixed(2));
         Hvel = parseFloat(((vs1 ** 2 / 19.62) * (2 * (Lp / Leq) ** 2 - (Lp / Leq) ** 4)).toFixed(4));
       }
 
       const Hin = parseFloat((hfin + Hftotal + (aclv * Lp / 100) - Hvel).toFixed(2));
-
       const diu2 = parseFloat(Diu);
       const f_riser = parseFloat(colebrook(Math.floor(mespag * vs1 * diu2 / uc), rugN, diu2).toFixed(4));
       const Hfunit = parseFloat(((6.376e6) * f_riser * Qin ** 2 * lTs / diu2 ** 5).toFixed(2));
@@ -351,10 +332,18 @@ export default function PivotCalculator() {
     }
   };
 
+  // Build report data
+  const reportInputs = {
+    Rut, Clb, Lap, Tgi, efc, Tempag, material, rug,
+    hasCanonSpray, Qc, Hfin, Aclv, Dclv, LTs, Alts,
+    Diu, Lseg1_2, D2s, Lseg1_3, Lseg2_3, Lseg3_3, D2s_3, D3s_3,
+    diamConfig,
+  };
+
   return (
     <div>
-      {/* Sub-tabs */}
-      <div className="flex border-b border-border overflow-x-auto">
+      {/* Sub-tabs + Print button */}
+      <div className="flex border-b border-border overflow-x-auto items-center">
         {PIVOT_TABS.map(tab => (
           <button
             key={tab.key}
@@ -368,6 +357,15 @@ export default function PivotCalculator() {
             {tab.label}
           </button>
         ))}
+        <div className="ml-auto flex-shrink-0 px-3">
+          <button
+            onClick={() => setShowReport(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold font-body text-primary border border-primary/30 bg-primary/5 hover:bg-primary/15 transition-colors"
+          >
+            <Printer size={13} />
+            Imprimir Relatório
+          </button>
+        </div>
       </div>
 
       {/* Dados tab */}
@@ -472,7 +470,6 @@ export default function PivotCalculator() {
             {diamConfig === "1" && (
               <PInput label="Diâmetro interno — Diu (mm)" value={Diu} onChange={setDiu} placeholder="Ex: 168" />
             )}
-
             {diamConfig === "2" && (
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
@@ -485,7 +482,6 @@ export default function PivotCalculator() {
                 </div>
               </div>
             )}
-
             {diamConfig === "3" && (
               <div className="space-y-3">
                 <div className="grid grid-cols-3 gap-3">
@@ -528,8 +524,6 @@ export default function PivotCalculator() {
           ) : (
             <>
               <h3 className="font-display font-semibold text-foreground text-base">Resultados — Método Analítico</h3>
-
-              {/* Summary inputs display */}
               <div className="grid grid-cols-2 gap-3 text-xs font-body">
                 <div className="bg-muted rounded-lg p-3">
                   <span className="text-muted-foreground">Área básica (Ab)</span>
@@ -556,8 +550,6 @@ export default function PivotCalculator() {
                   <p className="font-semibold text-primary">{results.Hftotal} m</p>
                 </div>
               </div>
-
-              {/* Pressure results */}
               <div className="grid grid-cols-3 gap-3">
                 <div className="equation-block rounded-xl p-3 text-center">
                   <p className="text-xs text-muted-foreground font-body">Ho (m)</p>
@@ -568,8 +560,6 @@ export default function PivotCalculator() {
                   <p className="font-display text-2xl font-bold text-primary">{results.Hpp} <span className="text-sm font-body font-normal">m.c.a.</span></p>
                 </div>
               </div>
-
-              {/* Segments */}
               {results.segments.map((seg, i) => (
                 <fieldset key={i} className="border border-border rounded-xl p-4 space-y-2">
                   <legend className="text-xs font-semibold uppercase tracking-wider text-primary px-2 font-body">{`${i + 1}º Segmento — Ø ${seg.d} mm`}</legend>
@@ -583,7 +573,6 @@ export default function PivotCalculator() {
                   </div>
                 </fieldset>
               ))}
-
               <div className="grid grid-cols-2 gap-3 text-xs font-body text-muted-foreground">
                 <span>Carga cinética (Hvel): {results.Hvel} m</span>
                 <span>Viscosidade: {results.viscosity} × 10⁻³ N.s/m²</span>
@@ -598,9 +587,9 @@ export default function PivotCalculator() {
       {activeTab === "trechotrecho" && (
         <TrechoATrechoCalculator
           shared={getShared()}
-          onHpp={(hpp, h0, hfTotal) => {
-            setSharedHpp(hpp);
-          }}
+          state={trechoState}
+          onStateChange={updateTrecho}
+          onHpp={(hpp) => setSharedHpp(hpp)}
         />
       )}
 
@@ -611,6 +600,9 @@ export default function PivotCalculator() {
           Hpp={sharedHpp || (parseFloat(results?.Hpp ?? "0"))}
           rug={parseFloat(rug) || 0.15}
           Tempag={parseFloat(Tempag) || 25}
+          state={potenciaState}
+          onStateChange={updatePotencia}
+          onPabs={(p) => setSharedPabsCV(p)}
         />
       )}
 
@@ -620,6 +612,20 @@ export default function PivotCalculator() {
           Qin={sharedQin || (parseFloat(results?.Qin ?? "0"))}
           Tgi={parseFloat(Tgi) || 0}
           PabsCV={sharedPabsCV}
+          state={custoState}
+          onStateChange={updateCusto}
+        />
+      )}
+
+      {/* Report modal */}
+      {showReport && (
+        <PivotReport
+          inputs={reportInputs}
+          results={results}
+          trechoState={trechoState}
+          potenciaState={potenciaState}
+          custoState={custoState}
+          onClose={() => setShowReport(false)}
         />
       )}
     </div>
