@@ -80,8 +80,9 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
         V = Q / (2.8274 * Di ** 2);
       }
 
-      // Reynolds
-      const Re = mespa * V * Di / (Uc); // using dynamic visc in 10^-3 N.s/m² = mPa.s
+      // Reynolds — usa V arredondado para 2 casas (igual ao VBA original)
+      const Vr = parseFloat(V.toFixed(2));
+      const Re = mespa * Vr * Di / Uc;
 
       // Rugosidade hidráulica adimensional
       const RgHid = (Re ** 0.9) * e / Di;
@@ -132,10 +133,10 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
 
       setResults({
         velocity: V.toFixed(2),
-        reynolds: Math.floor(Re).toString(),
+        reynolds: Math.round(Re).toString(),
         rugosidade: RgHid.toFixed(2),
         frictionFactor: f.toFixed(4),
-        headLoss: hf.toFixed(3),
+        headLoss: hf.toFixed(2),
         regime,
         frictionMethod,
         tubeType,
