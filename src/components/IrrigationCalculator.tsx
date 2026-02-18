@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { X, Calculator, Droplets, Ruler } from "lucide-react";
+import { X, Calculator, Droplets, Ruler, Waves } from "lucide-react";
 import DiameterCalculator from "./DiameterCalculator";
+import PivotCalculator from "./PivotCalculator";
 
 interface CalcResults {
   velocity: string;
@@ -28,7 +29,7 @@ const PIPE_MATERIALS = [
 ];
 
 export default function IrrigationCalculator({ open, onClose }: IrrigationCalculatorProps) {
-  const [activeTab, setActiveTab] = useState<"colebrook" | "diameter">("colebrook");
+  const [activeTab, setActiveTab] = useState<"colebrook" | "diameter" | "pivot">("colebrook");
   const [flowUnit, setFlowUnit] = useState<"m3h" | "Lh">("m3h");
   const [flow, setFlow] = useState("");
   const [length, setLength] = useState("");
@@ -211,10 +212,24 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
             <Ruler size={15} />
             Diâmetro
           </button>
+          <button
+            onClick={() => setActiveTab("pivot")}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
+              activeTab === "pivot"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Waves size={15} />
+            Pivô Central
+          </button>
         </div>
 
         {/* Diameter calculator tab */}
         {activeTab === "diameter" && <DiameterCalculator />}
+
+        {/* Pivot calculator tab */}
+        {activeTab === "pivot" && <PivotCalculator />}
 
         {/* Colebrook tab */}
         {activeTab === "colebrook" && <div className="p-6 space-y-5">
