@@ -132,7 +132,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
 
       setResults({
         velocity: V.toFixed(2),
-        reynolds: Math.round(Re).toString(),
+        reynolds: Re.toFixed(2),
         rugosidade: RgHid.toFixed(2),
         frictionFactor: f.toFixed(4),
         headLoss: hf.toFixed(3),
