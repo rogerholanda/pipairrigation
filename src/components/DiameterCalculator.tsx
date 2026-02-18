@@ -194,10 +194,10 @@ export default function DiameterCalculator() {
           Coeficientes de Perda Localizada (K)
         </label>
         <div className="grid grid-cols-2 gap-3">
-          <SelectField label="Ke — Entrada" value={ke} onChange={setKe} options={KE_OPTIONS} />
-          <SelectField label="Ks — Saída" value={ks} onChange={setKs} options={KS_OPTIONS} />
-          <SelectField label="KRg — Reg. Gaveta" value={krg} onChange={setKrg} options={KRG_OPTIONS} />
-          <SelectField label="Kc — Curva 90°" value={kc} onChange={setKc} options={KC_OPTIONS} />
+          <SelectField label="Ke — Entrada" value={ke} onChange={setKe} options={KE_OPTIONS} id="dl-ke" />
+          <SelectField label="Ks — Saída" value={ks} onChange={setKs} options={KS_OPTIONS} id="dl-ks" />
+          <SelectField label="KRg — Reg. Gaveta" value={krg} onChange={setKrg} options={KRG_OPTIONS} id="dl-krg" />
+          <SelectField label="Kc — Curva 90°" value={kc} onChange={setKc} options={KC_OPTIONS} id="dl-kc" />
         </div>
         <p className="text-xs text-muted-foreground mt-1.5 font-body">
           Soma K = {(parseFloat(ke) + parseFloat(ks) + parseFloat(krg) + parseFloat(kc)).toFixed(1)}
@@ -268,20 +268,24 @@ function InputField({ label, value, onChange, placeholder }: { label: string; va
   );
 }
 
-function SelectField({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: string[] }) {
+function SelectField({ label, value, onChange, options, id }: { label: string; value: string; onChange: (v: string) => void; options: string[]; id: string }) {
   return (
     <div>
       <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
         {label}
       </label>
-      <select
+      <input
+        type="number"
         value={value}
         onChange={e => onChange(e.target.value)}
+        list={id}
+        step="any"
         className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
         style={{ borderColor: "hsl(var(--border))" }}
-      >
-        {options.map(o => <option key={o} value={o}>{o}</option>)}
-      </select>
+      />
+      <datalist id={id}>
+        {options.map(o => <option key={o} value={o} />)}
+      </datalist>
     </div>
   );
 }
