@@ -68,9 +68,9 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
         return;
       }
 
-      const u = calcViscosity(Tempa);        // m²/s (kinematic)
-      const Uc = u * 1000;                    // x10⁻³ N.s/m²
-      const mespa = calcDensity(Tempa);       // kg/m³
+      const u = calcViscosity(Tempa);                        // m²/s (kinematic)
+      const Uc = parseFloat((u * 1000).toFixed(2));          // x10⁻³ N.s/m² — 2 casas decimais
+      const mespa = calcDensity(Tempa);                      // kg/m³
 
       // Velocity
       let V: number;
