@@ -148,7 +148,7 @@ export default function DiameterCalculator() {
 
       {/* Inputs row 2 */}
       <div className="grid grid-cols-2 gap-4">
-        <InputField label="Perda de Carga permitida (m)" value={headLossAllowed} onChange={setHeadLossAllowed} placeholder="Ex: 5" />
+        <InputField label="Desnível (m)" value={headLossAllowed} onChange={setHeadLossAllowed} placeholder="Ex: 5" />
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
             Temperatura (°C)
