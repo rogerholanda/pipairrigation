@@ -1,14 +1,406 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { BookOpen, Download, Calculator, Droplets, Waves, ChevronDown, Leaf, Sun, BookMarked } from "lucide-react";
+import IrrigationCalculator from "@/components/IrrigationCalculator";
+import heroImg from "@/assets/hero-irrigation.jpg";
+import dripImg from "@/assets/drip-irrigation.jpg";
+import sprinklerImg from "@/assets/sprinkler-irrigation.jpg";
+import pivotImg from "@/assets/pivot-irrigation.jpg";
+import microImg from "@/assets/micro-sprinkler.jpg";
 
-const Index = () => {
+const PDF_PLACEHOLDER_URL = "#download-ebook";
+
+const quotes = [
+  {
+    text: "Aquilo que observamos não é a natureza em si, mas a natureza exposta ao nosso método de questionamento.",
+    author: "Werner Heisenberg",
+    role: "Físico e Filósofo alemão, 1958",
+  },
+  {
+    text: "A nossa ignorância ou a implausibilidade de nossas ideias jamais devem interromper as nossas especulações.",
+    author: "Marcelo Gleiser",
+    role: "Físico brasileiro",
+  },
+  {
+    text: "A liberdade de questionamento não deve ter barreiras. Não há lugar para dogmas na ciência.",
+    author: "J. Robert Oppenheimer",
+    role: "Físico Americano — Projeto Manhattan, 1949",
+  },
+];
+
+const irrigationTypes = [
+  {
+    title: "Gotejamento",
+    desc: "Aplica água diretamente na zona radicular das plantas, com alta eficiência e mínima evaporação. Ideal para culturas de alto valor econômico.",
+    img: dripImg,
+    icon: Droplets,
+    efficiency: "90–95%",
+  },
+  {
+    title: "Microaspersão",
+    desc: "Distribui água em pequenas áreas circulares próximas às plantas. Excelente para fruticultura e cultivos em espaçamentos maiores.",
+    img: microImg,
+    icon: Waves,
+    efficiency: "85–90%",
+  },
+  {
+    title: "Aspersão Convencional",
+    desc: "Simula a chuva natural, aplicando água acima das culturas por meio de aspersores rotativos ou fixos. Versátil e amplamente utilizada.",
+    img: sprinklerImg,
+    icon: Sun,
+    efficiency: "75–85%",
+  },
+  {
+    title: "Pivô Central",
+    desc: "Sistema de grande porte que gira em torno de um ponto central, irrigando áreas circulares de hectares. Alta automação e cobertura.",
+    img: pivotImg,
+    icon: Leaf,
+    efficiency: "80–90%",
+  },
+];
+
+const equations = [
+  {
+    title: "Equação de Darcy-Weisbach",
+    formula: "hf = f · (L / D) · (V² / 2g)",
+    vars: "hf = perda de carga (m) | f = fator de atrito | L = comprimento (m) | D = diâmetro (m) | V = velocidade (m/s) | g = 9,81 m/s²",
+    color: "primary",
+  },
+  {
+    title: "Equação de Colebrook-White",
+    formula: "1/√f = −2 · log₁₀(ε/(3,7·D) + 2,51/(Re·√f))",
+    vars: "f = fator de atrito | ε = rugosidade absoluta (mm) | D = diâmetro interno (mm) | Re = número de Reynolds",
+    color: "secondary",
+  },
+  {
+    title: "Número de Reynolds",
+    formula: "Re = ρ · V · D / μ",
+    vars: "ρ = massa específica (kg/m³) | V = velocidade (m/s) | D = diâmetro (m) | μ = viscosidade dinâmica (Pa·s)",
+    color: "accent",
+  },
+  {
+    title: "Regime de Escoamento",
+    formula: "Re < 2000 → Laminar | 2000 < Re < 4000 → Transição | Re > 4000 → Turbulento",
+    vars: "Hagen-Poiseuille: f = 64/Re (regime laminar)",
+    color: "primary",
+  },
+];
+
+export default function Index() {
+  const [calcOpen, setCalcOpen] = useState(false);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background font-body">
+      {/* ── NAVBAR ── */}
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-card/90 backdrop-blur-sm border-b border-border shadow-sm">
+        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <Droplets size={22} className="text-primary" />
+            <span className="font-display font-semibold text-foreground text-base leading-tight">
+              Eng. Sistemas de Irrigação
+            </span>
+          </div>
+          <div className="hidden md:flex items-center gap-6 text-sm font-body text-muted-foreground">
+            <a href="#sobre" className="hover:text-primary transition-colors">Sobre</a>
+            <a href="#sistemas" className="hover:text-primary transition-colors">Sistemas</a>
+            <a href="#equacoes" className="hover:text-primary transition-colors">Equações</a>
+            <a href="#autor" className="hover:text-primary transition-colors">Autor</a>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCalcOpen(true)}
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-secondary/10 text-secondary text-sm font-semibold hover:bg-secondary/20 transition-colors"
+            >
+              <Calculator size={15} />
+              Calculadora
+            </button>
+            <a
+              href={PDF_PLACEHOLDER_URL}
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg gradient-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity shadow-sm"
+            >
+              <Download size={15} />
+              E-book
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      {/* ── HERO ── */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <img src={heroImg} alt="Sistemas de irrigação agrícola" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="gradient-hero absolute inset-0" />
+        <div className="relative z-10 text-center px-6 max-w-4xl mx-auto animate-fade-up">
+          <div className="inline-flex items-center gap-2 bg-primary/20 backdrop-blur-sm border border-primary/30 text-primary-foreground px-4 py-1.5 rounded-full text-sm font-semibold mb-6">
+            <BookMarked size={14} />
+            Colégio Técnico de Bom Jesus
+          </div>
+          <h1 className="font-display text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
+            Engenharia dos<br />
+            <span className="text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(90deg, hsl(152 80% 70%), hsl(200 80% 75%))" }}>
+              Sistemas de Irrigação
+            </span>
+          </h1>
+          <p className="text-white/80 text-lg md:text-xl mb-10 max-w-2xl mx-auto font-body font-light">
+            Gotejamento · Microaspersão · Aspersão Convencional · Pivô Central
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a
+              href={PDF_PLACEHOLDER_URL}
+              className="flex items-center gap-2 px-8 py-3.5 rounded-xl gradient-primary text-primary-foreground font-semibold shadow-elegant hover:opacity-90 transition-opacity text-base"
+            >
+              <Download size={18} />
+              Baixar E-book em PDF
+            </a>
+            <button
+              onClick={() => setCalcOpen(true)}
+              className="flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white/15 backdrop-blur-sm text-white border border-white/30 font-semibold hover:bg-white/25 transition-colors text-base"
+            >
+              <Calculator size={18} />
+              Abrir Calculadora
+            </button>
+          </div>
+        </div>
+        <a href="#sobre" className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/60 animate-bounce">
+          <ChevronDown size={32} />
+        </a>
+      </section>
+
+      {/* ── QUOTES ── */}
+      <section className="py-16 gradient-section">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-3 gap-6">
+            {quotes.map((q, i) => (
+              <blockquote key={i} className="gradient-card rounded-2xl p-6 shadow-card border border-border">
+                <p className="text-foreground/80 font-body text-sm leading-relaxed italic mb-4">
+                  "{q.text}"
+                </p>
+                <footer>
+                  <cite className="font-display font-semibold text-primary not-italic block">{q.author}</cite>
+                  <span className="text-xs text-muted-foreground font-body">{q.role}</span>
+                </footer>
+              </blockquote>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── SOBRE / APRESENTAÇÃO ── */}
+      <section id="sobre" className="py-20 bg-card">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <span className="text-xs font-semibold uppercase tracking-widest text-primary font-body">Apresentação</span>
+              <h2 className="font-display text-4xl font-bold text-foreground mt-2 mb-6 leading-tight">
+                Irrigação como<br />Ciência e Prática
+              </h2>
+              <div className="space-y-4 text-muted-foreground font-body text-sm leading-relaxed">
+                <p>
+                  A irrigação viabiliza a exploração agrícola em regiões de clima semiárido ou com veranicos, sendo uma técnica imprescindível na atividade agrícola para aumentar a produtividade e propiciar a qualidade dos produtos, desde que utilizada adequadamente.
+                </p>
+                <p>
+                  O gerenciamento da irrigação deve ser realizado considerando atributos do <strong className="text-foreground">solo, da água, da planta e do clima</strong>, para que a água seja aplicada no tempo e na quantidade certa.
+                </p>
+                <p>
+                  Com o advento da <strong className="text-foreground">Lei 12.787/13 (Lei da Irrigação)</strong>, busca-se o uso e manejo sustentável dos solos e dos recursos hídricos destinados à irrigação, visando crescimento econômico com preservação ambiental.
+                </p>
+              </div>
+              <div className="mt-8 flex gap-3 flex-wrap">
+                <div className="flex items-center gap-2 bg-primary-muted rounded-lg px-4 py-2 text-sm font-body font-semibold text-primary">
+                  <Leaf size={14} /> 31 anos de docência
+                </div>
+                <div className="flex items-center gap-2 bg-secondary/10 rounded-lg px-4 py-2 text-sm font-body font-semibold text-secondary">
+                  <BookOpen size={14} /> Exercícios resolvidos
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <img src={dripImg} alt="Gotejamento" className="rounded-2xl object-cover w-full h-48 shadow-card col-span-1" />
+              <img src={microImg} alt="Microaspersão" className="rounded-2xl object-cover w-full h-48 shadow-card col-span-1 mt-6" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── SISTEMAS DE IRRIGAÇÃO ── */}
+      <section id="sistemas" className="py-20 gradient-section">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <span className="text-xs font-semibold uppercase tracking-widest text-primary font-body">Tecnologias</span>
+            <h2 className="font-display text-4xl font-bold text-foreground mt-2">Sistemas de Irrigação</h2>
+            <p className="text-muted-foreground mt-3 max-w-xl mx-auto text-sm font-body">
+              Cada sistema possui características hidráulicas distintas, exigindo dimensionamento específico para maximizar eficiência e sustentabilidade.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {irrigationTypes.map((sys) => {
+              const Icon = sys.icon;
+              return (
+                <div key={sys.title} className="bg-card rounded-2xl overflow-hidden shadow-card border border-border group hover:-translate-y-1 transition-transform duration-300">
+                  <div className="relative h-44 overflow-hidden">
+                    <img src={sys.img} alt={sys.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <div className="absolute inset-0 gradient-hero opacity-40" />
+                    <div className="absolute top-3 right-3 bg-primary/90 text-primary-foreground text-xs font-bold font-body px-2.5 py-1 rounded-full">
+                      {sys.efficiency}
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Icon size={16} className="text-primary" />
+                      <h3 className="font-display font-semibold text-foreground">{sys.title}</h3>
+                    </div>
+                    <p className="text-xs text-muted-foreground font-body leading-relaxed">{sys.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── EQUAÇÕES MATEMÁTICAS ── */}
+      <section id="equacoes" className="py-20 bg-card">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <span className="text-xs font-semibold uppercase tracking-widest text-primary font-body">Fundamentos</span>
+            <h2 className="font-display text-4xl font-bold text-foreground mt-2">Equações Matemáticas</h2>
+            <p className="text-muted-foreground mt-3 max-w-xl mx-auto text-sm font-body">
+              As principais equações utilizadas no dimensionamento hidráulico dos sistemas de irrigação.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            {equations.map((eq, i) => {
+              const borderColor = eq.color === "primary" ? "hsl(var(--primary))" : eq.color === "secondary" ? "hsl(var(--secondary))" : "hsl(var(--accent))";
+              const bgColor = eq.color === "primary" ? "hsl(var(--primary-muted))" : eq.color === "secondary" ? "hsl(var(--secondary-muted))" : "hsl(var(--accent-muted))";
+              const textColor = eq.color === "primary" ? "hsl(var(--primary))" : eq.color === "secondary" ? "hsl(var(--secondary))" : "hsl(var(--accent))";
+              return (
+                <div
+                  key={i}
+                  className="rounded-2xl border overflow-hidden shadow-card"
+                  style={{ borderColor: `${borderColor}40` }}
+                >
+                  <div className="px-5 py-3" style={{ backgroundColor: `${bgColor}` }}>
+                    <h3 className="font-display font-semibold text-sm" style={{ color: textColor }}>{eq.title}</h3>
+                  </div>
+                  <div className="bg-card px-5 py-5">
+                    <div
+                      className="font-mono text-lg font-bold mb-3 px-4 py-3 rounded-xl text-center overflow-x-auto"
+                      style={{ backgroundColor: bgColor, color: textColor }}
+                    >
+                      {eq.formula}
+                    </div>
+                    <p className="text-xs text-muted-foreground font-body leading-relaxed">{eq.vars}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Viscosity detail table */}
+          <div className="mt-10 bg-muted rounded-2xl p-6 border border-border">
+            <h3 className="font-display font-semibold text-foreground mb-4">Viscosidade Cinemática da Água (u)</h3>
+            <p className="text-xs text-muted-foreground font-body mb-3">Fórmula empírica para cálculo em função da temperatura:</p>
+            <div
+              className="font-mono text-sm px-5 py-3 rounded-xl text-center mb-4"
+              style={{ backgroundColor: "hsl(var(--primary-muted))", color: "hsl(var(--primary))" }}
+            >
+              log u = −11,73 + 1828/T + 0,01966·T − 0,00001466·T²
+            </div>
+            <p className="text-xs text-muted-foreground font-body">
+              onde T é a temperatura em Kelvin (T = T°C + 273,16). A viscosidade u é dada em m²/s × 10⁻⁶.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CALCULADORA CTA ── */}
+      <section className="py-16 gradient-primary">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <Calculator size={40} className="mx-auto mb-4 text-primary-foreground/80" />
+          <h2 className="font-display text-3xl font-bold text-primary-foreground mb-4">
+            Programa de Cálculo Hidráulico
+          </h2>
+          <p className="text-primary-foreground/80 font-body text-sm mb-8 max-w-xl mx-auto leading-relaxed">
+            Calcule a perda de carga em tubulações de irrigação utilizando as equações de Darcy-Weisbach e Colebrook-White, com suporte a tubos de PEBD, PVC e Aço Zincado.
+          </p>
+          <button
+            onClick={() => setCalcOpen(true)}
+            className="inline-flex items-center gap-2 bg-white text-primary font-semibold px-8 py-3.5 rounded-xl hover:bg-white/90 transition-colors shadow-elegant text-base"
+          >
+            <Calculator size={18} />
+            Abrir Calculadora
+          </button>
+        </div>
+      </section>
+
+      {/* ── DOWNLOAD EBOOK ── */}
+      <section id="autor" className="py-20 gradient-section">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="bg-card rounded-2xl p-8 shadow-card border border-border">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="gradient-primary p-3 rounded-xl">
+                  <BookOpen size={22} className="text-primary-foreground" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-foreground leading-tight">Engenharia dos Sistemas<br />de Irrigação</h3>
+                  <p className="text-xs text-muted-foreground font-body mt-0.5">José Orlando Piauilino Ferreira</p>
+                </div>
+              </div>
+              <ul className="space-y-2 text-sm text-muted-foreground font-body mb-6">
+                {["Gotejamento", "Microaspersão", "Aspersão Convencional", "Pivô Central", "Exercícios resolvidos e propostos", "Programas computacionais de dimensionamento"].map(item => (
+                  <li key={item} className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href={PDF_PLACEHOLDER_URL}
+                className="flex items-center justify-center gap-2 w-full gradient-primary text-primary-foreground font-semibold py-3.5 rounded-xl hover:opacity-90 transition-opacity shadow-md"
+              >
+                <Download size={18} />
+                Baixar E-book Gratuitamente
+              </a>
+            </div>
+            <div>
+              <span className="text-xs font-semibold uppercase tracking-widest text-primary font-body">O Autor</span>
+              <h2 className="font-display text-3xl font-bold text-foreground mt-2 mb-4">
+                Prof. José Orlando<br />Piauilino Ferreira
+              </h2>
+              <p className="text-muted-foreground font-body text-sm leading-relaxed mb-4">
+                Professor de Irrigação do <strong className="text-foreground">Colégio Técnico de Bom Jesus (CTBJ)</strong>, com 31 anos de experiência docente. Especialista em sistemas de irrigação e engenharia agronômica.
+              </p>
+              <p className="text-muted-foreground font-body text-sm leading-relaxed mb-6">
+                Esta publicação reúne décadas de experiência em sala de aula, fornecendo aos estudantes de agronomia e engenheiros equações e programas para dimensionamento de sistemas de irrigação de acordo com as exigências práticas.
+              </p>
+              <blockquote className="border-l-4 pl-4 italic text-sm text-muted-foreground font-body" style={{ borderColor: "hsl(var(--primary))" }}>
+                "Àquele que é o caminho, a verdade e a vida – a ti JESUS."
+                <cite className="block mt-2 text-xs not-italic text-muted-foreground">— Agradecimentos do Autor</cite>
+              </blockquote>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer className="bg-foreground text-background py-10">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <Droplets size={20} className="text-primary" style={{ color: "hsl(152 55% 55%)" }} />
+              <span className="font-display font-semibold text-white/90">Engenharia dos Sistemas de Irrigação</span>
+            </div>
+            <p className="text-white/50 text-xs font-body text-center">
+              Colégio Técnico de Bom Jesus · Prof. José Orlando Piauilino Ferreira
+            </p>
+            <p className="text-white/30 text-xs font-body">
+              Lei 12.787/2013 — Política Nacional de Irrigação
+            </p>
+          </div>
+        </div>
+      </footer>
+
+      {/* ── CALCULATOR MODAL ── */}
+      <IrrigationCalculator open={calcOpen} onClose={() => setCalcOpen(false)} />
     </div>
   );
-};
-
-export default Index;
+}
