@@ -3,6 +3,7 @@ import { Waves } from "lucide-react";
 
 // ---- Types ----
 type DiamConfig = "1" | "2" | "3";
+type Material = "AGD" | "PVC";
 
 interface Seg {
   label: string;
@@ -56,6 +57,11 @@ function colebrook(NR: number, rug: number, D: number): number {
   return oldf;
 }
 
+const MATERIAL_RUG: Record<Material, number> = {
+  AGD: 0.15,
+  PVC: 0.0015,
+};
+
 // ---- Component ----
 export default function PivotCalculator() {
   // Basic inputs
@@ -65,10 +71,13 @@ export default function PivotCalculator() {
   const [Tgi, setTgi] = useState("");
   const [efc, setEfc] = useState("");
   const [Tempag, setTempag] = useState("25");
+  const [material, setMaterial] = useState<Material>("AGD");
   const [rug, setRug] = useState("0.15");
+  const [hasCanonSpray, setHasCanonSpray] = useState(false);
   const [Qc, setQc] = useState("0");
   const [Hfin, setHfin] = useState("");
   const [Aclv, setAclv] = useState("0");
+  const [Dclv, setDclv] = useState("0");
   const [LTs, setLTs] = useState("");
   const [Alts, setAlts] = useState("0");
 
@@ -90,6 +99,11 @@ export default function PivotCalculator() {
   const [results, setResults] = useState<PivotResults | null>(null);
   const [error, setError] = useState("");
 
+  const handleMaterialChange = (mat: Material) => {
+    setMaterial(mat);
+    setRug(MATERIAL_RUG[mat].toString());
+  };
+
   const calculate = () => {
     setError("");
     try {
@@ -100,9 +114,10 @@ export default function PivotCalculator() {
       const efcN = parseFloat(efc);
       const tempag = parseFloat(Tempag);
       const rugN = parseFloat(rug);
-      const qc = parseFloat(Qc) || 0;
+      const qc = hasCanonSpray ? (parseFloat(Qc) || 0) : 0;
       const hfin = parseFloat(Hfin) || 0;
       const aclv = parseFloat(Aclv) || 0;
+      const dclv = parseFloat(Dclv) || 0;
       const lTs = parseFloat(LTs) || 0;
       const alts = parseFloat(Alts) || 0;
 
@@ -138,6 +153,9 @@ export default function PivotCalculator() {
       // Equivalent length
       const Leq = parseFloat((Lp / (1 - gr) ** 0.5).toFixed(1));
 
+      // Net slope = aclive - declive (% => fraction per meter)
+      const netSlope = aclv - dclv;
+
       const expm = 2;
       const segments: Seg[] = [];
       let Hftotal = 0;
@@ -167,7 +185,6 @@ export default function PivotCalculator() {
           hf: Hfdu.toFixed(2),
         });
 
-        // Carga cinética
         Hvel = parseFloat(((vs1 ** 2 / 19.62) * (2 * (Lp / Leq) ** 2 - (Lp / Leq) ** 4)).toFixed(4));
       }
 
@@ -179,7 +196,6 @@ export default function PivotCalculator() {
           setError("Informe os comprimentos e diâmetros dos segmentos."); return;
         }
 
-        // Seg 1
         const a1 = (lseg1 / Lp) - (2 / 3) * (lseg1 / Lp) ** 3 * (1 - gr);
         const b1 = ((expm - 1) / (7 - expm)) * (lseg1 / Lp) ** (7 - expm) * (1 - gr) ** (3 - expm / 2);
         const Fseg1 = parseFloat((a1 + b1).toFixed(5));
@@ -194,7 +210,6 @@ export default function PivotCalculator() {
           nr: NRs1.toString(), f: fs1.toFixed(4), F: Fseg1.toFixed(5), hf: Hfseg1.toFixed(2),
         });
 
-        // Seg 2
         const Ftot = parseFloat((1 - (expm / 3) * (1 - gr) + ((expm - 1) / (7 - expm)) * (1 - gr) ** (3 - expm / 2)).toFixed(5));
         const Fseg2 = parseFloat((Ftot - Fseg1).toFixed(5));
         const Q2s = parseFloat((Qin * (1 - (lseg1 / Leq) ** 2)).toFixed(2));
@@ -224,7 +239,6 @@ export default function PivotCalculator() {
           setError("Informe todos os comprimentos e diâmetros dos três segmentos."); return;
         }
 
-        // Seg 1
         const a1 = (lseg1 / Lp) - (2 / 3) * (lseg1 / Lp) ** 3 * (1 - gr);
         const b1 = ((expm - 1) / (7 - expm)) * (lseg1 / Lp) ** (7 - expm) * (1 - gr) ** (3 - expm / 2);
         const Fseg1 = parseFloat((a1 + b1).toFixed(4));
@@ -239,7 +253,6 @@ export default function PivotCalculator() {
           nr: NRs1.toString(), f: fs1.toFixed(4), F: Fseg1.toFixed(4), hf: Hfseg1.toFixed(2),
         });
 
-        // Seg 2
         const ax = (1 - lseg3 / Lp) - (2 / 3) * (1 - lseg3 / Lp) ** 3 * (1 - gr);
         const bx = ((expm - 1) / (7 - expm)) * (1 - lseg3 / Lp) ** (7 - expm) * (1 - gr) ** (3 - expm / 2);
         const Fx = parseFloat((ax + bx).toFixed(4));
@@ -256,7 +269,6 @@ export default function PivotCalculator() {
           nr: NR2s.toString(), f: f2s.toFixed(4), F: Fseg2.toFixed(4), hf: Hfseg2.toFixed(2),
         });
 
-        // Seg 3
         const Ftot = parseFloat((1 - (expm / 3) * (1 - gr) + ((expm - 1) / (7 - expm)) * (1 - gr) ** (3 - expm / 2)).toFixed(6));
         const Fseg3 = parseFloat((Ftot - Fx).toFixed(6));
         const Q3s = parseFloat((Qin * (1 - ((lseg1 + lseg2) / Leq) ** 2)).toFixed(2));
@@ -275,8 +287,8 @@ export default function PivotCalculator() {
         Hvel = parseFloat(((vs1 ** 2 / 19.62) * (2 * (Lp / Leq) ** 2 - (Lp / Leq) ** 4)).toFixed(4));
       }
 
-      // Pressão no início da lateral
-      const Hin = parseFloat((hfin + Hftotal + (aclv * Lp / 100) - Hvel).toFixed(2));
+      // Pressão no início da lateral (usando netSlope = aclive - declive)
+      const Hin = parseFloat((hfin + Hftotal + (netSlope * Lp / 100) - Hvel).toFixed(2));
 
       // Perda de carga no tubo de subida
       const diu2 = parseFloat(Diu);
@@ -305,8 +317,6 @@ export default function PivotCalculator() {
     }
   };
 
-  const lTs = parseFloat(LTs);
-
   return (
     <div className="p-6 space-y-5">
 
@@ -324,27 +334,84 @@ export default function PivotCalculator() {
 
       {/* Row 3 */}
       <div className="grid grid-cols-2 gap-4">
-        <PInput label="Eficiência — efc (%)" value={efc} onChange={setEfc} placeholder="Ex: 90" />
+        <PInput label="Eficiência — Efc (%)" value={efc} onChange={setEfc} placeholder="Ex: 90" />
         <PInput label="Temperatura da água (°C)" value={Tempag} onChange={setTempag} placeholder="Ex: 25" />
       </div>
 
-      {/* Row 4 — Pressure / topography */}
+      {/* Row 4 — Slope */}
       <div className="grid grid-cols-2 gap-4">
-        <PInput label="Pressão no final — Hfin (m.c.a.)" value={Hfin} onChange={setHfin} placeholder="Ex: 25" />
         <PInput label="Aclive lateral — Aclv (%)" value={Aclv} onChange={setAclv} placeholder="Ex: 0" />
+        <PInput label="Declive lateral — Dclv (%)" value={Dclv} onChange={setDclv} placeholder="Ex: 0" />
       </div>
 
-      {/* Row 5 — Rising pipe */}
+      {/* Row 5 — Pressure / end */}
+      <div className="grid grid-cols-2 gap-4">
+        <PInput label="Pressão no final — Hfin (m.c.a.)" value={Hfin} onChange={setHfin} placeholder="Ex: 25" />
+        <div /> {/* spacer */}
+      </div>
+
+      {/* Row 6 — Rising pipe */}
       <div className="grid grid-cols-2 gap-4">
         <PInput label="Comp. tubo de subida — LTs (m)" value={LTs} onChange={setLTs} placeholder="Ex: 3" />
         <PInput label="Desnível tubo de subida — Alts (m)" value={Alts} onChange={setAlts} placeholder="Ex: 3" />
       </div>
 
-      {/* Row 6 — Cannon spray + roughness */}
-      <div className="grid grid-cols-2 gap-4">
-        <PInput label="Vazão canhão/spray — Qc (m³/h)" value={Qc} onChange={setQc} placeholder="Ex: 0" />
-        <PInput label="Rugosidade abs. — rug (mm)" value={rug} onChange={setRug} placeholder="Ex: 0.15" />
+      {/* Row 7 — Material */}
+      <div>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 font-body">
+          Material da Tubulação
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          {(["AGD", "PVC"] as Material[]).map(mat => (
+            <button
+              key={mat}
+              onClick={() => handleMaterialChange(mat)}
+              className={`py-2 px-3 rounded-lg text-sm font-semibold font-body transition-all border ${
+                material === mat
+                  ? "gradient-primary text-primary-foreground border-transparent"
+                  : "bg-muted text-muted-foreground border-border hover:border-primary"
+              }`}
+            >
+              {mat === "AGD" ? "AGD° — Aço Galvanizado" : "PVC"}
+            </button>
+          ))}
+        </div>
       </div>
+
+      {/* Row 8 — Roughness */}
+      <div className="grid grid-cols-2 gap-4">
+        <PInput label="Rugosidade abs. — rug (mm)" value={rug} onChange={setRug} placeholder="Ex: 0.15" />
+        <div /> {/* spacer */}
+      </div>
+
+      {/* Row 9 — Cannon/Spray checkbox */}
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => setHasCanonSpray(v => !v)}
+          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+            hasCanonSpray
+              ? "gradient-primary border-transparent"
+              : "border-border bg-background"
+          }`}
+        >
+          {hasCanonSpray && (
+            <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+              <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          )}
+        </button>
+        <label
+          onClick={() => setHasCanonSpray(v => !v)}
+          className="text-sm font-body text-foreground cursor-pointer select-none"
+        >
+          Possui aspersor canhão/Spray
+        </label>
+      </div>
+
+      {hasCanonSpray && (
+        <PInput label="Vazão canhão/spray — Qc (m³/h)" value={Qc} onChange={setQc} placeholder="Ex: 4.86" />
+      )}
 
       {/* Diameter configuration */}
       <div>
@@ -375,10 +442,13 @@ export default function PivotCalculator() {
         {/* 2 diameters */}
         {diamConfig === "2" && (
           <div className="space-y-3">
-            <PInput label="Diâmetro interno — Diu (mm)" value={Diu} onChange={setDiu} placeholder="Ex: 168" />
             <div className="grid grid-cols-2 gap-3">
-              <PInput label="Comp. seg. 1 — Lseg1 (m)" value={Lseg1_2} onChange={setLseg1_2} placeholder="Ex: 250" />
-              <PInput label="Diâm. seg. 2 — D2s (mm)" value={D2s} onChange={setD2s} placeholder="Ex: 143" />
+              <PInput label="Comp. seg. 1 — L1s (m)" value={Lseg1_2} onChange={setLseg1_2} placeholder="Ex: 250" />
+              <div /> {/* spacer */}
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <PInput label="Diâm. seg. 1 — Ds1 (mm)" value={Diu} onChange={setDiu} placeholder="Ex: 168" />
+              <PInput label="Diâm. seg. 2 — Ds2 (mm)" value={D2s} onChange={setD2s} placeholder="Ex: 143" />
             </div>
           </div>
         )}
@@ -386,16 +456,16 @@ export default function PivotCalculator() {
         {/* 3 diameters */}
         {diamConfig === "3" && (
           <div className="space-y-3">
-            <PInput label="Diâmetro interno — Diu (mm)" value={Diu} onChange={setDiu} placeholder="Ex: 168" />
-            <div className="grid grid-cols-2 gap-3">
-              <PInput label="Comp. seg. 1 — Lseg1 (m)" value={Lseg1_3} onChange={setLseg1_3} placeholder="Ex: 150" />
-              <PInput label="Comp. seg. 2 — Lseg2 (m)" value={Lseg2_3} onChange={setLseg2_3} placeholder="Ex: 150" />
+            <div className="grid grid-cols-3 gap-3">
+              <PInput label="Comp. seg. 1 — L1s (m)" value={Lseg1_3} onChange={setLseg1_3} placeholder="Ex: 150" />
+              <PInput label="Comp. seg. 2 — L2s (m)" value={Lseg2_3} onChange={setLseg2_3} placeholder="Ex: 150" />
+              <PInput label="Comp. seg. 3 — L3s (m)" value={Lseg3_3} onChange={setLseg3_3} placeholder="Ex: 150" />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <PInput label="Comp. seg. 3 — Lseg3 (m)" value={Lseg3_3} onChange={setLseg3_3} placeholder="Ex: 150" />
-              <PInput label="Diâm. seg. 2 — D2s (mm)" value={D2s_3} onChange={setD2s_3} placeholder="Ex: 143" />
+            <div className="grid grid-cols-3 gap-3">
+              <PInput label="Diâm. seg. 1 — Ds1 (mm)" value={Diu} onChange={setDiu} placeholder="Ex: 168" />
+              <PInput label="Diâm. seg. 2 — Ds2 (mm)" value={D2s_3} onChange={setD2s_3} placeholder="Ex: 143" />
+              <PInput label="Diâm. seg. 3 — Ds3 (mm)" value={D3s_3} onChange={setD3s_3} placeholder="Ex: 120" />
             </div>
-            <PInput label="Diâm. seg. 3 — D3s (mm)" value={D3s_3} onChange={setD3s_3} placeholder="Ex: 120" />
           </div>
         )}
       </div>
