@@ -54,26 +54,31 @@ interface DischargeResults {
 }
 
 // ── Utility functions ──
+// Matches VBA Format() — rounds to fixed decimals and returns number
+const fmt = (v: number, d: number): number => parseFloat(v.toFixed(d));
+
 const calcViscosity = (T: number) => {
   const K = T + 273.16;
   const Lgu = -11.73 + 1828 / K + 0.01966 * K - 0.00001466 * K ** 2;
-  return (10 ** Lgu) / 100;
+  return fmt((10 ** Lgu) / 100, 5); // VBA: Format(..., "0.00000")
 };
 
 const calcDensity = (T: number) => {
   const Fct = ((T - 3.983035) ** 2) * (T + 301.797) / (522528.9 * (T + 69.34881));
-  return 1000 * (1 - Fct);
+  return fmt(1000 * (1 - Fct), 2); // VBA: Format(..., "0.00")
 };
 
+// Colebrook iteration matching VBA exactly (Do While, divides by new value, uses Log*0.434294482)
 const calcFrictionFactor = (Re: number, roughness: number, diameter: number) => {
-  if (Re <= 2300) return { f: 64 / Re, regime: "Escoamento Laminar" };
+  if (Re <= 2300) return { f: fmt(64 / Re, 2), regime: "Escoamento Laminar" };
   let oldf = 1;
-  for (let i = 0; i < 200; i++) {
-    const newf = 1 / (-2 * Math.log10(roughness / (3.7 * diameter) + 2.51 / (Re * Math.sqrt(oldf)))) ** 2;
-    if (Math.abs((newf - oldf) / oldf) < 0.001) { oldf = newf; break; }
+  let deltaf = oldf;
+  while (Math.abs(deltaf / oldf) >= 0.001) {
+    const newf = 1 / (-2 * Math.log(roughness / (3.7 * diameter) + 2.51 / (Re * Math.sqrt(oldf))) * 0.434294482) ** 2;
+    deltaf = newf - oldf;
     oldf = newf;
   }
-  return { f: oldf, regime: Re >= 4000 ? "Escoamento Turbulento" : "Região de Transição" };
+  return { f: fmt(oldf, 4), regime: Re >= 4000 ? "Escoamento Turbulento" : "Região de Transição" };
 };
 
 // ── Shared UI ──
@@ -167,7 +172,7 @@ export default function PumpingCalculator() {
   const [dError, setDError] = useState("");
 
   // ═══════════════════════════════════
-  // SUCTION CALCULATION
+  // SUCTION CALCULATION (matches VBA exactly with intermediate rounding)
   // ═══════════════════════════════════
   const calcSuction = () => {
     setSError("");
@@ -193,41 +198,46 @@ export default function PumpingCalculator() {
         return;
       }
 
-      const u = calcViscosity(T);
-      const mespa = calcDensity(T);
-      const Pes = mespa * 9.81;
+      // Viscosity & density (VBA formats these intermediately)
+      const u = calcViscosity(T);        // fmt to 5 decimals
+      const Uc = fmt(u * 1000, 2);       // VBA: Uc = u * 1000
+      const mespa = calcDensity(T);      // fmt to 2 decimals
 
-      // Vapor pressure
+      // Specific weight (VBA: Format(mespa*9.81, "0.00"), then CDbl)
+      const Pes = fmt(mespa * 9.81, 2);
+
+      // Vapor pressure (VBA keeps Pvm at full precision, only display is formatted)
       const logPv = 8.0701 - 1730.6 / (T + 233.4);
       const PvHg = 10 ** logPv;
       const Pvm = PvHg * 10.33 / 760;
+      const PvmDisplay = fmt(Pvm, 2);
 
-      // Velocity
-      const V = 353.6775 * Q / D ** 2;
+      // Velocity (VBA: Format(..., "0.000"))
+      const V = fmt(353.6775 * Q / D ** 2, 3);
 
-      // Reynolds
-      const Re = mespa * V * (D / 1000) / u;
+      // Reynolds (VBA: Format(..., "0") — integer)
+      const Re = fmt(mespa * V * (D / 1000) / u, 0);
 
-      // Friction
+      // Friction factor (VBA uses integer Re in Colebrook, result formatted to 4 decimals)
       const { f, regime } = calcFrictionFactor(Re, mat.roughness, D);
 
-      // Distributed loss
-      const Hfls = 6.376e6 * f * Q ** 2 * L / D ** 5;
+      // Distributed loss (VBA: Format(..., "0.000"))
+      const Hfls = fmt(6.376e6 * f * Q ** 2 * L / D ** 5, 3);
 
-      // Singular losses
-      const Vrex = 353.6775 * Q / Dboc ** 2;
-      const Hfrex = Krex * Vrex ** 2 / 19.62;
-      const Hfsg = (Ke + Kvg + Kc + Kvpc) * V ** 2 / 19.62;
-      const Hfss = Hfsg + Hfrex;
+      // Singular losses (VBA uses 353.67765 for Vrex, formats intermediately)
+      const Vrex = fmt(353.67765 * Q / Dboc ** 2, 3);
+      const kredex = fmt(Krex * Vrex ** 2 / 19.62, 3);
+      const Hfsg = fmt((Ke + Kvg + Kc + Kvpc) * V ** 2 / 19.62, 3);
+      const Hfss = Hfsg + kredex; // VBA: CDbl(Hfsg + kredex)
 
-      // Total suction loss
-      const HfTs = Hfls + Hfss;
+      // Total suction loss (VBA: Format(Hfls + Hfss, "0.000"))
+      const HfTs = fmt(Hfls + Hfss, 3);
 
-      // Atmospheric pressure
-      const Patm = 10.33 * ((293 - 0.0065 * Alt) / 293) ** 5.26;
+      // Atmospheric pressure (VBA: Format then CDbl)
+      const Patm = fmt(10.33 * ((293 - 0.0065 * Alt) / 293) ** 5.26, 2);
 
-      // Critical suction height
-      const Zscritica = Patm - (NPSH + Pvm + HfTs);
+      // Critical suction height (always computed — VBA: Format(..., "0.000"))
+      const Zscritica = fmt(Patm - (NPSH + Pvm + HfTs), 3);
 
       let npshAvailable = "";
       let inletKpa = "";
@@ -235,21 +245,23 @@ export default function PumpingCalculator() {
       let message = "";
 
       if (sMode === "critical") {
-        const NPSHdreal = 1.15 * NPSH;
-        const Zsmax = Patm - (NPSHdreal + HfTs + Pvm);
-        npshAvailable = (Patm - (Zscritica + Pvm + HfTs)).toFixed(2);
+        // VBA CheckBox2: sucção positiva crítica
+        const NPSHdreal = fmt(1.15 * NPSH, 2);
+        const Zsmax = fmt(Patm - (NPSHdreal + HfTs + Pvm), 2);
+        npshAvailable = fmt(Patm - (Zscritica + Pvm + HfTs), 2).toFixed(2);
         message = `Altura estática de sucção máxima = ${Zsmax.toFixed(2)} m acima do nível da água (NPSHdisp = ${NPSHdreal.toFixed(2)} m)`;
       } else if (sMode === "submerged") {
-        npshAvailable = (Patm + ZsAfog - (Pvm + HfTs)).toFixed(2);
-        inletMca = (ZsAfog - HfTs - V ** 2 / 19.62).toFixed(2);
-        inletKpa = (Pes * parseFloat(inletMca) / 1000).toFixed(2);
+        // VBA CheckBox3: sucção negativa (afogada)
+        npshAvailable = fmt(Patm + ZsAfog - (Pvm + HfTs), 2).toFixed(2);
+        inletMca = fmt(ZsAfog - HfTs - V ** 2 / 19.62, 2).toFixed(2);
+        inletKpa = fmt(Pes * parseFloat(inletMca) / 1000, 2).toFixed(2);
         message = `Altura estática de sucção mínima de ${ZsAfog.toFixed(2)} m abaixo do nível inferior da água no reservatório.`;
       } else {
-        // predefined
-        npshAvailable = (Patm - (Zspre + Pvm + HfTs)).toFixed(2);
-        inletKpa = (-(Pes) * (Zspre + V ** 2 / 19.62 + HfTs) / 1000).toFixed(2);
-        inletMca = (-(Zspre + V ** 2 / 19.62 + HfTs)).toFixed(2);
-        const Hdsuc = HfTs + Zspre;
+        // VBA CheckBox1: sucção positiva pré-definida
+        npshAvailable = fmt(Patm - (Zspre + Pvm + HfTs), 2).toFixed(2);
+        inletKpa = fmt(-Pes * (Zspre + (V ** 2 / 19.62) + HfTs) / 1000, 2).toFixed(2);
+        inletMca = fmt(-(Zspre + (V ** 2 / 19.62) + HfTs), 2).toFixed(2);
+        const Hdsuc = fmt(HfTs + Zspre, 3);
         message = `Altura dinâmica de sucção: ${Hdsuc.toFixed(3)} m`;
       }
 
@@ -259,16 +271,16 @@ export default function PumpingCalculator() {
       }
 
       setSResults({
-        viscosity: (u * 1000).toFixed(2),
+        viscosity: Uc.toFixed(2),
         density: mespa.toFixed(2),
         specificWeight: Pes.toFixed(2),
-        vaporPressure: Pvm.toFixed(2),
+        vaporPressure: PvmDisplay.toFixed(2),
         velocity: V.toFixed(3),
-        reynolds: Math.round(Re).toString(),
+        reynolds: Re.toFixed(0),
         frictionFactor: f.toFixed(4),
         regime,
         distributedLoss: Hfls.toFixed(3),
-        singularLoss: Hfss.toFixed(3),
+        singularLoss: fmt(Hfss, 3).toFixed(3),
         totalLoss: HfTs.toFixed(3),
         atmPressure: Patm.toFixed(2),
         criticalHeight: Zscritica.toFixed(3),
@@ -318,62 +330,61 @@ export default function PumpingCalculator() {
 
       const u = calcViscosity(T);
       const mespa = calcDensity(T);
-      const Pes = mespa * 9.81;
+      const Pes = fmt(mespa * 9.81, 2);
 
-      // Velocity
-      const Vrec = 353.6775 * Q / D ** 2;
+      // Velocity (VBA: Format(..., "0.00"))
+      const Vrec = fmt(353.6775 * Q / D ** 2, 2);
 
-      // Reynolds
-      const Re = mespa * Vrec * (D / 1000) / u;
+      // Reynolds (VBA: Format(..., "0"))
+      const Re = fmt(mespa * Vrec * (D / 1000) / u, 0);
 
-      // Friction
+      // Friction (VBA: Format(..., "0.0000"))
       const { f } = calcFrictionFactor(Re, mat.roughness, D);
 
-      // Distributed loss
-      const HfLr = 6.3735 * f * (1000 * Q) ** 2 * L / D ** 5;
+      // Distributed loss (VBA: Format(6.3735 * f * (1000*Q)^2 * L / D^5, "0.00"))
+      const HfLr = fmt(6.3735 * f * (1000 * Q) ** 2 * L / D ** 5, 2);
 
-      // Singular losses
-      const vac = 353.6775 * Q / Dbocd ** 2;
+      // Singular losses (VBA formats intermediately)
+      const vac = fmt(353.6775 * Q / Dbocd ** 2, 2);
       const Hfac = Kac * vac ** 2 / 19.62;
-      const vsac = 353.6775 * Q / Dgav ** 2;
+      const vsac = fmt(353.6775 * Q / Dgav ** 2, 2);
       const Hfrgv = Kvgr * vsac ** 2 / 19.62;
       const Hfagrd = Kagd * vsac ** 2 / 19.62;
       const Hfvrt = Kvr * Vrec ** 2 / 19.62;
       const Hfcur = Kcr * Vrec ** 2 / 19.62;
-      const HfSr = Hfac + Hfrgv + Hfagrd + Hfvrt + Hfcur;
+      const HfSr = fmt(Hfac + Hfrgv + Hfagrd + Hfvrt + Hfcur, 3);
 
       // Total discharge loss
-      const Hftr = HfLr + HfSr;
+      const Hftr = fmt(HfLr + HfSr, 2);
 
       // Total system loss
-      const HfTs = parseFloat(sResults.totalLoss);
-      const totalSystem = Hftr + HfTs;
+      const HfTsuc = parseFloat(sResults.totalLoss);
+      const totalSystem = fmt(Hftr + HfTsuc, 3);
 
       // Dynamic height
-      const dynamicHeight = Aer + Hftr;
+      const dynamicHeight = fmt(Aer + Hftr, 3);
 
-      // Outlet pressure (mca)
-      const PSaida = Psd + (Aer - d) + Hftr + Filt;
+      // Outlet pressure (mca) (VBA: Format(..., "0.00"))
+      const PSaida = fmt(Psd + (Aer - d) + Hftr + Filt, 2);
       // Outlet pressure (KPa)
-      const PSaidaKpa = Pes * (Psd + (Aer - d) + Hftr) / 1000;
+      const PSaidaKpa = fmt(Pes * (Psd + (Aer - d) + Hftr) / 1000, 2);
 
-      // Pump head
+      // Pump head (VBA: Format(..., "0.00"))
       const PAdm = parseFloat(sResults.inletPressureMca) || 0;
       const Vsuc = parseFloat(sResults.velocity);
-      const Hb = (PSaida - PAdm) + ((Vrec ** 2 - Vsuc ** 2) / 19.62) + d;
+      const Hb = fmt((PSaida - PAdm) + ((Vrec ** 2 - Vsuc ** 2) / 19.62) + d, 2);
 
-      // Power
-      const PotKw = (Pes * (Q / 3600) * Hb) / (Eff / 100) / 1000;
-      const PotCv = PotKw / 0.7355;
+      // Power (VBA: Format(..., "0.00"))
+      const PotKw = fmt((Pes * (Q / 3600) * Hb) / (Eff / 100) / 1000, 2);
+      const PotCv = fmt(PotKw / 0.7355, 2);
 
-      // Velocity warning
       if (Vrec > 2) {
         setDError("Velocidade acima de 2 m/s no recalque. Atenção!");
       }
 
       setDResults({
         velocity: Vrec.toFixed(2),
-        reynolds: Math.round(Re).toString(),
+        reynolds: Re.toFixed(0),
         frictionFactor: f.toFixed(4),
         distributedLoss: HfLr.toFixed(2),
         singularLoss: HfSr.toFixed(3),
