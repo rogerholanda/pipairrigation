@@ -164,7 +164,7 @@ export default function Index() {
             <div>
               <span className="text-xs font-semibold uppercase tracking-widest text-primary font-body">Apresentação</span>
               <h2 className="font-display text-4xl font-bold text-foreground mt-2 mb-6 leading-tight">
-                Irrigação como<br />Ciência e Prática
+                Irrigação como Ciência e Prática
               </h2>
               <div className="space-y-4 text-muted-foreground font-body text-sm leading-relaxed text-justify">
                 <p>
