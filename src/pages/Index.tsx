@@ -105,7 +105,7 @@ export default function Index() {
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto animate-fade-up">
           <div className="inline-flex items-center gap-2 bg-primary/20 backdrop-blur-sm border border-primary/30 text-primary-foreground px-4 py-1.5 rounded-full text-sm font-semibold mb-6">
             <BookMarked size={14} />
-            Colégio Técnico de Bom Jesus
+            José Orlando Piauilino Ferreira
           </div>
           <h1 className="font-display text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
             Engenharia dos<br />
