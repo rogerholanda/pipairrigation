@@ -256,7 +256,7 @@ export default function Index() {
               <h2 className="font-display text-3xl font-bold text-foreground mt-2 mb-4">
                 Prof. José Orlando<br />Piauilino Ferreira
               </h2>
-              <p className="text-muted-foreground font-body text-sm leading-relaxed mb-6">
+              <p className="text-muted-foreground font-body text-sm leading-relaxed mb-6 text-justify">
                 Engenheiro Agrônomo, graduado pela <strong className="text-foreground">Universidade Federal Rural de Pernambuco (UFRPE)</strong>. Mestre em Agronomia – Área de concentração: Irrigação e Drenagem – <strong className="text-foreground">Escola Superior de Agricultura "Luiz de Queiroz" (ESALQ – USP)</strong>. Doutor em Agronomia – Área de concentração: Produção Vegetal – <strong className="text-foreground">Universidade Estadual de São Paulo "Júlio de Mesquita" (UNESP – Jaboticabal/SP)</strong>. É professor titular, aposentado, do <strong className="text-foreground">Colégio Técnico de Bom Jesus – PI</strong>, vinculado à Universidade Federal do Piauí (UFPI). Durante o período de docência ministrou as disciplinas de Irrigação, Agrometeorologia, Informática Aplicada à Agronomia e Educação e Legislação ambiental.
               </p>
               <blockquote className="border-l-4 pl-4 italic text-sm text-muted-foreground font-body" style={{ borderColor: "hsl(var(--primary))" }}>
