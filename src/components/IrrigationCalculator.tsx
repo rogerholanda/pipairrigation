@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { X, Calculator, Droplets, Ruler, Waves } from "lucide-react";
+import { X, Calculator, Droplets, Ruler, Waves, Gauge } from "lucide-react";
 import DiameterCalculator from "./DiameterCalculator";
 import PivotCalculator from "./PivotCalculator";
+import PumpingCalculator from "./PumpingCalculator";
 
 interface CalcResults {
   velocity: string;
@@ -29,7 +30,7 @@ const PIPE_MATERIALS = [
 ];
 
 export default function IrrigationCalculator({ open, onClose }: IrrigationCalculatorProps) {
-  const [activeTab, setActiveTab] = useState<"colebrook" | "diameter" | "pivot">("colebrook");
+  const [activeTab, setActiveTab] = useState<"colebrook" | "diameter" | "pivot" | "pumping">("colebrook");
   const [flowUnit, setFlowUnit] = useState<"m3h" | "Lh">("m3h");
   const [flow, setFlow] = useState("");
   const [length, setLength] = useState("");
@@ -223,6 +224,17 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
             <Waves size={15} />
             Pivô Central
           </button>
+          <button
+            onClick={() => setActiveTab("pumping")}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
+              activeTab === "pumping"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Gauge size={15} />
+            Bombeamento
+          </button>
         </div>
 
         {/* Diameter calculator tab */}
@@ -230,6 +242,9 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
 
         {/* Pivot calculator tab */}
         {activeTab === "pivot" && <PivotCalculator />}
+
+        {/* Pumping calculator tab */}
+        {activeTab === "pumping" && <PumpingCalculator />}
 
         {/* Colebrook tab */}
         {activeTab === "colebrook" && <div className="p-6 space-y-5">
