@@ -160,7 +160,7 @@ export default function Index() {
       {/* ── SOBRE / APRESENTAÇÃO ── */}
       <section id="sobre" className="py-20 bg-card">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="max-w-3xl mx-auto">
             <div>
               <span className="text-xs font-semibold uppercase tracking-widest text-primary font-body">Apresentação</span>
               <h2 className="font-display text-4xl font-bold text-foreground mt-2 mb-6 leading-tight">
@@ -185,10 +185,6 @@ export default function Index() {
                   <BookOpen size={14} /> Exercícios resolvidos
                 </div>
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <img src={dripImg} alt="Gotejamento" className="rounded-2xl object-cover w-full h-48 shadow-card col-span-1" />
-              <img src={microImg} alt="Microaspersão" className="rounded-2xl object-cover w-full h-48 shadow-card col-span-1 mt-6" />
             </div>
           </div>
         </div>
