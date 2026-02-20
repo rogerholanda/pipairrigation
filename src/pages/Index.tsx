@@ -250,33 +250,7 @@ export default function Index() {
       {/* ── DOWNLOAD EBOOK ── */}
       <section id="autor" className="py-20 gradient-section">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="bg-card rounded-2xl p-8 shadow-card border border-border">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="gradient-primary p-3 rounded-xl">
-                  <BookOpen size={22} className="text-primary-foreground" />
-                </div>
-                <div>
-                  <h3 className="font-display font-bold text-foreground leading-tight">Engenharia dos Sistemas<br />de Irrigação</h3>
-                  <p className="text-xs text-muted-foreground font-body mt-0.5">José Orlando Piauilino Ferreira</p>
-                </div>
-              </div>
-              <ul className="space-y-2 text-sm text-muted-foreground font-body mb-6">
-                {["Gotejamento", "Microaspersão", "Aspersão Convencional", "Pivô Central", "Exercícios resolvidos e propostos", "Programas computacionais de dimensionamento"].map(item => (
-                  <li key={item} className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <a
-                href={PDF_PLACEHOLDER_URL}
-                className="flex items-center justify-center gap-2 w-full gradient-primary text-primary-foreground font-semibold py-3.5 rounded-xl hover:opacity-90 transition-opacity shadow-md"
-              >
-                <Download size={18} />
-                Baixar E-book Gratuitamente
-              </a>
-            </div>
+        <div className="max-w-3xl mx-auto">
             <div>
               <span className="text-xs font-semibold uppercase tracking-widest text-primary font-body">O Autor</span>
               <h2 className="font-display text-3xl font-bold text-foreground mt-2 mb-4">
