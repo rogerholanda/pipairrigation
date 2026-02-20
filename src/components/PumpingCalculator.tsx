@@ -459,21 +459,21 @@ export default function PumpingCalculator() {
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body">Coeficientes de Perda Localizada</p>
             <div className="grid grid-cols-3 gap-3">
               <Field label="Ke (entrada)">
-                <SelectInput value={sKe} onChange={setSKe} options={[{ value: "0.5", label: "0.5" }]} />
+                <NumInput value={sKe} onChange={setSKe} placeholder="0.5" />
               </Field>
               <Field label="Kvg (registro)">
-                <SelectInput value={sKvg} onChange={setSKvg} options={[{ value: "0.2", label: "0.2" }, { value: "10", label: "10" }]} />
+                <NumInput value={sKvg} onChange={setSKvg} placeholder="0.2" />
               </Field>
               <Field label="Kc (curva 90°)">
-                <SelectInput value={sKc} onChange={setSKc} options={[{ value: "0.4", label: "0.4" }, { value: "0.6", label: "0.6" }, { value: "0.9", label: "0.9" }]} />
+                <NumInput value={sKc} onChange={setSKc} placeholder="0.4" />
               </Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Kvpc (válv. pé c/ crivo)">
-                <SelectInput value={sKvpc} onChange={setSKvpc} options={[{ value: "0.75", label: "0.75" }, { value: "10", label: "10" }]} />
+                <NumInput value={sKvpc} onChange={setSKvpc} placeholder="0.75" />
               </Field>
               <Field label="Krex (red. excêntrica)">
-                <SelectInput value={sKrex} onChange={setSKrex} options={[{ value: "0.2", label: "0.2" }]} />
+                <NumInput value={sKrex} onChange={setSKrex} placeholder="0.2" />
               </Field>
             </div>
           </div>
@@ -625,29 +625,29 @@ export default function PumpingCalculator() {
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body">Coeficientes e Conexões — Recalque</p>
             <div className="grid grid-cols-3 gap-3">
               <Field label="Kvgr (registro)">
-                <SelectInput value={dKvgr} onChange={setDKvgr} options={[{ value: "0.2", label: "0.2" }, { value: "10", label: "10" }]} />
+                <NumInput value={dKvgr} onChange={setDKvgr} placeholder="0.2" />
               </Field>
               <Field label="Kvr (válv. retenção)">
-                <SelectInput value={dKvr} onChange={setDKvr} options={[{ value: "2.5", label: "2.5" }, { value: "3", label: "3" }]} />
+                <NumInput value={dKvr} onChange={setDKvr} placeholder="2.5" />
               </Field>
               <Field label="Kcr (curvas)">
-                <SelectInput value={dKcr} onChange={setDKcr} options={[{ value: "0.2", label: "0.2" }, { value: "0.4", label: "0.4" }, { value: "0.6", label: "0.6" }, { value: "0.9", label: "0.9" }]} />
+                <NumInput value={dKcr} onChange={setDKcr} placeholder="0.4" />
               </Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Diam. bocal descarga (mm)">
-                <SelectInput value={dNozzleDiam} onChange={setDNozzleDiam} options={NOZZLE_DIAMETERS.map(d => ({ value: String(d), label: `${d} mm` }))} />
+                <NumInput value={dNozzleDiam} onChange={setDNozzleDiam} placeholder="100" />
               </Field>
               <Field label="Kac (ampl. concêntrica)">
-                <SelectInput value={dKac} onChange={setDKac} options={[{ value: "0.3", label: "0.3" }]} />
+                <NumInput value={dKac} onChange={setDKac} placeholder="0.3" />
               </Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Kagd (ampl. gradual)">
-                <SelectInput value={dKagd} onChange={setDKagd} options={[{ value: "0.3", label: "0.3" }]} />
+                <NumInput value={dKagd} onChange={setDKagd} placeholder="0.3" />
               </Field>
               <Field label="Diam. registro gaveta (mm)">
-                <SelectInput value={dGavDiam} onChange={setDGavDiam} options={GATE_VALVE_DIAMETERS.map(d => ({ value: String(d), label: `${d} mm` }))} />
+                <NumInput value={dGavDiam} onChange={setDGavDiam} placeholder="200" />
               </Field>
             </div>
           </div>
