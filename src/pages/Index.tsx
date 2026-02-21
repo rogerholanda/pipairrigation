@@ -181,9 +181,6 @@ export default function Index() {
                 <div className="flex items-center gap-2 bg-primary-muted rounded-lg px-4 py-2 text-sm font-body font-semibold text-primary">
                   <Leaf size={14} /> 31 anos de docência
                 </div>
-                <div className="flex items-center gap-2 bg-secondary/10 rounded-lg px-4 py-2 text-sm font-body font-semibold text-secondary">
-                  <BookOpen size={14} /> Exercícios resolvidos
-                </div>
               </div>
             </div>
           </div>
