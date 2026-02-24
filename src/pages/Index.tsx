@@ -229,7 +229,7 @@ export default function Index() {
         <div className="max-w-3xl mx-auto px-6 text-center">
           <Calculator size={40} className="mx-auto mb-4 text-primary-foreground/80" />
           <h2 className="font-display text-3xl font-bold text-primary-foreground mb-4">
-            Programa de Cálculo Hidráulico
+            Programas Computacionais para Projeto Hidráulico
           </h2>
           <p className="text-primary-foreground/80 font-body text-sm mb-8 max-w-xl mx-auto leading-relaxed">
             Calcule a perda de carga em tubulações de irrigação utilizando as equações de Darcy-Weisbach e Colebrook-White, com suporte a tubos de PEBD, PVC e Aço Zincado.
