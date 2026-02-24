@@ -277,12 +277,14 @@ export default function Index() {
               <Droplets size={20} className="text-primary" style={{ color: "hsl(152 55% 55%)" }} />
               <span className="font-display font-semibold text-white/90">Engenharia dos Sistemas de Irrigação</span>
             </div>
-            <p className="text-white/50 text-xs font-body text-center">
-              Colégio Técnico de Bom Jesus · Prof. José Orlando Piauilino Ferreira
-            </p>
-            <p className="text-white/30 text-xs font-body">
-              Lei 12.787/2013 — Política Nacional de Irrigação
-            </p>
+            <div className="text-center">
+              <p className="text-white/50 text-xs font-body">
+                Eng° Agrº Prof. Dr José Orlando Piauilino Ferreira
+              </p>
+              <p className="text-white/30 text-xs font-body">
+                Colégio Técnico de Bom Jesus – PI
+              </p>
+            </div>
           </div>
         </div>
       </footer>
