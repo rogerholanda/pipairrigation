@@ -144,7 +144,7 @@ export default function Index() {
           <div className="grid md:grid-cols-3 gap-6">
             {quotes.map((q, i) => (
               <blockquote key={i} className="gradient-card rounded-2xl p-6 shadow-card border border-border">
-                <p className="text-foreground/80 font-body text-sm leading-relaxed italic mb-4">
+                <p className="text-foreground/80 font-body text-sm leading-relaxed italic mb-4 text-justify">
                   "{q.text}"
                 </p>
                 <footer>
