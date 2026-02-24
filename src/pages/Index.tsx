@@ -13,17 +13,17 @@ const quotes = [
   {
     text: "Aquilo que observamos não é a natureza em si, mas a natureza exposta ao nosso método de questionamento.",
     author: "Werner Heisenberg",
-    role: "Físico e Filósofo alemão, 1958",
+    role: "",
   },
   {
     text: "A nossa ignorância ou a implausibilidade de nossas ideias jamais devem interromper as nossas especulações.",
     author: "Marcelo Gleiser",
-    role: "Físico brasileiro",
+    role: "",
   },
   {
     text: "A liberdade de questionamento não deve ter barreiras. Não há lugar para dogmas na ciência.",
     author: "J. Robert Oppenheimer",
-    role: "Físico Americano — Projeto Manhattan, 1949",
+    role: "",
   },
 ];
 
