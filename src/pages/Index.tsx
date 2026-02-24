@@ -234,6 +234,11 @@ export default function Index() {
           <p className="text-primary-foreground/80 font-body text-sm mb-8 max-w-xl mx-auto leading-relaxed">
             Calcule a perda de carga em tubulações de irrigação utilizando as equações de Darcy-Weisbach e Colebrook-White, com suporte a tubos de PEBD, PVC e Aço Zincado.
           </p>
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 text-sm font-body font-semibold text-primary-foreground">
+              <BookOpen size={14} /> Exercícios resolvidos
+            </div>
+          </div>
           <button
             onClick={() => setCalcOpen(true)}
             className="inline-flex items-center gap-2 bg-white text-primary font-semibold px-8 py-3.5 rounded-xl hover:bg-white/90 transition-colors shadow-elegant text-base"
