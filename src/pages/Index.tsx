@@ -263,7 +263,6 @@ export default function Index() {
               </p>
               <blockquote className="border-l-4 pl-4 italic text-sm text-muted-foreground font-body" style={{ borderColor: "hsl(var(--primary))" }}>
                 "Àquele que é o caminho, a verdade e a vida – a ti JESUS."
-                <cite className="block mt-2 text-xs not-italic text-muted-foreground">— Agradecimentos do Autor</cite>
               </blockquote>
             </div>
           </div>
