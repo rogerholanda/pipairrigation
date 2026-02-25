@@ -242,8 +242,9 @@ export default function Index() {
               <Calculator size={18} />
               Abrir Calculadora
             </button>
-            <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3.5 text-sm font-body font-semibold text-primary-foreground">
-              <BookOpen size={16} /> Exercícios resolvidos
+            <div className="flex items-start gap-2 bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3.5 text-sm font-body font-semibold text-primary-foreground text-justify max-w-md">
+              <BookOpen size={16} className="mt-0.5 shrink-0" /> 
+              <span>Exemplo 1.10: Numa tubulação de PVC com 100 m de comprimento e diâmetro interno de 72,5 mm a água escoa à taxa de 25,2 m³ h⁻¹ e temperatura de 20° C. sendo a rugosidade absoluta da superfície interna do tubo de 0,003334 mm. Determine o fator de atrito e o decréscimo da carga de pressão. (Resposta no livro).</span>
             </div>
           </div>
         </div>
