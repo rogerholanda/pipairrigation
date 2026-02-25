@@ -242,6 +242,12 @@ export default function Index() {
               <Calculator size={18} />
               Abrir Calculadora
             </button>
+            <button
+              className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-primary-foreground font-semibold px-8 py-3.5 rounded-xl border border-white/30 hover:bg-white/30 transition-colors text-base"
+            >
+              <BookOpen size={18} />
+              Exercícios
+            </button>
           </div>
         </div>
       </section>
