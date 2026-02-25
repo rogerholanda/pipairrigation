@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BookOpen, Download, Calculator, Droplets, Waves, ChevronDown, Leaf, Sun, BookMarked } from "lucide-react";
 import IrrigationCalculator from "@/components/IrrigationCalculator";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import heroImg from "@/assets/hero-irrigation.jpg";
 import dripImg from "@/assets/drip-irrigation.jpg";
 import sprinklerImg from "@/assets/sprinkler-irrigation.jpg";
@@ -242,12 +243,22 @@ export default function Index() {
               <Calculator size={18} />
               Abrir Calculadora
             </button>
-            <button
-              className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-primary-foreground font-semibold px-8 py-3.5 rounded-xl border border-white/30 hover:bg-white/30 transition-colors text-base"
-            >
-              <BookOpen size={18} />
-              Exercícios
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-primary-foreground font-semibold px-8 py-3.5 rounded-xl border border-white/30 hover:bg-white/30 transition-colors text-base"
+                >
+                  <BookOpen size={18} />
+                  Exercícios
+                  <ChevronDown size={14} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-card border border-border shadow-lg z-50">
+                <DropdownMenuItem className="cursor-pointer">Exercício 1</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">Exercício 2</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">Exercício 3</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </section>
