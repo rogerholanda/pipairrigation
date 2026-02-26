@@ -245,7 +245,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
             }`}
           >
             <CircleDot size={15} />
-            Localizada
+            Sub Trapezoidal
           </button>
         </div>
 
