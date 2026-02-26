@@ -64,6 +64,7 @@ const irrigationTypes = [
 export default function Index() {
   const [calcOpen, setCalcOpen] = useState(false);
   const [exercicio1Open, setExercicio1Open] = useState(false);
+  const [exercicio2Open, setExercicio2Open] = useState(false);
 
   return (
     <div className="min-h-screen bg-background font-body">
@@ -257,7 +258,7 @@ export default function Index() {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-card border border-border shadow-lg z-50">
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio1Open(true)}>Exercício 1</DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">Exercício 2</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio2Open(true)}>Exercício 2</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer">Exercício 3</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -313,6 +314,18 @@ export default function Index() {
           </DialogHeader>
           <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
             Numa tubulação de PVC com 100 m de comprimento e diâmetro interno de 72,5 mm a água escoa à taxa de 25,2 m³ h⁻¹ e temperatura de 20° C. Sendo a rugosidade absoluta da superfície interna do tubo de 0,003334 mm. Determine o fator de atrito e o decréscimo da carga de pressão. (Utilize a calculadora Colebrook).
+          </p>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── EXERCÍCIO 2 MODAL ── */}
+      <Dialog open={exercicio2Open} onOpenChange={setExercicio2Open}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg">Exemplo 1.21</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
+            A água a 20 °C será transportada de um grande reservatório para um canal de irrigação por meio de uma tubulação de PVC cujo comprimento é de 200 m. A vazão desejada é de 20 m³·h⁻¹. A diferença de nível, ΔZ, entre os pontos 1 e 2 é de 5,0 m. O início e o final da tubulação estão a 1,0 m da superfície da água nos reservatórios. Conforme esquematizado na Figura 1.32. Determine o diâmetro comercial da tubulação, o decréscimo da carga de pressão. (Utilize a calculadora Diâmetro).
           </p>
         </DialogContent>
       </Dialog>
