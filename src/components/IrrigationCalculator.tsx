@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { X, Calculator, Droplets, Ruler, Waves, Gauge } from "lucide-react";
+import { X, Calculator, Droplets, Ruler, Waves, Gauge, CircleDot } from "lucide-react";
 import DiameterCalculator from "./DiameterCalculator";
 import PivotCalculator from "./PivotCalculator";
 import PumpingCalculator from "./PumpingCalculator";
+import LocalizedCalculator from "./LocalizedCalculator";
 
 interface CalcResults {
   velocity: string;
@@ -30,7 +31,7 @@ const PIPE_MATERIALS = [
 ];
 
 export default function IrrigationCalculator({ open, onClose }: IrrigationCalculatorProps) {
-  const [activeTab, setActiveTab] = useState<"colebrook" | "diameter" | "pivot" | "pumping">("colebrook");
+  const [activeTab, setActiveTab] = useState<"colebrook" | "diameter" | "pivot" | "pumping" | "localized">("colebrook");
   const [flowUnit, setFlowUnit] = useState<"m3h" | "Lh">("m3h");
   const [flow, setFlow] = useState("");
   const [length, setLength] = useState("");
@@ -235,6 +236,17 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
             <Gauge size={15} />
             Bombeamento
           </button>
+          <button
+            onClick={() => setActiveTab("localized")}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
+              activeTab === "localized"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <CircleDot size={15} />
+            Localizada
+          </button>
         </div>
 
         {/* Diameter calculator tab */}
@@ -245,6 +257,9 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
 
         {/* Pumping calculator tab */}
         {activeTab === "pumping" && <PumpingCalculator />}
+
+        {/* Localized irrigation tab */}
+        {activeTab === "localized" && <LocalizedCalculator />}
 
         {/* Colebrook tab */}
         {activeTab === "colebrook" && <div className="p-6 space-y-5">
