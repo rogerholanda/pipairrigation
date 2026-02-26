@@ -65,6 +65,7 @@ export default function Index() {
   const [calcOpen, setCalcOpen] = useState(false);
   const [exercicio1Open, setExercicio1Open] = useState(false);
   const [exercicio2Open, setExercicio2Open] = useState(false);
+  const [exercicio3Open, setExercicio3Open] = useState(false);
 
   return (
     <div className="min-h-screen bg-background font-body">
@@ -259,7 +260,7 @@ export default function Index() {
               <DropdownMenuContent className="bg-card border border-border shadow-lg z-50">
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio1Open(true)}>Exercício 1</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio2Open(true)}>Exercício 2</DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">Exercício 3</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio3Open(true)}>Exercício 3</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -326,6 +327,18 @@ export default function Index() {
           </DialogHeader>
           <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
             A água a 20 °C será transportada de um grande reservatório para um canal de irrigação por meio de uma tubulação de PVC cujo comprimento é de 200 m. A vazão desejada é de 20 m³·h⁻¹. A diferença de nível, ΔZ, entre os pontos 1 e 2 é de 5,0 m. O início e o final da tubulação estão a 1,0 m da superfície da água nos reservatórios. Conforme esquematizado na Figura 1.32. Determine o diâmetro comercial da tubulação, o decréscimo da carga de pressão. (Utilize a calculadora Diâmetro).
+          </p>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── EXERCÍCIO 3 MODAL ── */}
+      <Dialog open={exercicio3Open} onOpenChange={setExercicio3Open}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg">Exemplo 3.2</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
+            A água a 20 °C deve ser bombeada à taxa de 210 m³·h⁻¹. A tubulação que interliga o reservatório à bomba é de PVC (ε = 0,003334 mm), com diâmetro interno de 250 mm e comprimento de 12 m; e possui uma válvula de pé com crivo, uma curva de 90° e uma redução excêntrica (250 × 125 mm). A tubulação de recalque, também de PVC, possui diâmetro interno de 200 mm e 272,8 m de comprimento, além de uma ampliação concêntrica (100 × 200 mm), um registro de gaveta, uma válvula de retenção e uma curva de 90°. As alturas estáticas de sucção e de recalque são, nessa ordem, de 2,0 metros e 10 metros. Pede-se: determinar as pressões nas secções de entrada e saída da bomba, a carga e potência da bomba com tubulação de recalque, descarregando livremente num canal de irrigação. (Utilize a calculadora Bombeamento).
           </p>
         </DialogContent>
       </Dialog>
