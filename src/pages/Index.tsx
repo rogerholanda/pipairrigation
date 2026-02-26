@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { BookOpen, Download, Calculator, Droplets, Waves, ChevronDown, Leaf, Sun, BookMarked } from "lucide-react";
 import IrrigationCalculator from "@/components/IrrigationCalculator";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
@@ -62,6 +63,7 @@ const irrigationTypes = [
 
 export default function Index() {
   const [calcOpen, setCalcOpen] = useState(false);
+  const [exercicio1Open, setExercicio1Open] = useState(false);
 
   return (
     <div className="min-h-screen bg-background font-body">
@@ -254,7 +256,7 @@ export default function Index() {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-card border border-border shadow-lg z-50">
-                <DropdownMenuItem className="cursor-pointer">Exercício 1</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio1Open(true)}>Exercício 1</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer">Exercício 2</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer">Exercício 3</DropdownMenuItem>
               </DropdownMenuContent>
@@ -302,6 +304,18 @@ export default function Index() {
           </div>
         </div>
       </footer>
+
+      {/* ── EXERCÍCIO 1 MODAL ── */}
+      <Dialog open={exercicio1Open} onOpenChange={setExercicio1Open}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg">Exemplo 1.10</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
+            Numa tubulação de PVC com 100 m de comprimento e diâmetro interno de 72,5 mm a água escoa à taxa de 25,2 m³ h⁻¹ e temperatura de 20° C. Sendo a rugosidade absoluta da superfície interna do tubo de 0,003334 mm. Determine o fator de atrito e o decréscimo da carga de pressão. (Utilize a calculadora Colebrook).
+          </p>
+        </DialogContent>
+      </Dialog>
 
       {/* ── CALCULATOR MODAL ── */}
       <IrrigationCalculator open={calcOpen} onClose={() => setCalcOpen(false)} />
