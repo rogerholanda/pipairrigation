@@ -286,8 +286,8 @@ export default function LocalizedCalculator() {
           </p>
 
           <div className="grid grid-cols-2 gap-4">
-            <NumInput label="Compr. 1ª Lateral (m)" value={llat1} onChange={setLlat1} />
-            <NumInput label="Compr. Última Lateral (m)" value={llatu} onChange={setLlatu} />
+            <NumInput label="Compr. 1ª Lateral (m)" value={llat1} onChange={setLlat1} hideSpinner />
+            <NumInput label="Compr. Última Lateral (m)" value={llatu} onChange={setLlatu} hideSpinner />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -491,12 +491,12 @@ function FieldLabel({ label }: { label: string }) {
   );
 }
 
-function NumInput({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
+function NumInput({ label, value, onChange, placeholder, hideSpinner }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; hideSpinner?: boolean }) {
   return (
     <div>
       <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">{label}</label>
       <input type="number" value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-        className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground"
+        className={`w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground ${hideSpinner ? "no-spinner" : ""}`}
         style={{ borderColor: "hsl(var(--border))" }} />
     </div>
   );
