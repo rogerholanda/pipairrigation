@@ -344,7 +344,7 @@ export default function LocalizedCalculator() {
               options={TERTIARY_DIAMETERS.map(d => ({ value: String(d), label: `${d} mm` }))} />
             {tercOption === "2" && (
               <SelectInput label="Diâm. 2º Segmento (mm)" value={dseg2} onChange={setDseg2}
-                options={TERTIARY_DIAMETERS.map(d => ({ value: String(d), label: `${d} mm` }))} />
+                options={TERTIARY_DIAMETERS.map(d => ({ value: String(d), label: `${d} mm` }))} editable />
             )}
           </div>
 
