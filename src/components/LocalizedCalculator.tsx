@@ -298,12 +298,12 @@ export default function LocalizedCalculator() {
           </div>
 
           <div className="grid grid-cols-3 gap-4">
-            <NumInput label="Espaçam. Emissores (m)" value={eem} onChange={setEem} />
-            <NumInput label="Vazão Emissor (L/h)" value={qem} onChange={setQem} />
-            <NumInput label="Pressão Serviço (m.c.a.)" value={psem} onChange={setPsem} />
+            <NumInput label="Espaçam. Emissores (m)" value={eem} onChange={setEem} hideSpinner />
+            <NumInput label="Vazão Emissor (L/h)" value={qem} onChange={setQem} hideSpinner />
+            <NumInput label="Pressão Serviço (m.c.a.)" value={psem} onChange={setPsem} hideSpinner />
           </div>
 
-          <NumInput label="Temperatura (°C)" value={temp} onChange={setTemp} />
+          <NumInput label="Temperatura (°C)" value={temp} onChange={setTemp} hideSpinner />
 
           <hr className="border-border" />
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body">Dados da Terciária</p>
