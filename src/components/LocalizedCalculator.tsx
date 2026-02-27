@@ -291,9 +291,9 @@ export default function LocalizedCalculator() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <SelectInput label="Diâmetro Interno (mm)" value={di} onChange={setDi}
+            <SelectInput label="Diâmetro Interno (mm)" value={di} onChange={setDi} editable
               options={LATERAL_DIAMETERS.map(d => ({ value: String(d), label: `${d} mm` }))} />
-            <SelectInput label="Conexão Emissor" value={conex} onChange={setConex}
+            <SelectInput label="Conexão Emissor" value={conex} onChange={setConex} editable
               options={CONNECTION_SIZES.map(c => ({ value: c.value, label: c.label }))} />
           </div>
 
@@ -340,7 +340,7 @@ export default function LocalizedCalculator() {
           </div>
 
           <div className={`grid ${tercOption === "2" ? "grid-cols-2" : "grid-cols-1"} gap-4`}>
-            <SelectInput label="Diâm. 1º Segmento (mm)" value={dseg1} onChange={setDseg1}
+            <SelectInput label="Diâm. 1º Segmento (mm)" value={dseg1} onChange={setDseg1} editable
               options={TERTIARY_DIAMETERS.map(d => ({ value: String(d), label: `${d} mm` }))} />
             {tercOption === "2" && (
               <SelectInput label="Diâm. 2º Segmento (mm)" value={dseg2} onChange={setDseg2}
@@ -359,7 +359,7 @@ export default function LocalizedCalculator() {
           <div className="grid grid-cols-3 gap-4">
             <NumInput label="Variação Vazão (%)" value={vq} onChange={setVq} hideSpinner />
             <NumInput label="Nº Emissores/Planta" value={nep} onChange={setNep} hideSpinner />
-            <SelectInput label="CVf" value={cvf} onChange={setCvf}
+            <SelectInput label="CVf" value={cvf} onChange={setCvf} editable
               options={CVF_OPTIONS.map(c => ({ value: c, label: c }))} />
           </div>
 
@@ -502,7 +502,21 @@ function NumInput({ label, value, onChange, placeholder, hideSpinner }: { label:
   );
 }
 
-function SelectInput({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[] }) {
+function SelectInput({ label, value, onChange, options, editable }: { label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[]; editable?: boolean }) {
+  if (editable) {
+    const listId = `dl-${label.replace(/\s+/g, '-')}`;
+    return (
+      <div>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">{label}</label>
+        <input type="text" value={value} onChange={e => onChange(e.target.value)} list={listId}
+          className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
+          style={{ borderColor: "hsl(var(--border))" }} />
+        <datalist id={listId}>
+          {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </datalist>
+      </div>
+    );
+  }
   return (
     <div>
       <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">{label}</label>
