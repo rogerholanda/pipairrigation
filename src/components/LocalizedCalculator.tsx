@@ -322,8 +322,8 @@ export default function LocalizedCalculator() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <NumInput label="Compr. Terciária (m)" value={lterc} onChange={setLterc} />
-            <NumInput label="Espaçam. Laterais (m)" value={elat} onChange={setElat} />
+            <NumInput label="Compr. Terciária (m)" value={lterc} onChange={setLterc} hideSpinner />
+            <NumInput label="Espaçam. Laterais (m)" value={elat} onChange={setElat} hideSpinner />
           </div>
 
           {/* Opção 1 ou 2 diâmetros */}
@@ -352,13 +352,13 @@ export default function LocalizedCalculator() {
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body">Uniformidade</p>
 
           <div className="grid grid-cols-2 gap-4">
-            <NumInput label="Expoente (x)" value={expVal} onChange={setExpVal} />
-            <NumInput label="Coef. Descarga (Cd·k)" value={cdk} onChange={setCdk} />
+            <NumInput label="Expoente (x)" value={expVal} onChange={setExpVal} hideSpinner />
+            <NumInput label="Coef. Descarga (Cd·k)" value={cdk} onChange={setCdk} hideSpinner />
           </div>
 
           <div className="grid grid-cols-3 gap-4">
-            <NumInput label="Variação Vazão (%)" value={vq} onChange={setVq} />
-            <NumInput label="Nº Emissores/Planta" value={nep} onChange={setNep} />
+            <NumInput label="Variação Vazão (%)" value={vq} onChange={setVq} hideSpinner />
+            <NumInput label="Nº Emissores/Planta" value={nep} onChange={setNep} hideSpinner />
             <SelectInput label="CVf" value={cvf} onChange={setCvf}
               options={CVF_OPTIONS.map(c => ({ value: c, label: c }))} />
           </div>
