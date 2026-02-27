@@ -234,7 +234,7 @@ export default function Index() {
         <div className="max-w-3xl mx-auto px-6 text-center">
           <Calculator size={40} className="mx-auto mb-4 text-primary-foreground/80" />
           <h2 className="font-display text-3xl font-bold text-primary-foreground mb-4">
-            Programas Computacionais para Projeto Hidráulico
+            Programa Computacional para Projeto Hidráulico
           </h2>
           <p className="text-primary-foreground/80 font-body text-sm mb-8 max-w-xl mx-auto leading-relaxed">
             Calcula, principalmente, o decréscimo da carga de pressão em tubulações de irrigação com intuito de proporcionar o funcionamento eficiente dos sistemas de irrigação.
