@@ -237,7 +237,7 @@ export default function Index() {
             Programas Computacionais para Projeto Hidráulico
           </h2>
           <p className="text-primary-foreground/80 font-body text-sm mb-8 max-w-xl mx-auto leading-relaxed">
-            Calcule a perda de carga em tubulações de irrigação utilizando as equações de Darcy-Weisbach e Colebrook-White, com suporte a tubos de PEBD, PVC e Aço Zincado.
+            Calcula, principalmente, o decréscimo da carga de pressão em tubulações de irrigação com intuito de proporcionar o funcionamento eficiente dos sistemas de irrigação.
           </p>
           <div className="flex items-center justify-center gap-4 flex-wrap">
             <button
