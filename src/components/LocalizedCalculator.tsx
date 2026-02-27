@@ -503,17 +503,48 @@ function NumInput({ label, value, onChange, placeholder, hideSpinner }: { label:
 }
 
 function SelectInput({ label, value, onChange, options, editable }: { label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[]; editable?: boolean }) {
+  const [isEditing, setIsEditing] = useState(false);
+
   if (editable) {
-    const listId = `dl-${label.replace(/\s+/g, '-')}`;
     return (
       <div>
         <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">{label}</label>
-        <input type="text" value={value} onChange={e => onChange(e.target.value)} list={listId}
-          className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
-          style={{ borderColor: "hsl(var(--border))" }} />
-        <datalist id={listId}>
-          {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </datalist>
+        <div className="relative">
+          {isEditing ? (
+            <input
+              type="text"
+              value={value}
+              onChange={e => onChange(e.target.value)}
+              onBlur={() => setIsEditing(false)}
+              autoFocus
+              className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
+              style={{ borderColor: "hsl(var(--border))" }}
+            />
+          ) : (
+            <div className="flex gap-1">
+              <select
+                value={options.some(o => o.value === value) ? value : ""}
+                onChange={e => { if (e.target.value) onChange(e.target.value); }}
+                className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                style={{ borderColor: "hsl(var(--border))" }}
+              >
+                {!options.some(o => o.value === value) && (
+                  <option value="" disabled>{value || "Selecione..."}</option>
+                )}
+                {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+              <button
+                type="button"
+                onClick={() => setIsEditing(true)}
+                className="px-2 py-1 rounded-lg border text-xs font-body text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                style={{ borderColor: "hsl(var(--border))" }}
+                title="Digitar valor personalizado"
+              >
+                ✏️
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
