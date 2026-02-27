@@ -462,7 +462,7 @@ export default function LocalizedCalculator() {
                     <ResCard label="Hf com D1 maior (m)" value={`${results.hfComD1?.toFixed(2)}`} />
                     <ResCard label="Fator de forma (Sf-II)" value={`${results.Sf2s}`} />
                     <ResCard label="Fator de atrito (f) p/ D2" value={`${results.ftDm}`} />
-                    <ResCard label="Fator F' (Keller)" value={`${results.f2sKeller}`} />
+                    <ResCard label="Fator F' (Keller)" value={`${results.Fr2s}`} />
                     <ResCard label="Hf com D2 menor (m)" value={`${results.hfComD2?.toFixed(3)}`} />
                   </div>
 
