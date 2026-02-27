@@ -19,9 +19,14 @@ interface Results {
   nLat: number; qt: number; sf: number; ft: number; frC: number;
   hfT: number; hfTerc: number;
   hf1s?: number; hf2s?: number; hfdm?: number;
+  // Extra 2-diameter intermediate values
+  qseg2?: number; Qes2?: number; Sf2s?: number; f2sKeller?: number;
+  Fch2s?: number; Fr2s?: number; ft2s?: number; ftDm?: number;
+  hfComD1?: number; hfComD2?: number;
   hTerc: number; hmins: number; vhs: number; vhTerc: number;
   qmin: number; uniformity: number;
   warning?: string;
+  isTwoDiam?: boolean;
 }
 
 export default function LocalizedCalculator() {
@@ -181,6 +186,8 @@ export default function LocalizedCalculator() {
       let hf2sVal: number | undefined;
       let hfdmVal: number | undefined;
 
+      const extraTwoDiam: Partial<Results> = {};
+
       if (tercOption === "1") {
         HfTerc = parseFloat(HfT.toFixed(2));
       } else {
@@ -215,6 +222,12 @@ export default function LocalizedCalculator() {
         hf2sVal = Hf2s;
         hfdmVal = Hfdm;
         HfTerc = parseFloat((hf1s + Hfdm).toFixed(2));
+
+        // Store extra intermediates for display
+        Object.assign(extraTwoDiam, {
+          qseg2, Qes2, Sf2s, f2sKeller, Fch2s: Fch2s, Fr2s,
+          ft2s: f2s, ftDm: fdm, hfComD1: Hf2s, hfComD2: Hfdm,
+        });
       }
 
       // === SUBUNIDADE ===
@@ -233,6 +246,8 @@ export default function LocalizedCalculator() {
         nLat: NLat, qt: QT, sf: Sf, ft, frC: FrC,
         hfT: HfT, hfTerc: HfTerc,
         hf1s, hf2s: hf2sVal, hfdm: hfdmVal,
+        ...extraTwoDiam,
+        isTwoDiam: tercOption === "2",
         hTerc: HTerc, hmins: Hmins, vhs: VHs, vhTerc: VHterc,
         qmin: qminVal, uniformity, warning,
       });
@@ -421,27 +436,59 @@ export default function LocalizedCalculator() {
               </div>
               <ResCard label="Carga Pressão Início Lateral (HiL)" value={`${results.hiL} m.c.a.`} highlight />
 
-              <h3 className="font-display font-semibold text-foreground text-sm mt-4">Terciária</h3>
+              <h3 className="font-display font-semibold text-foreground text-sm mt-4">
+                {results.isTwoDiam
+                  ? "Decréscimo de Carga no compr. Total da Terciária com Diâmetro maior"
+                  : "Terciária"}
+              </h3>
               <div className="grid grid-cols-2 gap-3">
-                <ResCard label="Nº Laterais" value={String(results.nLat)} />
-                <ResCard label="Vazão Entrada (QT)" value={`${results.qt} L/h`} />
-                <ResCard label="Fator Forma (Sf)" value={String(results.sf)} />
-                <ResCard label="Fator Atrito (ft)" value={String(results.ft)} />
-                <ResCard label="Fator Red. (FrC)" value={String(results.frC)} />
-                <ResCard label="Hf Total Terciária" value={`${results.hfT.toFixed(3)} m.c.a.`} />
+                <ResCard label="Número de Laterais" value={String(results.nLat)} />
+                <ResCard label="Fator de atrito (f)" value={String(results.ft)} />
+                <ResCard label="Vazão na entrada da Terciária (L/h)" value={`${results.qt}`} />
+                <ResCard label="Fator F' (Keller)" value={String(results.frC)} />
+                <ResCard label="Fator de forma (Sf-I)" value={String(results.sf)} />
+                <ResCard label="Hf na Terciária (m)" value={`${results.hfT.toFixed(3)}`} />
               </div>
 
-              {results.hf1s !== undefined && (
-                <div className="grid grid-cols-2 gap-3">
-                  <ResCard label="Hf 1º Segmento" value={`${results.hf1s.toFixed(2)} m.c.a.`} />
-                  <ResCard label="Hf 2º Seg. (Ø menor)" value={`${results.hfdm?.toFixed(3)} m.c.a.`} />
-                </div>
+              {results.isTwoDiam && results.hf1s !== undefined && (
+                <>
+                  <h3 className="font-display font-semibold text-foreground text-sm mt-4">
+                    Decréscimo de carga no 2º segmento da Terciária
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <ResCard label="Vazão na 1ª Lateral do 2º seg. (L/h)" value={`${results.qseg2}`} />
+                    <ResCard label="Fator de atrito (f) p/ D1" value={`${results.ft2s}`} />
+                    <ResCard label="Vazão no 2º seg. da terciária (L/h)" value={`${results.Qes2}`} />
+                    <ResCard label="Hf com D1 maior (m)" value={`${results.hfComD1?.toFixed(2)}`} />
+                    <ResCard label="Fator de forma (Sf-II)" value={`${results.Sf2s}`} />
+                    <ResCard label="Fator de atrito (f) p/ D2" value={`${results.ftDm}`} />
+                    <ResCard label="Fator F' (Keller)" value={`${results.f2sKeller}`} />
+                    <ResCard label="Hf com D2 menor (m)" value={`${results.hfComD2?.toFixed(3)}`} />
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3 mt-3">
+                    <div className="equation-block px-4 py-3 text-center">
+                      <p className="text-xs text-muted-foreground font-body mb-1">Hf 1º seg. (m)</p>
+                      <p className="font-display text-lg font-bold text-primary">{results.hf1s.toFixed(2)}</p>
+                    </div>
+                    <div className="equation-block px-4 py-3 text-center">
+                      <p className="text-xs text-muted-foreground font-body mb-1">Hf 2º seg. (m)</p>
+                      <p className="font-display text-lg font-bold text-primary">{results.hfdm?.toFixed(3)}</p>
+                    </div>
+                    <div className="equation-block px-4 py-3 text-center">
+                      <p className="text-xs text-muted-foreground font-body mb-1">Hf Total (m)</p>
+                      <p className="font-display text-lg font-bold text-primary">{results.hfTerc}</p>
+                    </div>
+                  </div>
+                </>
               )}
 
-              <div className="equation-block px-5 py-4">
-                <p className="text-xs text-muted-foreground font-body mb-1">Decréscimo Total na Terciária</p>
-                <p className="font-display text-2xl font-bold text-primary">{results.hfTerc} <span className="text-base font-body font-normal">m.c.a.</span></p>
-              </div>
+              {!results.isTwoDiam && (
+                <div className="equation-block px-5 py-4">
+                  <p className="text-xs text-muted-foreground font-body mb-1">Decréscimo Total na Terciária</p>
+                  <p className="font-display text-2xl font-bold text-primary">{results.hfTerc} <span className="text-base font-body font-normal">m.c.a.</span></p>
+                </div>
+              )}
             </>
           )}
         </div>
