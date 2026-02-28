@@ -301,7 +301,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
                 type="number"
                 value={temp}
                 onChange={e => setTemp(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
                 style={{ borderColor: "hsl(var(--border))" }}
               />
             </div>
@@ -405,7 +405,7 @@ function InputField({ label, value, onChange, placeholder }: { label: string; va
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground"
+        className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground no-spinner"
         style={{ borderColor: "hsl(var(--border))" }}
       />
     </div>
