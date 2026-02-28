@@ -39,6 +39,8 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
   const [diameter, setDiameter] = useState("26.9");
   const [customDiameter, setCustomDiameter] = useState(false);
   const [materialIdx, setMaterialIdx] = useState(0);
+  const [roughness, setRoughness] = useState("0.0015");
+  const [customRoughness, setCustomRoughness] = useState(false);
   const [results, setResults] = useState<CalcResults | null>(null);
   const [error, setError] = useState("");
 
@@ -67,7 +69,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
       const Di = parseFloat(diameter);
       const Tempa = parseFloat(temp);
       const material = PIPE_MATERIALS[materialIdx];
-      const e = material.roughness;
+      const e = parseFloat(roughness);
 
       if (isNaN(Q) || isNaN(L) || isNaN(Di) || isNaN(Tempa)) {
         setError("Verifique se todos os dados estão preenchidos corretamente.");
@@ -355,7 +357,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
               {PIPE_MATERIALS.map((m, i) => (
                 <button
                   key={m.label}
-                  onClick={() => setMaterialIdx(i)}
+                  onClick={() => { setMaterialIdx(i); if (!customRoughness) setRoughness(m.roughness.toString()); }}
                   className={`py-2 px-3 rounded-lg text-sm font-semibold font-body transition-all border ${
                     materialIdx === i
                       ? "gradient-primary text-primary-foreground border-transparent"
@@ -367,8 +369,52 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
               ))}
             </div>
             <p className="text-xs text-muted-foreground mt-1.5 font-body">
-              {material.name} — Rugosidade: ε = {material.roughness} mm
+              {material.name}
             </p>
+            <div className="mt-3">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
+                Rugosidade Absoluta (mm)
+              </label>
+              <div className="flex gap-2">
+                {customRoughness ? (
+                  <input
+                    type="number"
+                    value={roughness}
+                    onChange={e => setRoughness(e.target.value)}
+                    placeholder="Ex: 0.003334"
+                    className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
+                    style={{ borderColor: "hsl(var(--border))" }}
+                  />
+                ) : (
+                  <select
+                    value={roughness}
+                    onChange={e => {
+                      setRoughness(e.target.value);
+                      const idx = PIPE_MATERIALS.findIndex(m => m.roughness.toString() === e.target.value);
+                      if (idx >= 0) setMaterialIdx(idx);
+                    }}
+                    className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                    style={{ borderColor: "hsl(var(--border))" }}
+                  >
+                    {PIPE_MATERIALS.map(m => (
+                      <option key={m.label} value={m.roughness}>{m.roughness} mm — {m.label}</option>
+                    ))}
+                  </select>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setCustomRoughness(!customRoughness)}
+                  className={`px-3 py-2 rounded-lg border text-xs font-semibold font-body transition-all ${
+                    customRoughness
+                      ? "gradient-primary text-primary-foreground border-transparent"
+                      : "bg-muted text-muted-foreground border-border hover:border-primary"
+                  }`}
+                  title={customRoughness ? "Usar valores pré-definidos" : "Digitar valor personalizado"}
+                >
+                  {customRoughness ? "Lista" : "✎"}
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Error */}
