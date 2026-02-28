@@ -309,14 +309,18 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
               <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
                 Diâmetro Interno (mm)
               </label>
-              <select
+              <input
+                type="number"
+                list="pipe-diameters"
                 value={diameter}
                 onChange={e => setDiameter(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                placeholder="Ex: 26.9"
+                className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
                 style={{ borderColor: "hsl(var(--border))" }}
-              >
-                {PIPE_DIAMETERS.map(d => <option key={d} value={d}>{d} mm</option>)}
-              </select>
+              />
+              <datalist id="pipe-diameters">
+                {PIPE_DIAMETERS.map(d => <option key={d} value={d} />)}
+              </datalist>
             </div>
           </div>
 
