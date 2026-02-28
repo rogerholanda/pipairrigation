@@ -376,31 +376,15 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
                 Rugosidade Absoluta (mm)
               </label>
               <div className="flex gap-2">
-                {customRoughness ? (
-                  <input
-                    type="number"
-                    value={roughness}
-                    onChange={e => setRoughness(e.target.value)}
-                    placeholder="Ex: 0.003334"
-                    className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
-                    style={{ borderColor: "hsl(var(--border))" }}
-                  />
-                ) : (
-                  <select
-                    value={roughness}
-                    onChange={e => {
-                      setRoughness(e.target.value);
-                      const idx = PIPE_MATERIALS.findIndex(m => m.roughness.toString() === e.target.value);
-                      if (idx >= 0) setMaterialIdx(idx);
-                    }}
-                    className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
-                    style={{ borderColor: "hsl(var(--border))" }}
-                  >
-                    {PIPE_MATERIALS.map(m => (
-                      <option key={m.label} value={m.roughness}>{m.roughness} mm — {m.label}</option>
-                    ))}
-                  </select>
-                )}
+                <input
+                  type="number"
+                  value={roughness}
+                  onChange={e => { if (customRoughness) setRoughness(e.target.value); }}
+                  readOnly={!customRoughness}
+                  placeholder="Ex: 0.003334"
+                  className={`flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner ${!customRoughness ? 'cursor-default' : ''}`}
+                  style={{ borderColor: "hsl(var(--border))" }}
+                />
                 <button
                   type="button"
                   onClick={() => setCustomRoughness(!customRoughness)}
