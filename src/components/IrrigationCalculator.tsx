@@ -37,6 +37,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
   const [length, setLength] = useState("");
   const [temp, setTemp] = useState("25");
   const [diameter, setDiameter] = useState("26.9");
+  const [customDiameter, setCustomDiameter] = useState(false);
   const [materialIdx, setMaterialIdx] = useState(0);
   const [results, setResults] = useState<CalcResults | null>(null);
   const [error, setError] = useState("");
@@ -309,18 +310,39 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
               <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
                 Diâmetro Interno (mm)
               </label>
-              <input
-                type="number"
-                list="pipe-diameters"
-                value={diameter}
-                onChange={e => setDiameter(e.target.value)}
-                placeholder="Ex: 26.9"
-                className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
-                style={{ borderColor: "hsl(var(--border))" }}
-              />
-              <datalist id="pipe-diameters">
-                {PIPE_DIAMETERS.map(d => <option key={d} value={d} />)}
-              </datalist>
+              <div className="flex gap-2">
+                {customDiameter ? (
+                  <input
+                    type="number"
+                    value={diameter}
+                    onChange={e => setDiameter(e.target.value)}
+                    placeholder="Ex: 26.9"
+                    className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
+                    style={{ borderColor: "hsl(var(--border))" }}
+                  />
+                ) : (
+                  <select
+                    value={diameter}
+                    onChange={e => setDiameter(e.target.value)}
+                    className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                    style={{ borderColor: "hsl(var(--border))" }}
+                  >
+                    {PIPE_DIAMETERS.map(d => <option key={d} value={d}>{d} mm</option>)}
+                  </select>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setCustomDiameter(!customDiameter)}
+                  className={`px-3 py-2 rounded-lg border text-xs font-semibold font-body transition-all ${
+                    customDiameter
+                      ? "gradient-primary text-primary-foreground border-transparent"
+                      : "bg-muted text-muted-foreground border-border hover:border-primary"
+                  }`}
+                  title={customDiameter ? "Usar valores pré-definidos" : "Digitar valor personalizado"}
+                >
+                  {customDiameter ? "Lista" : "✎"}
+                </button>
+              </div>
             </div>
           </div>
 
