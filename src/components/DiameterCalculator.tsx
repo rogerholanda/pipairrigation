@@ -16,6 +16,7 @@ const DIAM_MATERIALS = [
   { label: "AZDº", roughness: 0.15 },
 ];
 
+
 // Ke options (entrada)
 const KE_OPTIONS = ["0.5"];
 // Ks options (saída)
@@ -31,6 +32,8 @@ export default function DiameterCalculator() {
   const [headLossAllowed, setHeadLossAllowed] = useState("");
   const [temp, setTemp] = useState("25");
   const [materialIdx, setMaterialIdx] = useState(0);
+  const [roughness, setRoughness] = useState(DIAM_MATERIALS[0].roughness.toString());
+  const [customRoughness, setCustomRoughness] = useState(false);
   const [ke, setKe] = useState(KE_OPTIONS[0]);
   const [ks, setKs] = useState(KS_OPTIONS[0]);
   const [krg, setKrg] = useState(KRG_OPTIONS[0]);
@@ -61,7 +64,7 @@ export default function DiameterCalculator() {
       const dz = parseFloat(headLossAllowed);
       const Tempa = parseFloat(temp);
       const material = DIAM_MATERIALS[materialIdx];
-      const rug = material.roughness;
+      const rug = parseFloat(roughness);
       const Ke = parseFloat(ke);
       const Ks = parseFloat(ks);
       const KRg = parseFloat(krg);
@@ -136,7 +139,6 @@ export default function DiameterCalculator() {
     }
   };
 
-  const material = DIAM_MATERIALS[materialIdx];
 
   return (
     <div className="p-6 space-y-5">
@@ -172,7 +174,7 @@ export default function DiameterCalculator() {
           {DIAM_MATERIALS.map((m, i) => (
             <button
               key={m.label}
-              onClick={() => setMaterialIdx(i)}
+              onClick={() => { setMaterialIdx(i); if (!customRoughness) setRoughness(m.roughness.toString()); }}
               className={`py-2 px-3 rounded-lg text-sm font-semibold font-body transition-all border ${
                 materialIdx === i
                   ? "gradient-primary text-primary-foreground border-transparent"
@@ -183,9 +185,36 @@ export default function DiameterCalculator() {
             </button>
           ))}
         </div>
-        <p className="text-xs text-muted-foreground mt-1.5 font-body">
-          Rugosidade: ε = {material.roughness} mm
-        </p>
+      </div>
+
+      {/* Rugosidade Absoluta */}
+      <div>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
+          Rugosidade Absoluta (mm)
+        </label>
+        <div className="flex gap-2">
+          <input
+            type="number"
+            value={roughness}
+            onChange={e => { if (customRoughness) setRoughness(e.target.value); }}
+            readOnly={!customRoughness}
+            placeholder="Ex: 0.003334"
+            className={`flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner ${!customRoughness ? 'cursor-default' : ''}`}
+            style={{ borderColor: "hsl(var(--border))" }}
+          />
+          <button
+            type="button"
+            onClick={() => setCustomRoughness(!customRoughness)}
+            className={`px-3 py-2 rounded-lg border text-xs font-semibold font-body transition-all ${
+              customRoughness
+                ? "gradient-primary text-primary-foreground border-transparent"
+                : "bg-muted text-muted-foreground border-border hover:border-primary"
+            }`}
+            title={customRoughness ? "Usar valores pré-definidos" : "Digitar valor personalizado"}
+          >
+            {customRoughness ? "Lista" : "✎"}
+          </button>
+        </div>
       </div>
 
       {/* Coeficientes de perda localizada */}
