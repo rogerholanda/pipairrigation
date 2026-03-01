@@ -568,11 +568,11 @@ export default function PivotCalculator() {
 
               {/* Row 4: Ho / Hpp - bordered boxes */}
               <div className="grid grid-cols-2 gap-3 text-xs font-body">
-                <div className="border border-border rounded-lg p-3 text-center">
+                <div className="bg-muted border border-border rounded-lg p-3 text-center">
                   <span className="text-muted-foreground text-xs">Ho (m)</span>
                   <p className="font-bold text-foreground text-xl mt-1">{fmtBR(results.Hin)}</p>
                 </div>
-                <div className="border border-border rounded-lg p-3 text-center">
+                <div className="bg-muted border border-border rounded-lg p-3 text-center">
                   <span className="text-muted-foreground text-xs">Hpp (m)</span>
                   <p className="mt-1"><span className="font-bold text-primary text-2xl">{fmtBR(results.Hpp)}</span> <span className="text-sm font-normal text-muted-foreground">m.ca</span></p>
                 </div>
