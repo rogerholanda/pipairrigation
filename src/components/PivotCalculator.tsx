@@ -644,7 +644,7 @@ function PInput({ label, value, onChange, placeholder }: { label: string; value:
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
         step="any"
-        className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground"
+        className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground no-spinner"
         style={{ borderColor: "hsl(var(--border))" }}
       />
     </div>
