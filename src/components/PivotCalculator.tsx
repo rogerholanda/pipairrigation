@@ -524,60 +524,81 @@ export default function PivotCalculator() {
           ) : (
             <>
               <h3 className="font-display font-semibold text-foreground text-base">Resultados — Método Analítico</h3>
+
+              {/* Row 1 */}
               <div className="grid grid-cols-2 gap-3 text-xs font-body">
                 <div className="bg-muted rounded-lg p-3">
-                  <span className="text-muted-foreground">Área básica (Ab)</span>
-                  <p className="font-semibold text-foreground">{results.Ab} ha</p>
+                  <span className="text-muted-foreground">Área básica irrigada (ha)</span>
+                  <p className="font-semibold text-foreground">{results.Ab}</p>
                 </div>
                 <div className="bg-muted rounded-lg p-3">
-                  <span className="text-muted-foreground">Vazão na área básica (Qb)</span>
-                  <p className="font-semibold text-foreground">{results.Qb} m³/h</p>
+                  <span className="text-muted-foreground">Vazão na área básica (m³/h)</span>
+                  <p className="font-semibold text-foreground">{results.Qb}</p>
                 </div>
+              </div>
+
+              {/* Row 2 */}
+              <div className="grid grid-cols-2 gap-3 text-xs font-body">
                 <div className="bg-muted rounded-lg p-3">
-                  <span className="text-muted-foreground">Vazão no início da lateral (Qin)</span>
-                  <p className="font-semibold text-foreground">{results.Qin} m³/h</p>
+                  <span className="text-muted-foreground">Vazão no início da lateral (m³/h)</span>
+                  <p className="font-semibold text-foreground">{results.Qin}</p>
                 </div>
                 <div className="bg-muted rounded-lg p-3">
                   <span className="text-muted-foreground">Razão (Qc/Qin)</span>
                   <p className="font-semibold text-foreground">{results.gr}</p>
                 </div>
+              </div>
+
+              {/* Row 3 */}
+              <div className="grid grid-cols-2 gap-3 text-xs font-body">
                 <div className="bg-muted rounded-lg p-3">
-                  <span className="text-muted-foreground">Comp. equivalente da lateral (m)</span>
-                  <p className="font-semibold text-foreground">{results.Leq} m</p>
+                  <span className="text-muted-foreground">Comprimento equivalente da lateral (m)</span>
+                  <p className="font-semibold text-foreground">{results.Leq}</p>
                 </div>
                 <div className="equation-block rounded-lg p-3">
-                  <span className="text-muted-foreground">Hf total (m)</span>
-                  <p className="font-semibold text-primary">{results.Hftotal} m</p>
+                  <span className="text-muted-foreground font-semibold">Hf total (m)</span>
+                  <p className="font-bold text-primary">{results.Hftotal}</p>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="equation-block rounded-xl p-3 text-center">
-                  <p className="text-xs text-muted-foreground font-body">Ho (m)</p>
-                  <p className="font-display text-lg font-bold text-primary">{results.Hin}</p>
+
+              {/* Row 4: Viscosity + Ho */}
+              <div className="grid grid-cols-2 gap-3 text-xs font-body">
+                <div className="bg-muted rounded-lg p-3">
+                  <span className="text-muted-foreground">Viscosidade dinâmica: {results.viscosity} × 10⁻³ N.s/m²</span>
                 </div>
-                <div className="equation-block rounded-xl p-3 text-center col-span-2">
-                  <p className="text-xs text-muted-foreground font-body">Hpp (m)</p>
-                  <p className="font-display text-2xl font-bold text-primary">{results.Hpp} <span className="text-sm font-body font-normal">m.c.a.</span></p>
+                <div className="equation-block rounded-lg p-3">
+                  <span className="text-muted-foreground font-semibold">Ho (m)</span>
+                  <p className="font-bold text-primary">{results.Hin}</p>
                 </div>
               </div>
+
+              {/* Row 5: Density + Hpp */}
+              <div className="grid grid-cols-2 gap-3 text-xs font-body">
+                <div className="bg-muted rounded-lg p-3">
+                  <span className="text-muted-foreground">Massa específica: {results.density} kg/m³</span>
+                </div>
+                <div className="equation-block rounded-lg p-3">
+                  <span className="text-muted-foreground font-semibold">Hpp (m)</span>
+                  <p className="font-display text-xl font-bold text-primary">{results.Hpp}</p>
+                </div>
+              </div>
+
+              {/* Segments */}
               {results.segments.map((seg, i) => (
                 <fieldset key={i} className="border border-border rounded-xl p-4 space-y-2">
-                  <legend className="text-xs font-semibold uppercase tracking-wider text-primary px-2 font-body">{`${i + 1}º Segmento — Ø ${seg.d} mm`}</legend>
+                  <legend className="text-xs font-semibold uppercase tracking-wider text-primary px-2 font-body">
+                    {results.segments.length === 1 ? "Diâmetro único" : `${i + 1}º Segmento`}
+                  </legend>
                   <div className="grid grid-cols-2 gap-2 text-xs font-body">
                     <span className="text-muted-foreground">Fator de correção (F): <strong className="text-foreground">{seg.F}</strong></span>
                     <span className="text-muted-foreground">Velocidade da água (m/s): <strong className="text-foreground">{seg.v}</strong></span>
                     <span className="text-muted-foreground">Vazão (m³/h): <strong className="text-foreground">{seg.q}</strong></span>
                     <span className="text-muted-foreground">Número de Reynolds: <strong className="text-foreground">{seg.nr}</strong></span>
-                    <span className="text-muted-foreground">Fator de atrito (f) Colebrook: <strong className="text-foreground">{seg.f}</strong></span>
+                    <span className="text-muted-foreground">Fator de atrito (f) <em>Colebrook</em>: <strong className="text-foreground">{seg.f}</strong></span>
                     <span className="text-muted-foreground">Perda de carga (m): <strong className="text-primary">{seg.hf}</strong></span>
                   </div>
                 </fieldset>
               ))}
-              <div className="grid grid-cols-2 gap-3 text-xs font-body text-muted-foreground">
-                <span>Carga cinética (Hvel): {results.Hvel} m</span>
-                <span>Viscosidade: {results.viscosity} × 10⁻³ N.s/m²</span>
-                <span>Massa específica: {results.density} kg/m³</span>
-              </div>
             </>
           )}
         </div>
