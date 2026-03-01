@@ -234,7 +234,7 @@ export default function PivotCalculator() {
         const NRDU = Math.round(mespag * vs1 * diu / uc);
         const fs1_raw = colebrook(NRDU, rugN, diu);
         const fs1_disp = parseFloat(fs1_raw.toFixed(4));
-        const Hfdu = parseFloat(((6.376e6) * fs1_disp * Qin ** 2 * Lp * F_raw / diu ** 5).toFixed(2));
+        const Hfdu = parseFloat(((6.376e6) * fs1_raw * Qin ** 2 * Lp * F_raw / diu ** 5).toFixed(2));
         Hftotal = Hfdu;
         segments.push({ label: "Diâmetro único", d: diu.toFixed(1), q: Qin.toFixed(2), v: vs1.toFixed(2), nr: NRDU.toString(), f: fs1_disp.toFixed(4), F: F_raw.toFixed(4), hf: Hfdu.toFixed(2) });
         Hvel = parseFloat(((vs1 ** 2 / 19.62) * (2 * (Lp / Leq) ** 2 - (Lp / Leq) ** 4)).toFixed(4));
@@ -251,7 +251,7 @@ export default function PivotCalculator() {
         const NRs1 = Math.round(mespag * vs1 * diu / uc);
         const fs1_raw = colebrook(NRs1, rugN, diu);
         const fs1_disp = parseFloat(fs1_raw.toFixed(4));
-        const Hfseg1 = parseFloat(((6.376e6) * fs1_disp * Qin ** 2 * Lp * Fseg1_raw / diu ** 5).toFixed(2));
+        const Hfseg1 = parseFloat(((6.376e6) * fs1_raw * Qin ** 2 * Lp * Fseg1_raw / diu ** 5).toFixed(2));
         segments.push({ label: "Segmento 1", d: diu.toFixed(1), q: Qin.toFixed(2), v: vs1.toFixed(2), nr: NRs1.toString(), f: fs1_disp.toFixed(4), F: Fseg1_raw.toFixed(5), hf: Hfseg1.toFixed(2) });
         const Ftot_raw = 1 - (expm / 3) * (1 - gr) + ((expm - 1) / (7 - expm)) * (1 - gr) ** (3 - expm / 2);
         const Fseg2_raw = Ftot_raw - Fseg1_raw;
@@ -260,7 +260,7 @@ export default function PivotCalculator() {
         const NR2s = Math.round(mespag * v2s * d2s / uc);
         const f2s_raw = colebrook(NR2s, rugN, d2s);
         const f2s_disp = parseFloat(f2s_raw.toFixed(4));
-        const Hfseg2 = parseFloat(((6.376e6) * f2s_disp * Qin ** 2 * Lp * Fseg2_raw / d2s ** 5).toFixed(2));
+        const Hfseg2 = parseFloat(((6.376e6) * f2s_raw * Qin ** 2 * Lp * Fseg2_raw / d2s ** 5).toFixed(2));
         segments.push({ label: "Segmento 2", d: d2s.toFixed(1), q: Q2s.toFixed(2), v: v2s.toFixed(2), nr: NR2s.toString(), f: f2s_disp.toFixed(4), F: Fseg2_raw.toFixed(5), hf: Hfseg2.toFixed(2) });
         Hftotal = parseFloat((Hfseg1 + Hfseg2).toFixed(2));
         Hvel = parseFloat(((vs1 ** 2 / 19.62) * (2 * (Lp / Leq) ** 2 - (Lp / Leq) ** 4)).toFixed(4));
@@ -280,7 +280,7 @@ export default function PivotCalculator() {
         const NRs1 = Math.round(mespag * vs1 * diu / uc);
         const fs1_raw = colebrook(NRs1, rugN, diu);
         const fs1_disp = parseFloat(fs1_raw.toFixed(4));
-        const Hfseg1 = parseFloat(((6.376e6) * fs1_disp * Qin ** 2 * Lp * Fseg1_raw / diu ** 5).toFixed(2));
+        const Hfseg1 = parseFloat(((6.376e6) * fs1_raw * Qin ** 2 * Lp * Fseg1_raw / diu ** 5).toFixed(2));
         segments.push({ label: "Segmento 1", d: diu.toFixed(1), q: Qin.toFixed(2), v: vs1.toFixed(2), nr: NRs1.toString(), f: fs1_disp.toFixed(4), F: Fseg1_raw.toFixed(4), hf: Hfseg1.toFixed(2) });
         const ax = (1 - lseg3 / Lp) - (2 / 3) * (1 - lseg3 / Lp) ** 3 * (1 - gr);
         const bx = ((expm - 1) / (7 - expm)) * (1 - lseg3 / Lp) ** (7 - expm) * (1 - gr) ** (3 - expm / 2);
@@ -291,7 +291,7 @@ export default function PivotCalculator() {
         const NR2s = Math.round(mespag * v2s * d2s / uc);
         const f2s_raw = colebrook(NR2s, rugN, d2s);
         const f2s_disp = parseFloat(f2s_raw.toFixed(4));
-        const Hfseg2 = parseFloat(((6.376e6) * f2s_disp * Qin ** 2 * Lp * Fseg2_raw / d2s ** 5).toFixed(2));
+        const Hfseg2 = parseFloat(((6.376e6) * f2s_raw * Qin ** 2 * Lp * Fseg2_raw / d2s ** 5).toFixed(2));
         segments.push({ label: "Segmento 2", d: d2s.toFixed(1), q: Q2s.toFixed(2), v: v2s.toFixed(2), nr: NR2s.toString(), f: f2s_disp.toFixed(4), F: Fseg2_raw.toFixed(4), hf: Hfseg2.toFixed(2) });
         const Ftot_raw = 1 - (expm / 3) * (1 - gr) + ((expm - 1) / (7 - expm)) * (1 - gr) ** (3 - expm / 2);
         const Fseg3_raw = Ftot_raw - Fx_raw;
@@ -300,7 +300,7 @@ export default function PivotCalculator() {
         const NR3s = Math.round(mespag * v3s * d3s / uc);
         const f3s_raw = colebrook(NR3s, rugN, d3s);
         const f3s_disp = parseFloat(f3s_raw.toFixed(4));
-        const Hfseg3 = parseFloat(((6.376e6) * f3s_disp * Qin ** 2 * Lp * Fseg3_raw / d3s ** 5).toFixed(2));
+        const Hfseg3 = parseFloat(((6.376e6) * f3s_raw * Qin ** 2 * Lp * Fseg3_raw / d3s ** 5).toFixed(2));
         segments.push({ label: "Segmento 3", d: d3s.toFixed(1), q: Q3s.toFixed(2), v: v3s.toFixed(2), nr: NR3s.toString(), f: f3s_disp.toFixed(4), F: Fseg3_raw.toFixed(4), hf: Hfseg3.toFixed(2) });
         Hftotal = parseFloat((Hfseg1 + Hfseg2 + Hfseg3).toFixed(2));
         Hvel = parseFloat(((vs1 ** 2 / 19.62) * (2 * (Lp / Leq) ** 2 - (Lp / Leq) ** 4)).toFixed(4));
@@ -308,8 +308,8 @@ export default function PivotCalculator() {
 
       const Hin = parseFloat((hfin + Hftotal + (aclv * Lp / 100) - Hvel).toFixed(2));
       const diu2 = parseFloat(Diu);
-      const f_riser = parseFloat(colebrook(Math.floor(mespag * vs1 * diu2 / uc), rugN, diu2).toFixed(4));
-      const Hfunit = parseFloat(((6.376e6) * f_riser * Qin ** 2 * lTs / diu2 ** 5).toFixed(2));
+      const f_riser_raw = colebrook(Math.floor(mespag * vs1 * diu2 / uc), rugN, diu2);
+      const Hfunit = parseFloat(((6.376e6) * f_riser_raw * Qin ** 2 * lTs / diu2 ** 5).toFixed(2));
       const Hpp = parseFloat((Hin + Hfunit + alts).toFixed(2));
 
       setSharedQin(Qin);
