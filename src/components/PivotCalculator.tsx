@@ -40,6 +40,11 @@ interface PivotResults {
 // ---- Helpers ----
 const ln = Math.log;
 
+/** Formata número para padrão brasileiro (vírgula como separador decimal) */
+function fmtBR(value: string | number): string {
+  return String(value).replace('.', ',');
+}
+
 function calcViscosity(Tempa: number) {
   const Tkelv = Tempa + 273.16;
   const Lgu = -11.73 + 1828 / Tkelv + 0.01966 * Tkelv - 0.00001466 * Tkelv ** 2;
@@ -529,11 +534,11 @@ export default function PivotCalculator() {
               <div className="grid grid-cols-2 gap-3 text-xs font-body">
                 <div className="bg-muted rounded-lg p-3">
                   <span className="text-muted-foreground">Área básica (Ab)</span>
-                  <p className="font-semibold text-foreground">{results.Ab} ha</p>
+                  <p className="font-semibold text-foreground">{fmtBR(results.Ab)} ha</p>
                 </div>
                 <div className="bg-muted rounded-lg p-3">
                   <span className="text-muted-foreground">Vazão na área básica (Qb)</span>
-                  <p className="font-semibold text-foreground">{results.Qb} m³/h</p>
+                  <p className="font-semibold text-foreground">{fmtBR(results.Qb)} m³/h</p>
                 </div>
               </div>
 
@@ -541,11 +546,11 @@ export default function PivotCalculator() {
               <div className="grid grid-cols-2 gap-3 text-xs font-body">
                 <div className="bg-muted rounded-lg p-3">
                   <span className="text-muted-foreground">Vazão no início da lateral (Qin)</span>
-                  <p className="font-semibold text-foreground">{results.Qin} m³/h</p>
+                  <p className="font-semibold text-foreground">{fmtBR(results.Qin)} m³/h</p>
                 </div>
                 <div className="bg-muted rounded-lg p-3">
                   <span className="text-muted-foreground">Razão (Qc/Qin)</span>
-                  <p className="font-semibold text-foreground">{results.gr}</p>
+                  <p className="font-semibold text-foreground">{fmtBR(results.gr)}</p>
                 </div>
               </div>
 
@@ -553,11 +558,11 @@ export default function PivotCalculator() {
               <div className="grid grid-cols-2 gap-3 text-xs font-body">
                 <div className="bg-muted rounded-lg p-3">
                   <span className="text-muted-foreground">Comp. equivalente da lateral (m)</span>
-                  <p className="font-semibold text-foreground">{results.Leq} m</p>
+                  <p className="font-semibold text-foreground">{fmtBR(results.Leq)} m</p>
                 </div>
                 <div className="bg-muted rounded-lg p-3">
                   <span className="text-muted-foreground">Hf total (m)</span>
-                  <p className="font-semibold text-foreground">{results.Hftotal} m</p>
+                  <p className="font-semibold text-foreground">{fmtBR(results.Hftotal)} m</p>
                 </div>
               </div>
 
@@ -565,11 +570,11 @@ export default function PivotCalculator() {
               <div className="grid grid-cols-2 gap-3 text-xs font-body">
                 <div className="border-2 border-border rounded-lg p-3 text-center">
                   <span className="text-muted-foreground font-semibold">Ho (m)</span>
-                  <p className="font-bold text-foreground text-lg">{results.Hin}</p>
+                  <p className="font-bold text-foreground text-lg">{fmtBR(results.Hin)}</p>
                 </div>
                 <div className="border-2 border-border rounded-lg p-3 text-center">
                   <span className="text-muted-foreground font-semibold">Hpp (m)</span>
-                  <p className="font-display text-xl font-bold text-primary">{results.Hpp} <span className="text-sm font-normal text-muted-foreground">m.ca</span></p>
+                  <p className="font-display text-xl font-bold text-primary">{fmtBR(results.Hpp)} <span className="text-sm font-normal text-muted-foreground">m.ca</span></p>
                 </div>
               </div>
 
@@ -578,16 +583,16 @@ export default function PivotCalculator() {
                 <fieldset key={i} className="border border-border rounded-xl p-4 space-y-2">
                   <legend className="text-xs font-semibold uppercase tracking-wider text-primary px-2 font-body">
                     {results.segments.length === 1
-                      ? `Diâmetro único — Ø ${seg.d || ""} mm`
-                      : `${i + 1}º Segmento — Ø ${seg.d || ""} mm`}
+                      ? `Diâmetro único — Ø ${fmtBR(seg.d || "")} mm`
+                      : `${i + 1}º Segmento — Ø ${fmtBR(seg.d || "")} mm`}
                   </legend>
                   <div className="grid grid-cols-2 gap-2 text-xs font-body">
-                    <span className="text-muted-foreground">Fator de Correção (F): <strong className="text-foreground">{seg.F}</strong></span>
-                    <span className="text-muted-foreground">Velocidade da água (m/s): <strong className="text-foreground">{seg.v}</strong></span>
-                    <span className="text-muted-foreground">Vazão (m³/h): <strong className="text-foreground">{seg.q}</strong></span>
+                    <span className="text-muted-foreground">Fator de Correção (F): <strong className="text-foreground">{fmtBR(seg.F)}</strong></span>
+                    <span className="text-muted-foreground">Velocidade da água (m/s): <strong className="text-foreground">{fmtBR(seg.v)}</strong></span>
+                    <span className="text-muted-foreground">Vazão (m³/h): <strong className="text-foreground">{fmtBR(seg.q)}</strong></span>
                     <span className="text-muted-foreground">Número de Reynolds: <strong className="text-foreground">{seg.nr}</strong></span>
-                    <span className="text-muted-foreground">Fator de atrito (f) Colebrook: <strong className="text-foreground">{seg.f}</strong></span>
-                    <span className="text-muted-foreground">Perda de carga (m): <strong className="text-primary">{seg.hf}</strong></span>
+                    <span className="text-muted-foreground">Fator de atrito (f) Colebrook: <strong className="text-foreground">{fmtBR(seg.f)}</strong></span>
+                    <span className="text-muted-foreground">Perda de carga (m): <strong className="text-primary">{fmtBR(seg.hf)}</strong></span>
                   </div>
                 </fieldset>
               ))}
@@ -595,11 +600,11 @@ export default function PivotCalculator() {
               {/* Bottom info: Carga cinética, Viscosidade, Massa específica */}
               <div className="text-xs font-body text-muted-foreground space-y-1 pt-2 border-t border-border">
                 <div className="grid grid-cols-2 gap-3">
-                  <span>Carga cinética (Hvel): <strong className="text-foreground">{results.Hvel || "—"} m</strong></span>
-                  <span>Viscosidade: <strong className="text-foreground">{results.viscosity} × 10⁻³ Ns/m²</strong></span>
+                  <span>Carga cinética (Hvel): <strong className="text-foreground">{fmtBR(results.Hvel || "—")} m</strong></span>
+                  <span>Viscosidade: <strong className="text-foreground">{fmtBR(results.viscosity)} × 10⁻³ Ns/m²</strong></span>
                 </div>
                 <div>
-                  <span>Massa específica: <strong className="text-foreground">{results.density} kg/m³</strong></span>
+                  <span>Massa específica: <strong className="text-foreground">{fmtBR(results.density)} kg/m³</strong></span>
                 </div>
               </div>
             </>
