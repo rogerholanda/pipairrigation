@@ -38,6 +38,10 @@ export default function DiameterCalculator() {
   const [ks, setKs] = useState(KS_OPTIONS[0]);
   const [krg, setKrg] = useState(KRG_OPTIONS[0]);
   const [kc, setKc] = useState(KC_OPTIONS[0]);
+  const [customKe, setCustomKe] = useState(false);
+  const [customKs, setCustomKs] = useState(false);
+  const [customKrg, setCustomKrg] = useState(false);
+  const [customKc, setCustomKc] = useState(false);
   const [results, setResults] = useState<DiamResults | null>(null);
   const [error, setError] = useState("");
 
@@ -223,10 +227,10 @@ export default function DiameterCalculator() {
           Coeficientes de Perda Localizada (K)
         </label>
         <div className="grid grid-cols-2 gap-3">
-          <SelectField label="Ke — Entrada" value={ke} onChange={setKe} options={KE_OPTIONS} id="dl-ke" />
-          <SelectField label="Ks — Saída" value={ks} onChange={setKs} options={KS_OPTIONS} id="dl-ks" />
-          <SelectField label="KRg — Reg. Gaveta" value={krg} onChange={setKrg} options={KRG_OPTIONS} id="dl-krg" />
-          <SelectField label="Kc — Curva 90°" value={kc} onChange={setKc} options={KC_OPTIONS} id="dl-kc" />
+          <SelectField label="Ke — Entrada" value={ke} onChange={setKe} options={KE_OPTIONS} id="dl-ke" custom={customKe} onToggleCustom={() => setCustomKe(!customKe)} />
+          <SelectField label="Ks — Saída" value={ks} onChange={setKs} options={KS_OPTIONS} id="dl-ks" custom={customKs} onToggleCustom={() => setCustomKs(!customKs)} />
+          <SelectField label="KRg — Reg. Gaveta" value={krg} onChange={setKrg} options={KRG_OPTIONS} id="dl-krg" custom={customKrg} onToggleCustom={() => setCustomKrg(!customKrg)} />
+          <SelectField label="Kc — Curva 90°" value={kc} onChange={setKc} options={KC_OPTIONS} id="dl-kc" custom={customKc} onToggleCustom={() => setCustomKc(!customKc)} />
         </div>
         <p className="text-xs text-muted-foreground mt-1.5 font-body">
           Soma K = {(parseFloat(ke) + parseFloat(ks) + parseFloat(krg) + parseFloat(kc)).toFixed(1)}
@@ -297,24 +301,45 @@ function InputField({ label, value, onChange, placeholder }: { label: string; va
   );
 }
 
-function SelectField({ label, value, onChange, options, id }: { label: string; value: string; onChange: (v: string) => void; options: string[]; id: string }) {
+function SelectField({ label, value, onChange, options, id, custom, onToggleCustom }: { label: string; value: string; onChange: (v: string) => void; options: string[]; id: string; custom: boolean; onToggleCustom: () => void }) {
   return (
     <div>
       <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
         {label}
       </label>
-      <input
-        type="number"
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        list={id}
-        step="any"
-        className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
-        style={{ borderColor: "hsl(var(--border))" }}
-      />
-      <datalist id={id}>
-        {options.map(o => <option key={o} value={o} />)}
-      </datalist>
+      <div className="flex gap-1.5">
+        {custom ? (
+          <input
+            type="number"
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            step="any"
+            className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
+            style={{ borderColor: "hsl(var(--border))" }}
+          />
+        ) : (
+          <select
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+            style={{ borderColor: "hsl(var(--border))" }}
+          >
+            {options.map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+        )}
+        <button
+          type="button"
+          onClick={onToggleCustom}
+          className={`px-2.5 py-2 rounded-lg border text-xs font-semibold font-body transition-all ${
+            custom
+              ? "gradient-primary text-primary-foreground border-transparent"
+              : "bg-muted text-muted-foreground border-border hover:border-primary"
+          }`}
+          title={custom ? "Usar valores pré-definidos" : "Digitar valor personalizado"}
+        >
+          {custom ? "Lista" : "✎"}
+        </button>
+      </div>
     </div>
   );
 }
