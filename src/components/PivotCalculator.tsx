@@ -372,7 +372,7 @@ export default function PivotCalculator() {
       {activeTab === "dados" && (
         <div className="p-6 space-y-5">
           <div className="grid grid-cols-2 gap-4">
-            <PInput label="Raio útil — Rut (m)" value={Rut} onChange={setRut} placeholder="Ex: 400" />
+            <PInput label="Raio até a última torre (m)" value={Rut} onChange={setRut} placeholder="Ex: 400" />
             <PInput label="Comprimento do balanço — Clb (m)" value={Clb} onChange={setClb} placeholder="Ex: 50" />
           </div>
           <div className="grid grid-cols-2 gap-4">
