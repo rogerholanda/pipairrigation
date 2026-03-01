@@ -226,7 +226,7 @@ export default function PivotCalculator() {
         if (isNaN(diu) || diu <= 0) { setError("Informe o diâmetro da lateral (mm)."); return; }
         const F_raw = 1 - (expm / 3) * (1 - gr) + ((expm - 1) / (7 - expm)) * (1 - gr) ** (3 - expm / 2);
         vs1 = parseFloat((353.67765 * Qin / diu ** 2).toFixed(2));
-        const NRDU = Math.floor(mespag * vs1 * diu / uc);
+        const NRDU = Math.round(mespag * vs1 * diu / uc);
         const fs1_raw = colebrook(NRDU, rugN, diu);
         const fs1_disp = parseFloat(fs1_raw.toFixed(4));
         const Hfdu = parseFloat(((6.376e6) * fs1_disp * Qin ** 2 * Lp * F_raw / diu ** 5).toFixed(2));
@@ -243,7 +243,7 @@ export default function PivotCalculator() {
         const b1 = ((expm - 1) / (7 - expm)) * (lseg1 / Lp) ** (7 - expm) * (1 - gr) ** (3 - expm / 2);
         const Fseg1_raw = a1 + b1;
         vs1 = parseFloat((353.67765 * Qin / diu ** 2).toFixed(2));
-        const NRs1 = Math.floor(mespag * vs1 * diu / uc);
+        const NRs1 = Math.round(mespag * vs1 * diu / uc);
         const fs1_raw = colebrook(NRs1, rugN, diu);
         const fs1_disp = parseFloat(fs1_raw.toFixed(4));
         const Hfseg1 = parseFloat(((6.376e6) * fs1_disp * Qin ** 2 * Lp * Fseg1_raw / diu ** 5).toFixed(2));
@@ -252,7 +252,7 @@ export default function PivotCalculator() {
         const Fseg2_raw = Ftot_raw - Fseg1_raw;
         const Q2s = parseFloat((Qin * (1 - (lseg1 / Leq) ** 2)).toFixed(2));
         const v2s = parseFloat((353.67765 * Q2s / d2s ** 2).toFixed(2));
-        const NR2s = Math.floor(mespag * v2s * d2s / uc);
+        const NR2s = Math.round(mespag * v2s * d2s / uc);
         const f2s_raw = colebrook(NR2s, rugN, d2s);
         const f2s_disp = parseFloat(f2s_raw.toFixed(4));
         const Hfseg2 = parseFloat(((6.376e6) * f2s_disp * Qin ** 2 * Lp * Fseg2_raw / d2s ** 5).toFixed(2));
@@ -272,7 +272,7 @@ export default function PivotCalculator() {
         const b1 = ((expm - 1) / (7 - expm)) * (lseg1 / Lp) ** (7 - expm) * (1 - gr) ** (3 - expm / 2);
         const Fseg1_raw = a1 + b1;
         vs1 = parseFloat((353.67765 * Qin / diu ** 2).toFixed(2));
-        const NRs1 = Math.floor(mespag * vs1 * diu / uc);
+        const NRs1 = Math.round(mespag * vs1 * diu / uc);
         const fs1_raw = colebrook(NRs1, rugN, diu);
         const fs1_disp = parseFloat(fs1_raw.toFixed(4));
         const Hfseg1 = parseFloat(((6.376e6) * fs1_disp * Qin ** 2 * Lp * Fseg1_raw / diu ** 5).toFixed(2));
@@ -283,7 +283,7 @@ export default function PivotCalculator() {
         const Fseg2_raw = Fx_raw - Fseg1_raw;
         const Q2s = parseFloat((Qin * (1 - (lseg1 / Leq) ** 2)).toFixed(2));
         const v2s = parseFloat((353.67765 * Q2s / d2s ** 2).toFixed(2));
-        const NR2s = Math.floor(mespag * v2s * d2s / uc);
+        const NR2s = Math.round(mespag * v2s * d2s / uc);
         const f2s_raw = colebrook(NR2s, rugN, d2s);
         const f2s_disp = parseFloat(f2s_raw.toFixed(4));
         const Hfseg2 = parseFloat(((6.376e6) * f2s_disp * Qin ** 2 * Lp * Fseg2_raw / d2s ** 5).toFixed(2));
@@ -292,7 +292,7 @@ export default function PivotCalculator() {
         const Fseg3_raw = Ftot_raw - Fx_raw;
         const Q3s = parseFloat((Qin * (1 - ((lseg1 + lseg2) / Leq) ** 2)).toFixed(2));
         const v3s = parseFloat((353.67765 * Q3s / d3s ** 2).toFixed(2));
-        const NR3s = Math.floor(mespag * v3s * d3s / uc);
+        const NR3s = Math.round(mespag * v3s * d3s / uc);
         const f3s_raw = colebrook(NR3s, rugN, d3s);
         const f3s_disp = parseFloat(f3s_raw.toFixed(4));
         const Hfseg3 = parseFloat(((6.376e6) * f3s_disp * Qin ** 2 * Lp * Fseg3_raw / d3s ** 5).toFixed(2));
