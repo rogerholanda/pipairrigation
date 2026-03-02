@@ -148,7 +148,7 @@ export default function DiameterCalculator() {
     <div className="p-6 space-y-5">
       {/* Inputs row 1 */}
       <div className="grid grid-cols-2 gap-4">
-        <InputField label="Vazão (m³/h)" value={flow} onChange={setFlow} placeholder="Ex: 28" />
+        <InputField label="Vazão (m³/h)" value={flow} onChange={setFlow} />
         <InputField label="Comprimento (m)" value={length} onChange={setLength} placeholder="Ex: 100" />
       </div>
 
