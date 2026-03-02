@@ -560,7 +560,7 @@ function TInput({ label, value, onChange, isText }: { label: string; value: stri
         value={value}
         onChange={e => onChange(e.target.value)}
         step="any"
-        className="w-full px-2 py-1.5 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+        className="w-full px-2 py-1.5 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
         style={{ borderColor: "hsl(var(--border))" }}
       />
     </div>
