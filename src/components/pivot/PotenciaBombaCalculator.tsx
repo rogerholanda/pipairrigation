@@ -176,7 +176,7 @@ export default function PotenciaBombaCalculator({ Qin, Hpp, rug, Tempag, state, 
           <PBInput label="Comprimento (m)" value={state.Lad} onChange={v => set("Lad", v)} placeholder="Ex: 50" />
           <PBInput label="Diâmetro (mm)" value={state.Dad} onChange={v => set("Dad", v)} placeholder="Ex: 200" />
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 items-end">
           <PBSelect label="Diâm. bocal de descarga da bomba (mm)" value={state.Dbrec} onChange={v => set("Dbrec", v)} options={DIAMETROS_BOCAL} />
           <PBSelect label="Diâm. do Registro (mm)" value={state.Dreg} onChange={v => set("Dreg", v)} options={DIAMETROS_BOCAL} />
         </div>
