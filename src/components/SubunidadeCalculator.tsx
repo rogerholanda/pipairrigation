@@ -129,8 +129,8 @@ export default function SubunidadeCalculator() {
         return;
       }
 
-      // Fluid properties
-      const u = calcViscosity(Tempa);
+      // Fluid properties (VBA: u = Format(..., "0.00000"))
+      const u = parseFloat(calcViscosity(Tempa).toFixed(5));
       const Uc = u * 1000;
       const mespa = parseFloat(calcDensity(Tempa).toFixed(2));
 
