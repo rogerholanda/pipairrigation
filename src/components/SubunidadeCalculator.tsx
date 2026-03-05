@@ -682,7 +682,7 @@ export default function SubunidadeCalculator() {
               <NumInput label="Desnível Lateral (m)" value={dzlat} onChange={setDzlat} hideSpinner />
             )}
           </div>
-          <NumInput label="Dist. 1ª Lateral à Primária (m)" value={distpri} onChange={setDistpri} hideSpinner />
+          <NumInput label="Dist. do Primeiro Emissor ao Início da Lateral (m)" value={distpri} onChange={setDistpri} hideSpinner />
 
           <hr className="border-border" />
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body">Dados da Terciária</p>
