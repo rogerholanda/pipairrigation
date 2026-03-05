@@ -728,7 +728,7 @@ export default function SubunidadeCalculator() {
               <NumInput label="Desnível Terciária (m)" value={dztc} onChange={setDztc} hideSpinner />
             )}
           </div>
-          <NumInput label="Dist. 1ª Lateral à Conexão (m)" value={distc} onChange={setDistc} hideSpinner />
+          <NumInput label="Dist. da Primeira Lateral ao Início da Terciária (m)" value={distc} onChange={setDistc} hideSpinner />
           <NumInput label="Temperatura (°C)" value={temp} onChange={setTemp} hideSpinner />
 
           {error && (
