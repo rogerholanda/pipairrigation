@@ -182,7 +182,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
                 Calculadoras Hidráulicas
               </h2>
               <p className="text-primary-foreground/80 text-xs font-body">
-                Darcy-Weisbach · Colebrook-White
+                Prof José Orlando Piauilino Ferreira
               </p>
             </div>
           </div>
