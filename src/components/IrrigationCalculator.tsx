@@ -252,7 +252,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
             <CircleDot size={15} />
             Sub Trapezoidal
            </button>
-          <button
+           <button
             onClick={() => setActiveTab("subunidade")}
             className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
               activeTab === "subunidade"
@@ -262,6 +262,17 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
           >
             <LayoutGrid size={15} />
             Subunidade
+          </button>
+          <button
+            onClick={() => setActiveTab("twodiam")}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
+              activeTab === "twodiam"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <GitBranch size={15} />
+            2 Diâmetros
           </button>
         </div>
 
