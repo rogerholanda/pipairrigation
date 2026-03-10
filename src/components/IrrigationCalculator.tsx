@@ -291,6 +291,9 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
         {/* Subunidade calculator tab */}
         {activeTab === "subunidade" && <SubunidadeCalculator />}
 
+        {/* Two Diameter calculator tab */}
+        {activeTab === "twodiam" && <TwoDiameterCalculator />}
+
         {/* Colebrook tab */}
         {activeTab === "colebrook" && <div className="p-6 space-y-5">
           {/* Flow unit */}
