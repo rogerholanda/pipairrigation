@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { X, Calculator, Droplets, Ruler, Waves, Gauge, CircleDot, LayoutGrid } from "lucide-react";
+import { X, Calculator, Droplets, Ruler, Waves, Gauge, CircleDot, LayoutGrid, GitBranch } from "lucide-react";
 import DiameterCalculator from "./DiameterCalculator";
 import PivotCalculator from "./PivotCalculator";
 import PumpingCalculator from "./PumpingCalculator";
 import LocalizedCalculator from "./LocalizedCalculator";
 import SubunidadeCalculator from "./SubunidadeCalculator";
+import TwoDiameterCalculator from "./TwoDiameterCalculator";
 
 interface CalcResults {
   velocity: string;
