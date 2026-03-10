@@ -33,7 +33,7 @@ const PIPE_MATERIALS = [
 ];
 
 export default function IrrigationCalculator({ open, onClose }: IrrigationCalculatorProps) {
-  const [activeTab, setActiveTab] = useState<"colebrook" | "diameter" | "pivot" | "pumping" | "localized" | "subunidade">("colebrook");
+  const [activeTab, setActiveTab] = useState<"colebrook" | "diameter" | "pivot" | "pumping" | "localized" | "subunidade" | "twodiam">("colebrook");
   const [flowUnit, setFlowUnit] = useState<"m3h" | "Lh">("m3h");
   const [flow, setFlow] = useState("");
   const [length, setLength] = useState("");
