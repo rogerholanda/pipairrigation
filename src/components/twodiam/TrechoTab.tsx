@@ -139,16 +139,22 @@ export default function TrechoTab({ inputs, dadosResult }: Props) {
 
       {result && (
         <div className="space-y-4">
-          <div className="overflow-x-auto rounded-lg border border-border max-h-64 overflow-y-auto">
-            <table className="w-full font-body">
+          <div className="overflow-x-auto overflow-y-auto rounded-lg border border-border max-h-64">
+            <table className="min-w-[1400px] font-body">
               <thead className="sticky top-0"><tr className="bg-muted">
                 <th className={TH}>Emissor</th><th className={TH}>Trecho</th><th className={TH}>Comp./Trecho (m)</th>
-                <th className={TH}>Diâm. (mm)</th><th className={TH}>Dist. (m)</th>
+                <th className={TH}>Diâm. (mm)</th><th className={TH}>Dist. (m)</th><th className={TH}>Hf (m)</th>
+                <th className={TH}>H(emissor) (m)</th><th className={TH}>Vazão (m³/h)</th><th className={TH}>Vazão/Trecho (m³/h)</th>
+                <th className={TH}>Vel./Trecho (m/s)</th><th className={TH}>NR/Trecho</th><th className={TH}>f/Trecho</th>
+                <th className={TH}>Hf/Trecho (m)</th><th className={TH}>Hf até emissor (m)</th><th className={TH}>H no emissor (m)</th>
               </tr></thead>
               <tbody>{result.rows.map(r => (
                 <tr key={r.emissor} className="border-b border-border">
                   <td className={TD}>{r.emissor}</td><td className={TD}>{r.trecho}</td><td className={TD}>{r.comp}</td>
-                  <td className={TD}>{fmtBR(r.diam, 1)}</td><td className={TD}>{r.dist}</td>
+                  <td className={TD}>{fmtBR(r.diam, 1)}</td><td className={TD}>{r.dist}</td><td className={TD}>{fmtBR(r.hfl, 5)}</td>
+                  <td className={TD}>{fmtBR(r.hem, 3)}</td><td className={TD}>{fmtBR(r.qe, 2)}</td><td className={TD}>{fmtBR(r.qtch, 2)}</td>
+                  <td className={TD}>{fmtBR(r.vel, 2)}</td><td className={TD}>{r.reynolds}</td><td className={TD}>{fmtBR(r.f, 4)}</td>
+                  <td className={TD}>{fmtBR(r.hfTrecho, 4)}</td><td className={TD}>{fmtBR(r.hfAte, 4)}</td><td className={TD}>{fmtBR(r.hEmissor, 4)}</td>
                 </tr>
               ))}</tbody>
             </table>

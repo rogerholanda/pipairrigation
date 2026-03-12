@@ -194,16 +194,24 @@ export default function ProcedimentosTab({ inputs, dadosResult }: Props) {
           {/* Anwar / S&M */}
           <div>
             <h4 className="font-display font-semibold text-foreground text-sm mb-2">Anwar / Soleimani & Mirzaei</h4>
-            <div className="overflow-x-auto rounded-lg border border-border">
-              <table className="w-full font-body">
-                <thead><tr className="bg-muted">
+            <div className="overflow-x-auto rounded-lg border border-border max-h-60">
+              <table className="min-w-[1200px] font-body">
+                <thead className="sticky top-0"><tr className="bg-muted">
                   <th className={TH}>Seg.</th><th className={TH}>Comp. (m)</th><th className={TH}>Diâm. (mm)</th>
-                  <th className={TH}>Vazão (m³/h)</th><th className={TH}>Vel. (m/s)</th>
+                  <th className={TH}>Vazão (m³/h)</th><th className={TH}>Vel. (m/s)</th><th className={TH}>Reynolds</th>
+                  <th className={TH}>f</th><th className={TH}>Hf (m)</th><th className={TH}>r</th>
+                  <th className={TH}>G(Anw)</th><th className={TH}>Ga(Anw)</th><th className={TH}>Hfcor(Anw) (m)</th>
+                  <th className={TH}>p(S&M)</th><th className={TH}>t(S&M)</th><th className={TH}>G(S&M)</th>
+                  <th className={TH}>Ga(S&M)</th><th className={TH}>Hfcor(S&M) (m)</th>
                 </tr></thead>
                 <tbody>{result.anwar.map(r => (
                   <tr key={r.seg} className="border-b border-border">
                     <td className={TD}>{r.seg}</td><td className={TD}>{fmtBR(r.comp, 0)}</td><td className={TD}>{fmtBR(r.diam, 1)}</td>
-                    <td className={TD}>{fmtBR(r.vazao, 2)}</td><td className={TD}>{fmtBR(r.vel, 2)}</td>
+                    <td className={TD}>{fmtBR(r.vazao, 2)}</td><td className={TD}>{fmtBR(r.vel, 2)}</td><td className={TD}>{r.reynolds}</td>
+                    <td className={TD}>{fmtBR(r.f, 4)}</td><td className={TD}>{fmtBR(r.hf, 2)}</td><td className={TD}>{fmtBR(r.r, 2)}</td>
+                    <td className={TD}>{fmtBR(r.gAnw, 3)}</td><td className={TD}>{fmtBR(r.gaAnw, 3)}</td><td className={TD}>{fmtBR(r.hfcorAnw, 3)}</td>
+                    <td className={TD}>{fmtBR(r.pSM, 3)}</td><td className={TD}>{fmtBR(r.tSM, 3)}</td><td className={TD}>{fmtBR(r.gSM, 3)}</td>
+                    <td className={TD}>{fmtBR(r.gaSM, 3)}</td><td className={TD}>{fmtBR(r.hfcorSM, 3)}</td>
                   </tr>
                 ))}</tbody>
               </table>
