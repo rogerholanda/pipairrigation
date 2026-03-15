@@ -2,25 +2,6 @@ import { useState } from "react";
 import { Droplets } from "lucide-react";
 import { PairedInputs, DadosResult, fmt, fmtBR, ResultField } from "./utils";
 
-interface EmparResult {
-  dz: number; raz: number;
-  compRelAcl: number; compRelDec: number;
-  compAcl: number; compDec: number;
-  neAcl: number; neDec: number;
-  qAcl: number; qDec: number;
-  hfAcl: number; hfDec: number;
-  dzAcl: number; dzDec: number;
-  HmaxAcl: number; HmaxDec: number;
-  HminAcl: number; HminDec: number;
-  varPrAcl: number; varPrDec: number;
-  varQAcl: number; varQDec: number;
-  locPmin: number;
-  dzHfDec: number;
-  labelAcl: string; labelDec: string;
-  labelLocPmin: string; labelPminNote: string;
-  frameLabel: string;
-}
-
 export interface EmparResult {
   dz: number; raz: number;
   compRelAcl: number; compRelDec: number;
