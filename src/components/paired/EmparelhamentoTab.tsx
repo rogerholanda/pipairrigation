@@ -43,7 +43,7 @@ export interface EmparResult {
 
 interface Props { inputs: PairedInputs; dadosResult: DadosResult | null; onResult?: (r: EmparResult) => void; }
 
-export default function EmparelhamentoTab({ inputs, dadosResult }: Props) {
+export default function EmparelhamentoTab({ inputs, dadosResult, onResult }: Props) {
   const [varMaxPressao, setVarMaxPressao] = useState("19");
   const [result, setResult] = useState<EmparResult | null>(null);
   const [error, setError] = useState("");
