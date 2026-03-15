@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { X, Calculator, Droplets, Ruler, Waves, Gauge, CircleDot, LayoutGrid, GitBranch } from "lucide-react";
+import { X, Calculator, Droplets, Ruler, Waves, Gauge, CircleDot, LayoutGrid, GitBranch, Link2 } from "lucide-react";
 import DiameterCalculator from "./DiameterCalculator";
 import PivotCalculator from "./PivotCalculator";
 import PumpingCalculator from "./PumpingCalculator";
 import LocalizedCalculator from "./LocalizedCalculator";
 import SubunidadeCalculator from "./SubunidadeCalculator";
 import TwoDiameterCalculator from "./TwoDiameterCalculator";
+import PairedLateralsCalculator from "./PairedLateralsCalculator";
 
 interface CalcResults {
   velocity: string;
@@ -33,7 +34,7 @@ const PIPE_MATERIALS = [
 ];
 
 export default function IrrigationCalculator({ open, onClose }: IrrigationCalculatorProps) {
-  const [activeTab, setActiveTab] = useState<"colebrook" | "diameter" | "pivot" | "pumping" | "localized" | "subunidade" | "twodiam">("colebrook");
+  const [activeTab, setActiveTab] = useState<"colebrook" | "diameter" | "pivot" | "pumping" | "localized" | "subunidade" | "twodiam" | "paired">("colebrook");
   const [flowUnit, setFlowUnit] = useState<"m3h" | "Lh">("m3h");
   const [flow, setFlow] = useState("");
   const [length, setLength] = useState("");
@@ -274,6 +275,17 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
             <GitBranch size={15} />
             2 Diâmetros
           </button>
+          <button
+            onClick={() => setActiveTab("paired")}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
+              activeTab === "paired"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Link2 size={15} />
+            Emparelhadas
+          </button>
         </div>
 
         {/* Diameter calculator tab */}
@@ -293,6 +305,9 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
 
         {/* Two Diameter calculator tab */}
         {activeTab === "twodiam" && <TwoDiameterCalculator />}
+
+        {/* Paired Laterals calculator tab */}
+        {activeTab === "paired" && <PairedLateralsCalculator />}
 
         {/* Colebrook tab */}
         {activeTab === "colebrook" && <div className="p-6 space-y-5">
