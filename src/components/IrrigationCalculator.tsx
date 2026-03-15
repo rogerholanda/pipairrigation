@@ -33,6 +33,17 @@ const PIPE_MATERIALS = [
   { label: "AZDº", name: "Aço Zincado com Costura", roughness: 0.15 },
 ];
 
+const calcCards = [
+  { id: "colebrook", title: "Colebrook", desc: "Fator de atrito e perda de carga", icon: Droplets },
+  { id: "diameter", title: "Diâmetro", desc: "Diâmetro comercial da tubulação", icon: Ruler },
+  { id: "pivot", title: "Pivô Central", desc: "Dimensionamento de pivô", icon: Waves },
+  { id: "pumping", title: "Bombeamento", desc: "Potência e carga da bomba", icon: Gauge },
+  { id: "localized", title: "Sub Trapezoidal", desc: "Subunidade trapezoidal", icon: CircleDot },
+  { id: "subunidade", title: "Subunidade", desc: "Projeto de subunidade", icon: LayoutGrid },
+  { id: "twodiam", title: "2 Diâmetros", desc: "Tubulação com dois diâmetros", icon: GitBranch },
+  { id: "paired", title: "Emparelhadas", desc: "Laterais emparelhadas", icon: Link2 },
+];
+
 export default function IrrigationCalculator({ open, onClose }: IrrigationCalculatorProps) {
   const [activeTab, setActiveTab] = useState<"home" | "colebrook" | "diameter" | "pivot" | "pumping" | "localized" | "subunidade" | "twodiam" | "paired">("home");
   const [flowUnit, setFlowUnit] = useState<"m3h" | "Lh">("m3h");
