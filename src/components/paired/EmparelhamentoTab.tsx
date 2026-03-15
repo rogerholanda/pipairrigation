@@ -173,14 +173,16 @@ export default function EmparelhamentoTab({ inputs, dadosResult, onResult }: Pro
         labelPminNote = "No início da lateral";
       }
 
-      setResult({
+      const res: EmparResult = {
         dz, raz, compRelAcl, compRelDec, compAcl, compDec,
         neAcl, neDec, qAcl, qDec, hfAcl, hfDec,
         dzAcl, dzDec, HmaxAcl, HmaxDec, HminAcl, HminDec,
         varPrAcl, varPrDec, varQAcl, varQDec,
-        locPmin, dzHfDec,
+        locPmin, dzHfDec, i_pos,
         labelAcl, labelDec, labelLocPmin, labelPminNote, frameLabel,
-      });
+      };
+      setResult(res);
+      onResult?.(res);
     } catch {
       setError("Erro no cálculo. Verifique os dados.");
     }
