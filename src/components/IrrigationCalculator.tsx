@@ -6,6 +6,7 @@ import PumpingCalculator from "./PumpingCalculator";
 import LocalizedCalculator from "./LocalizedCalculator";
 import SubunidadeCalculator from "./SubunidadeCalculator";
 import TwoDiameterCalculator from "./TwoDiameterCalculator";
+import PairedLateralsCalculator from "./PairedLateralsCalculator";
 
 interface CalcResults {
   velocity: string;
