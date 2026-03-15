@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Droplets } from "lucide-react";
 import { PairedInputs, DadosResult, fmt, fmtBR, ResultField } from "./utils";
 
-interface EmparResult {
+export interface EmparResult {
   dz: number; raz: number;
   compRelAcl: number; compRelDec: number;
   compAcl: number; compDec: number;
@@ -16,14 +16,15 @@ interface EmparResult {
   varQAcl: number; varQDec: number;
   locPmin: number;
   dzHfDec: number;
+  i_pos: number;
   labelAcl: string; labelDec: string;
   labelLocPmin: string; labelPminNote: string;
   frameLabel: string;
 }
 
-interface Props { inputs: PairedInputs; dadosResult: DadosResult | null; }
+interface Props { inputs: PairedInputs; dadosResult: DadosResult | null; onResult?: (r: EmparResult) => void; }
 
-export default function EmparelhamentoTab({ inputs, dadosResult }: Props) {
+export default function EmparelhamentoTab({ inputs, dadosResult, onResult }: Props) {
   const [varMaxPressao, setVarMaxPressao] = useState("19");
   const [result, setResult] = useState<EmparResult | null>(null);
   const [error, setError] = useState("");
@@ -172,14 +173,16 @@ export default function EmparelhamentoTab({ inputs, dadosResult }: Props) {
         labelPminNote = "No início da lateral";
       }
 
-      setResult({
+      const res: EmparResult = {
         dz, raz, compRelAcl, compRelDec, compAcl, compDec,
         neAcl, neDec, qAcl, qDec, hfAcl, hfDec,
         dzAcl, dzDec, HmaxAcl, HmaxDec, HminAcl, HminDec,
         varPrAcl, varPrDec, varQAcl, varQDec,
-        locPmin, dzHfDec,
+        locPmin, dzHfDec, i_pos,
         labelAcl, labelDec, labelLocPmin, labelPminNote, frameLabel,
-      });
+      };
+      setResult(res);
+      onResult?.(res);
     } catch {
       setError("Erro no cálculo. Verifique os dados.");
     }

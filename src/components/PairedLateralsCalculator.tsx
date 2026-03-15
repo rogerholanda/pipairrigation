@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PairedInputs, DadosResult } from "./paired/utils";
 import DadosTab from "./paired/DadosTab";
-import EmparelhamentoTab from "./paired/EmparelhamentoTab";
+import EmparelhamentoTab, { EmparResult } from "./paired/EmparelhamentoTab";
 import DistCargasTab from "./paired/DistCargasTab";
 
 const defaultInputs: PairedInputs = {
@@ -14,6 +14,7 @@ const defaultInputs: PairedInputs = {
 export default function PairedLateralsCalculator() {
   const [inputs, setInputs] = useState<PairedInputs>(defaultInputs);
   const [dadosResult, setDadosResult] = useState<DadosResult | null>(null);
+  const [emparResult, setEmparResult] = useState<EmparResult | null>(null);
   const [activeTab, setActiveTab] = useState<"dados" | "empar" | "dist">("dados");
 
   const tabs = [
@@ -44,10 +45,10 @@ export default function PairedLateralsCalculator() {
         <DadosTab inputs={inputs} setInputs={setInputs} onResult={setDadosResult} />
       )}
       {activeTab === "empar" && (
-        <EmparelhamentoTab inputs={inputs} dadosResult={dadosResult} />
+        <EmparelhamentoTab inputs={inputs} dadosResult={dadosResult} onResult={setEmparResult} />
       )}
       {activeTab === "dist" && (
-        <DistCargasTab dadosResult={dadosResult} />
+        <DistCargasTab dadosResult={dadosResult} emparResult={emparResult} />
       )}
     </div>
   );
