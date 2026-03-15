@@ -189,10 +189,18 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
         {/* Header */}
         <div className="gradient-primary px-6 py-5 rounded-t-2xl flex items-center justify-between">
           <div className="flex items-center gap-3">
+            {activeTab !== "home" && (
+              <button
+                onClick={() => setActiveTab("home")}
+                className="text-primary-foreground/70 hover:text-primary-foreground transition-colors rounded-full p-1 mr-1"
+              >
+                <ArrowLeft size={20} />
+              </button>
+            )}
             <Calculator className="text-primary-foreground" size={24} />
             <div>
               <h2 className="font-display text-lg font-semibold text-primary-foreground leading-tight">
-                Calculadoras Hidráulicas
+                {activeTab === "home" ? "Calculadoras Hidráulicas" : calcCards.find(c => c.id === activeTab)?.title ?? "Calculadora"}
               </h2>
               <p className="text-primary-foreground/80 text-xs font-body">
                 Prof José Orlando Piauilino Ferreira
@@ -207,117 +215,56 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex border-b border-border">
-          <button
-            onClick={() => setActiveTab("colebrook")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
-              activeTab === "colebrook"
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Droplets size={15} />
-            Colebrook
-          </button>
-          <button
-            onClick={() => setActiveTab("diameter")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
-              activeTab === "diameter"
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Ruler size={15} />
-            Diâmetro
-          </button>
-          <button
-            onClick={() => setActiveTab("pivot")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
-              activeTab === "pivot"
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Waves size={15} />
-            Pivô Central
-          </button>
-          <button
-            onClick={() => setActiveTab("pumping")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
-              activeTab === "pumping"
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Gauge size={15} />
-            Bombeamento
-          </button>
-          <button
-            onClick={() => setActiveTab("localized")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
-              activeTab === "localized"
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <CircleDot size={15} />
-            Sub Trapezoidal
-           </button>
-           <button
-            onClick={() => setActiveTab("subunidade")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
-              activeTab === "subunidade"
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <LayoutGrid size={15} />
-            Subunidade
-          </button>
-          <button
-            onClick={() => setActiveTab("twodiam")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
-              activeTab === "twodiam"
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <GitBranch size={15} />
-            2 Diâmetros
-          </button>
-          <button
-            onClick={() => setActiveTab("paired")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
-              activeTab === "paired"
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Link2 size={15} />
-            Emparelhadas
-          </button>
-        </div>
+        {/* Home — Card Grid */}
+        {activeTab === "home" && (
+          <div className="p-6">
+            <p className="text-sm text-muted-foreground font-body mb-5 text-center">
+              Selecione uma calculadora para começar
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {calcCards.map((card) => {
+                const Icon = card.icon;
+                return (
+                  <button
+                    key={card.id}
+                    onClick={() => setActiveTab(card.id as any)}
+                    className="group flex flex-col items-center gap-3 p-5 rounded-2xl border border-border bg-muted/50 hover:border-primary hover:bg-primary/5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+                  >
+                    <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                      <Icon size={22} className="text-primary-foreground" />
+                    </div>
+                    <span className="font-display font-semibold text-foreground text-sm text-center leading-tight">
+                      {card.title}
+                    </span>
+                    <span className="text-xs text-muted-foreground font-body text-center leading-snug">
+                      {card.desc}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
-        {/* Diameter calculator tab */}
+        {/* Diameter calculator */}
         {activeTab === "diameter" && <DiameterCalculator />}
 
-        {/* Pivot calculator tab */}
+        {/* Pivot calculator */}
         {activeTab === "pivot" && <PivotCalculator />}
 
-        {/* Pumping calculator tab */}
+        {/* Pumping calculator */}
         {activeTab === "pumping" && <PumpingCalculator />}
 
-        {/* Localized irrigation tab */}
+        {/* Localized irrigation */}
         {activeTab === "localized" && <LocalizedCalculator />}
 
-        {/* Subunidade calculator tab */}
+        {/* Subunidade calculator */}
         {activeTab === "subunidade" && <SubunidadeCalculator />}
 
-        {/* Two Diameter calculator tab */}
+        {/* Two Diameter calculator */}
         {activeTab === "twodiam" && <TwoDiameterCalculator />}
 
-        {/* Paired Laterals calculator tab */}
+        {/* Paired Laterals calculator */}
         {activeTab === "paired" && <PairedLateralsCalculator />}
 
         {/* Colebrook tab */}
