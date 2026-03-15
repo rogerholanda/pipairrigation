@@ -21,7 +21,27 @@ interface EmparResult {
   frameLabel: string;
 }
 
-interface Props { inputs: PairedInputs; dadosResult: DadosResult | null; }
+export interface EmparResult {
+  dz: number; raz: number;
+  compRelAcl: number; compRelDec: number;
+  compAcl: number; compDec: number;
+  neAcl: number; neDec: number;
+  qAcl: number; qDec: number;
+  hfAcl: number; hfDec: number;
+  dzAcl: number; dzDec: number;
+  HmaxAcl: number; HmaxDec: number;
+  HminAcl: number; HminDec: number;
+  varPrAcl: number; varPrDec: number;
+  varQAcl: number; varQDec: number;
+  locPmin: number;
+  dzHfDec: number;
+  i_pos: number;
+  labelAcl: string; labelDec: string;
+  labelLocPmin: string; labelPminNote: string;
+  frameLabel: string;
+}
+
+interface Props { inputs: PairedInputs; dadosResult: DadosResult | null; onResult?: (r: EmparResult) => void; }
 
 export default function EmparelhamentoTab({ inputs, dadosResult }: Props) {
   const [varMaxPressao, setVarMaxPressao] = useState("19");
