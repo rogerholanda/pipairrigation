@@ -275,6 +275,17 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
             <GitBranch size={15} />
             2 Diâmetros
           </button>
+          <button
+            onClick={() => setActiveTab("paired")}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold font-body transition-colors border-b-2 ${
+              activeTab === "paired"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Link2 size={15} />
+            Emparelhadas
+          </button>
         </div>
 
         {/* Diameter calculator tab */}
@@ -294,6 +305,9 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
 
         {/* Two Diameter calculator tab */}
         {activeTab === "twodiam" && <TwoDiameterCalculator />}
+
+        {/* Paired Laterals calculator tab */}
+        {activeTab === "paired" && <PairedLateralsCalculator />}
 
         {/* Colebrook tab */}
         {activeTab === "colebrook" && <div className="p-6 space-y-5">
