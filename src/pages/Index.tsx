@@ -345,6 +345,18 @@ export default function Index() {
         </DialogContent>
       </Dialog>
 
+      {/* ── EXERCÍCIO 4 MODAL ── */}
+      <Dialog open={exercicio4Open} onOpenChange={setExercicio4Open}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg">Exemplo 4.2</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
+            A tubulação lateral de determinado sistema de irrigação por gotejamento possui 100 metros de comprimento. A pressão nominal do gotejador é de 13 m c.a. e produz uma vazão média de 4,0 l h⁻¹. A distância entre gotejadores na lateral é de 1,0 m. A temperatura da água é de 22°C. A variação máxima da vazão entre o primeiro e último emissor na lateral deve ser de 10%. Considerando o que diâmetro interno da tubulação de 13 mm, determine a variação da carga de pressão e da vazão para a seguinte situação topográfica: Tubulação lateral em desnível de 0,68 m e emparelhada com um trecho ascendente e outro descendente. (Utilize a calculadora Laterais emparelhadas).
+          </p>
+        </DialogContent>
+      </Dialog>
+
       {/* ── CALCULATOR MODAL ── */}
       <IrrigationCalculator open={calcOpen} onClose={() => setCalcOpen(false)} />
     </div>
