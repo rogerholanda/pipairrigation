@@ -66,6 +66,7 @@ export default function Index() {
   const [exercicio1Open, setExercicio1Open] = useState(false);
   const [exercicio2Open, setExercicio2Open] = useState(false);
   const [exercicio3Open, setExercicio3Open] = useState(false);
+  const [exercicio4Open, setExercicio4Open] = useState(false);
 
   return (
     <div className="min-h-screen bg-background font-body">
@@ -261,6 +262,7 @@ export default function Index() {
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio1Open(true)}>Exercício 1</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio2Open(true)}>Exercício 2</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio3Open(true)}>Exercício 3</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio4Open(true)}>Exercício 4</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -339,6 +341,18 @@ export default function Index() {
           </DialogHeader>
           <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
             A água a 20 °C deve ser bombeada à taxa de 210 m³·h⁻¹. A tubulação que interliga o reservatório à bomba é de PVC (ε = 0,003334 mm), com diâmetro interno de 250 mm e comprimento de 12 m; e possui uma válvula de pé com crivo, uma curva de 90° e uma redução excêntrica (250 × 125 mm). A tubulação de recalque, também de PVC, possui diâmetro interno de 200 mm e 272,8 m de comprimento, além de uma ampliação concêntrica (100 × 200 mm), um registro de gaveta, uma válvula de retenção e uma curva de 90°. As alturas estáticas de sucção e de recalque são, nessa ordem, de 2,0 metros e 10 metros. Pede-se: determinar as pressões nas secções de entrada e saída da bomba, a carga e potência da bomba com tubulação de recalque, descarregando livremente num canal de irrigação. (Utilize a calculadora Bombeamento).
+          </p>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── EXERCÍCIO 4 MODAL ── */}
+      <Dialog open={exercicio4Open} onOpenChange={setExercicio4Open}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg">Exemplo 4.2</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
+            A tubulação lateral de determinado sistema de irrigação por gotejamento possui 100 metros de comprimento. A pressão nominal do gotejador é de 13 m c.a. e produz uma vazão média de 4,0 l h⁻¹. A distância entre gotejadores na lateral é de 1,0 m. A temperatura da água é de 22°C. A variação máxima da vazão entre o primeiro e último emissor na lateral deve ser de 10%. Considerando o que diâmetro interno da tubulação de 13 mm, determine a variação da carga de pressão e da vazão para a seguinte situação topográfica: Tubulação lateral em desnível de 0,68 m e emparelhada com um trecho ascendente e outro descendente. (Utilize a calculadora Laterais emparelhadas).
           </p>
         </DialogContent>
       </Dialog>
