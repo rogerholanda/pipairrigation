@@ -401,6 +401,45 @@ export default function Index() {
         </DialogContent>
       </Dialog>
 
+      {/* ── EXERCÍCIO 8 MODAL ── */}
+      <Dialog open={exercicio8Open} onOpenChange={setExercicio8Open}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg">Exemplo 5.3</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
+              A tubulação lateral de um sistema de irrigação por aspersão convencional, disposta na horizontal, possui 138 m de comprimento. Os aspersores estão espaçados de 12 m e o primeiro aspersor está a 6 m do início da lateral. A tubulação é de PVC, a temperatura da água é de 20° C. Assumir a variação máxima da vazão de 10% entre os aspersores extremos. A altura da haste do aspersor é de 1,0 m. Dimensione a tubulação com dois diâmetros. Características do aspersor selecionado:
+            </p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm font-body border-collapse">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-muted-foreground">Diâmetro dos bocais (mm)</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-muted-foreground">Coeficiente de descarga dos bocais</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-muted-foreground">Vazão nominal (m³h⁻¹)</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-muted-foreground">Pressão de serviço (m c.a.)</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold text-muted-foreground">Expoente x da equação (q = K Hˣ)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-border">
+                    <td className="px-3 py-2 text-foreground">5,0 x 2,4</td>
+                    <td className="px-3 py-2 text-foreground">0,91 x 0,985</td>
+                    <td className="px-3 py-2 text-foreground">1,95</td>
+                    <td className="px-3 py-2 text-foreground">30</td>
+                    <td className="px-3 py-2 text-foreground">0,5</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
+              (Utilize a calculadora 2 Diâmetros).
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* ── CALCULATOR MODAL ── */}
       <IrrigationCalculator open={calcOpen} onClose={() => setCalcOpen(false)} />
     </div>
