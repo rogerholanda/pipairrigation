@@ -359,6 +359,18 @@ export default function Index() {
         </DialogContent>
       </Dialog>
 
+      {/* ── EXERCÍCIO 5 MODAL ── */}
+      <Dialog open={exercicio5Open} onOpenChange={setExercicio5Open}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg">Exemplo 4.3</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
+            Dimensione a rede de distribuição do sistema de irrigação por gotejamento, de modo que a uniformidade de emissão da água seja de no mínimo 95%, a qual apresenta as seguintes características: Tubulação terciária: Comprimento da tubulação: 120 m; espaçamento entre tubulações laterais: 3,0 m, desnível descendente: 1,2 m; tubos de PVC. Tubulações laterais: Comprimento das tubulações: 60 m; desnível topográfico descendente de 0,6 m; tubos de PEBD; espaçamento entre laterais de 3,0 m; diâmetro das tubulações laterais de 13,0 mm. Gotejadores sobre linha com dimensões padrão: Vazão média do gotejador: 4,0 l h⁻¹; pressão de serviço: 10 m. Coeficiente de variação de fabricação: 0,03; espaçamento entre gotejadores de 1,0 m; três emissores por planta; equação do gotejador; temperatura da água: 20 °C. (Utilize a calculadora Subunidade).
+          </p>
+        </DialogContent>
+      </Dialog>
+
       {/* ── CALCULATOR MODAL ── */}
       <IrrigationCalculator open={calcOpen} onClose={() => setCalcOpen(false)} />
     </div>
