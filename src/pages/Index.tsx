@@ -67,6 +67,7 @@ export default function Index() {
   const [exercicio2Open, setExercicio2Open] = useState(false);
   const [exercicio3Open, setExercicio3Open] = useState(false);
   const [exercicio4Open, setExercicio4Open] = useState(false);
+  const [exercicio5Open, setExercicio5Open] = useState(false);
 
   return (
     <div className="min-h-screen bg-background font-body">
@@ -263,6 +264,7 @@ export default function Index() {
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio2Open(true)}>Exercício 2</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio3Open(true)}>Exercício 3</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio4Open(true)}>Exercício 4</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio5Open(true)}>Exercício 5</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -353,6 +355,18 @@ export default function Index() {
           </DialogHeader>
           <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
             A tubulação lateral de determinado sistema de irrigação por gotejamento possui 100 metros de comprimento. A pressão nominal do gotejador é de 13 m c.a. e produz uma vazão média de 4,0 l h⁻¹. A distância entre gotejadores na lateral é de 1,0 m. A temperatura da água é de 22°C. A variação máxima da vazão entre o primeiro e último emissor na lateral deve ser de 10%. Considerando o que diâmetro interno da tubulação de 13 mm, determine a variação da carga de pressão e da vazão para a seguinte situação topográfica: Tubulação lateral em desnível de 0,68 m e emparelhada com um trecho ascendente e outro descendente. (Utilize a calculadora Laterais emparelhadas).
+          </p>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── EXERCÍCIO 5 MODAL ── */}
+      <Dialog open={exercicio5Open} onOpenChange={setExercicio5Open}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg">Exemplo 4.3</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
+            Dimensione a rede de distribuição do sistema de irrigação por gotejamento, de modo que a uniformidade de emissão da água seja de no mínimo 95%, a qual apresenta as seguintes características: Tubulação terciária: Comprimento da tubulação: 120 m; espaçamento entre tubulações laterais: 3,0 m, desnível descendente: 1,2 m; tubos de PVC. Tubulações laterais: Comprimento das tubulações: 60 m; desnível topográfico descendente de 0,6 m; tubos de PEBD; espaçamento entre laterais de 3,0 m; diâmetro das tubulações laterais de 13,0 mm. Gotejadores sobre linha com dimensões padrão: Vazão média do gotejador: 4,0 l h⁻¹; pressão de serviço: 10 m. Coeficiente de variação de fabricação: 0,03; espaçamento entre gotejadores de 1,0 m; três emissores por planta; equação do gotejador; temperatura da água: 20 °C. (Utilize a calculadora Subunidade).
           </p>
         </DialogContent>
       </Dialog>
