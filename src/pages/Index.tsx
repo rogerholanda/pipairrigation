@@ -373,6 +373,18 @@ export default function Index() {
         </DialogContent>
       </Dialog>
 
+      {/* ── EXERCÍCIO 6 MODAL ── */}
+      <Dialog open={exercicio6Open} onOpenChange={setExercicio6Open}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg">Exemplo 4.4</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
+            A subunidade de irrigação por gotejamento de formato trapezoidal deve ser abastecida por tubulação terciária de PVC com 50 m de comprimento e diâmetro único de 48,1 mm. As laterais serão espaçadas de 2,5 m. A primeira e última tubulação lateral possuem, nessa ordem, 25 m e 75 m de comprimento, e serão compostas por tubo gotejador com diâmetro interno de 16 mm com gotejadores espaçados de 0,5 m; a pressão de serviço do emissor é de 10 m e produz vazão média de 4,0 l h⁻¹; o valor do expoente de descarga do emissor é x = 0,48 e do coeficiente de descarga é K = 1,325. Estime o decréscimo da carga de pressão na terciária e a carga de pressão no seu início. (Utilize a calculadora Sub Trapezoidal).
+          </p>
+        </DialogContent>
+      </Dialog>
+
       {/* ── CALCULATOR MODAL ── */}
       <IrrigationCalculator open={calcOpen} onClose={() => setCalcOpen(false)} />
     </div>
