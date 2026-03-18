@@ -69,6 +69,7 @@ export default function Index() {
   const [exercicio4Open, setExercicio4Open] = useState(false);
   const [exercicio5Open, setExercicio5Open] = useState(false);
   const [exercicio6Open, setExercicio6Open] = useState(false);
+  const [exercicio7Open, setExercicio7Open] = useState(false);
 
   return (
     <div className="min-h-screen bg-background font-body">
