@@ -68,6 +68,7 @@ export default function Index() {
   const [exercicio3Open, setExercicio3Open] = useState(false);
   const [exercicio4Open, setExercicio4Open] = useState(false);
   const [exercicio5Open, setExercicio5Open] = useState(false);
+  const [exercicio6Open, setExercicio6Open] = useState(false);
 
   return (
     <div className="min-h-screen bg-background font-body">
@@ -265,6 +266,7 @@ export default function Index() {
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio3Open(true)}>Exercício 3</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio4Open(true)}>Exercício 4</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio5Open(true)}>Exercício 5</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio6Open(true)}>Exercício 6</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -367,6 +369,18 @@ export default function Index() {
           </DialogHeader>
           <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
             Dimensione a rede de distribuição do sistema de irrigação por gotejamento, de modo que a uniformidade de emissão da água seja de no mínimo 95%, a qual apresenta as seguintes características: Tubulação terciária: Comprimento da tubulação: 120 m; espaçamento entre tubulações laterais: 3,0 m, desnível descendente: 1,2 m; tubos de PVC. Tubulações laterais: Comprimento das tubulações: 60 m; desnível topográfico descendente de 0,6 m; tubos de PEBD; espaçamento entre laterais de 3,0 m; diâmetro das tubulações laterais de 13,0 mm. Gotejadores sobre linha com dimensões padrão: Vazão média do gotejador: 4,0 l h⁻¹; pressão de serviço: 10 m. Coeficiente de variação de fabricação: 0,03; espaçamento entre gotejadores de 1,0 m; três emissores por planta; equação do gotejador; temperatura da água: 20 °C. (Utilize a calculadora Subunidade).
+          </p>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── EXERCÍCIO 6 MODAL ── */}
+      <Dialog open={exercicio6Open} onOpenChange={setExercicio6Open}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg">Exemplo 4.4</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
+            A subunidade de irrigação por gotejamento de formato trapezoidal deve ser abastecida por tubulação terciária de PVC com 50 m de comprimento e diâmetro único de 48,1 mm. As laterais serão espaçadas de 2,5 m. A primeira e última tubulação lateral possuem, nessa ordem, 25 m e 75 m de comprimento, e serão compostas por tubo gotejador com diâmetro interno de 16 mm com gotejadores espaçados de 0,5 m; a pressão de serviço do emissor é de 10 m e produz vazão média de 4,0 l h⁻¹; o valor do expoente de descarga do emissor é x = 0,48 e do coeficiente de descarga é K = 1,325. Estime o decréscimo da carga de pressão na terciária e a carga de pressão no seu início. (Utilize a calculadora Sub Trapezoidal).
           </p>
         </DialogContent>
       </Dialog>
