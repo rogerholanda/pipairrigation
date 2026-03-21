@@ -73,6 +73,7 @@ export default function Index() {
   const [exercicio7Open, setExercicio7Open] = useState(false);
   const [exercicio8Open, setExercicio8Open] = useState(false);
   const [exercicio9Open, setExercicio9Open] = useState(false);
+  const [exercicio10Open, setExercicio10Open] = useState(false);
 
   return (
     <div className="min-h-screen bg-background font-body">
@@ -274,6 +275,7 @@ export default function Index() {
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio7Open(true)}>Exercício 7</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio8Open(true)}>Exercício 8</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio9Open(true)}>Exercício 9</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio10Open(true)}>Exercício 10</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -467,6 +469,27 @@ export default function Index() {
             </p>
             <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
               (Utilize a calculadora Laterais emparelhadas).
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── EXERCÍCIO 10 MODAL ── */}
+      <Dialog open={exercicio10Open} onOpenChange={setExercicio10Open}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Exercício 10 — Exemplo 6.8</DialogTitle>
+            <DialogDescription>Pivô Central — Método analítico e trecho-a-trecho</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm leading-relaxed">
+            <p>
+              <strong>Exemplo 6.8:</strong> A tubulação lateral do sistema de irrigação pivô central com diâmetro único de 213 mm e comprimento até a última torre de 480,3 m e lance em balanço de 25 m é constituída de aço galvanizado. A lâmina d'água líquida a ser aplicada pelo sistema é de 7,2 mm e o tempo de operação é de 21 horas por dia. A eficiência da irrigação é de 90%. A vazão do aspersor final <em>spray</em> é de 4,86 m³ h⁻¹. Os emissores serão espaçados de 3,0 m. Considerou-se o coeficiente de descarga dos emissores de 0,977. A carga de pressão no último emissor é de 13 m. O desnível topográfico, uniforme, entre o ponto do pivô e a parte mais alta da área irrigada é de 2,0% e entre a parte mais baixa é de 1,2%. O comprimento do tubo de subida é de 4,0 m e a distância entre o ponto do pivô e o início da lateral é de 3,5 m. A temperatura da água é 22 °C.
+            </p>
+            <p>
+              Determinar o decréscimo da carga de pressão e as cargas de pressão no início da lateral e no ponto do pivô pelos métodos analítico e trecho-a-trecho.
+            </p>
+            <p className="text-muted-foreground italic">
+              (Utilize a calculadora Pivô central).
             </p>
           </div>
         </DialogContent>
