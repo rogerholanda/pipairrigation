@@ -8,6 +8,7 @@ import dripImg from "@/assets/drip-irrigation.jpg";
 import sprinklerImg from "@/assets/sprinkler-irrigation.jpg";
 import pivotImg from "@/assets/pivot-irrigation.jpg";
 import microImg from "@/assets/micro-sprinkler.jpg";
+import exercicio9Img from "@/assets/exercicio9-layout.png";
 
 const PDF_PLACEHOLDER_URL = "#download-ebook";
 
