@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { BookOpen, Download, Calculator, Droplets, Waves, ChevronDown, Leaf, Sun, BookMarked } from "lucide-react";
 import IrrigationCalculator from "@/components/IrrigationCalculator";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
@@ -8,6 +8,7 @@ import dripImg from "@/assets/drip-irrigation.jpg";
 import sprinklerImg from "@/assets/sprinkler-irrigation.jpg";
 import pivotImg from "@/assets/pivot-irrigation.jpg";
 import microImg from "@/assets/micro-sprinkler.jpg";
+import exercicio9Img from "@/assets/exercicio9-layout.png";
 
 const PDF_PLACEHOLDER_URL = "#download-ebook";
 
@@ -71,6 +72,7 @@ export default function Index() {
   const [exercicio6Open, setExercicio6Open] = useState(false);
   const [exercicio7Open, setExercicio7Open] = useState(false);
   const [exercicio8Open, setExercicio8Open] = useState(false);
+  const [exercicio9Open, setExercicio9Open] = useState(false);
 
   return (
     <div className="min-h-screen bg-background font-body">
@@ -271,6 +273,7 @@ export default function Index() {
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio6Open(true)}>Exercício 6</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio7Open(true)}>Exercício 7</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio8Open(true)}>Exercício 8</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio9Open(true)}>Exercício 9</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -435,6 +438,35 @@ export default function Index() {
             </div>
             <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
               (Utilize a calculadora 2 Diâmetros).
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── EXERCÍCIO 9 MODAL ── */}
+      <Dialog open={exercicio9Open} onOpenChange={setExercicio9Open}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg text-primary">Exercício 9 — Exemplo 5.4</DialogTitle>
+            <DialogDescription className="text-muted-foreground font-body text-sm">
+              Dimensionamento de tubulação lateral por aspersão convencional — Laterais emparelhadas
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
+              <strong>Exemplo 5.4:</strong> Um projeto de irrigação, por aspersão convencional, será montado para irrigar a cultura do feijoeiro. ETc = 6,0 mm dia⁻¹; eficiência da irrigação Efi = 85%; tempo disponível, por dia, para os eventos de irrigação: 10 horas; tubulação adutora: 40 m de comprimento; tubulação principal: 171 m de comprimento, o primeiro e o último hidrante estão a 9,0 m dos limites inicial e final da área no sentido da tubulação principal, conforme figura a seguir.
+            </p>
+            <div className="flex justify-center">
+              <img src={exercicio9Img} alt="Layout do sistema de irrigação - Exemplo 5.4" className="max-w-full rounded-lg border border-border" />
+            </div>
+            <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
+              Vazão nominal do aspersor: 1,46 m³ h⁻¹; pressão de serviço: 25 m c.a.; expoente de descarga do aspersor: x = 0,5; espaçamento entre aspersores na lateral: 12 m; espaçamento entre laterais: 18 m; diâmetro de cobertura do aspersor: 25 m; diâmetro dos bocais dos aspersores: 4,6 mm x 2,5 mm; altura da haste dos aspersores: 1,0 m.
+            </p>
+            <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
+              <strong>Determine:</strong> O diâmetro da tubulação lateral, e os comprimentos dos ramais em aclive e em declive.
+            </p>
+            <p className="text-sm text-muted-foreground font-body leading-relaxed text-justify">
+              (Utilize a calculadora Laterais emparelhadas).
             </p>
           </div>
         </DialogContent>
