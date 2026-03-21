@@ -272,6 +272,7 @@ export default function Index() {
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio6Open(true)}>Exercício 6</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio7Open(true)}>Exercício 7</DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio8Open(true)}>Exercício 8</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer" onSelect={() => setExercicio9Open(true)}>Exercício 9</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
