@@ -481,7 +481,7 @@ export default function Index() {
             <DialogTitle>Exercício 10 — Exemplo 6.8</DialogTitle>
             <DialogDescription>Pivô Central — Método analítico e trecho-a-trecho</DialogDescription>
           </DialogHeader>
-          <div className="space-y-3 text-sm leading-relaxed">
+          <div className="space-y-3 text-sm leading-relaxed text-justify">
             <p>
               <strong>Exemplo 6.8:</strong> A tubulação lateral do sistema de irrigação pivô central com diâmetro único de 213 mm e comprimento até a última torre de 480,3 m e lance em balanço de 25 m é constituída de aço galvanizado. A lâmina d'água líquida a ser aplicada pelo sistema é de 7,2 mm e o tempo de operação é de 21 horas por dia. A eficiência da irrigação é de 90%. A vazão do aspersor final <em>spray</em> é de 4,86 m³ h⁻¹. Os emissores serão espaçados de 3,0 m. Considerou-se o coeficiente de descarga dos emissores de 0,977. A carga de pressão no último emissor é de 13 m. O desnível topográfico, uniforme, entre o ponto do pivô e a parte mais alta da área irrigada é de 2,0% e entre a parte mais baixa é de 1,2%. O comprimento do tubo de subida é de 4,0 m e a distância entre o ponto do pivô e o início da lateral é de 3,5 m. A temperatura da água é 22 °C.
             </p>
