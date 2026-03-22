@@ -54,7 +54,7 @@ const irrigationTypes = [
   },
   {
     title: "Pivô Central",
-    desc: "Sistema de grande porte que gira em torno de um ponto central, irrigando áreas circulares de hectares. Alta automação e cobertura.",
+    desc: "É o sistema em que a tubulação lateral é sustentada por torres com propulsão própria, que se deslocam desenvolvendo órbitas circulares em torno da torre central.",
     img: pivotImg,
     icon: Leaf,
     efficiency: "80–90%",
