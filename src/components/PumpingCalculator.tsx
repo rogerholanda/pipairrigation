@@ -593,86 +593,113 @@ export default function PumpingCalculator() {
         </div>
       )}
 
-      {/* ═══ DISCHARGE TAB ═══ */}
       {tab === "discharge" && (
         <div className="space-y-4">
-          <h3 className="font-display font-semibold text-foreground text-sm flex items-center gap-2">
-            <Gauge size={16} className="text-primary" />
-            Tubulação de Recalque
-          </h3>
-
           {!sResults && (
             <div className="bg-destructive/10 text-destructive text-sm px-4 py-2 rounded-lg font-body">
-              ⚠ Calcule primeiro a aba Sucção para obter dados compartilhados.
+              ⚠ Calcule primeiro a aba Montagem à montante para obter dados compartilhados.
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Comprimento (m)">
-              <NumInput value={dLength} onChange={setDLength} placeholder="Ex: 200" />
-            </Field>
-            <Field label="Diâmetro interno (mm)">
-              <SelectInput value={dDiameter} onChange={setDDiameter} options={DISCHARGE_DIAMETERS.map(d => ({ value: String(d), label: `${d} mm` }))} />
-            </Field>
-          </div>
+          <fieldset className="border border-border rounded-xl p-4 space-y-3">
+            <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-2 font-body">
+              Descarga da tubulação à jusante
+            </legend>
+            <div className="flex gap-3 flex-wrap">
+              {([
+                { val: "livre" as const, label: "Livre" },
+                { val: "imersa" as const, label: "Imersa" },
+                { val: "pressurizada" as const, label: "Pressurizada" },
+              ]).map(opt => (
+                <label key={opt.val} className="flex items-center gap-1.5 text-sm font-body cursor-pointer">
+                  <input type="radio" name="dischargeType" checked={dDischargeType === opt.val}
+                    onChange={() => setDDischargeType(opt.val)}
+                    className="accent-primary" />
+                  {opt.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
 
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Material da tubulação">
-              <SelectInput value={String(dMaterialIdx)} onChange={v => setDMaterialIdx(Number(v))} options={PIPE_MATERIALS.map((m, i) => ({ value: String(i), label: m.label }))} />
-            </Field>
-            <Field label="Altura estática recalque (m)">
-              <NumInput value={dAer} onChange={setDAer} placeholder="Ex: 30" />
-            </Field>
-          </div>
+          <fieldset className="border border-border rounded-xl p-4 space-y-3">
+            <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-2 font-body">
+              Dados da Tubulação à jusante
+            </legend>
 
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Desnível (d) (m)">
-              <NumInput value={dD} onChange={setDD} placeholder="Ex: 1" />
-            </Field>
-            <Field label="Pressão de serviço (mca)">
-              <NumInput value={dPsd} onChange={setDPsd} placeholder="Ex: 20" />
-            </Field>
-          </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Comprimento (m)">
+                <NumInput value={dLength} onChange={setDLength} placeholder="Ex: 272.8" />
+              </Field>
+              <Field label="Material do tubo">
+                <SelectInput value={String(dMaterialIdx)} onChange={v => setDMaterialIdx(Number(v))} options={PIPE_MATERIALS.map((m, i) => ({ value: String(i), label: m.label }))} />
+              </Field>
+            </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Perda no filtro (m)">
-              <NumInput value={dFilt} onChange={setDFilt} placeholder="Ex: 3" />
-            </Field>
-            <Field label="Rendimento da bomba (%)">
-              <NumInput value={dEff} onChange={setDEff} placeholder="Ex: 70" />
-            </Field>
-          </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Diâmetro (mm)">
+                <SelectInput value={dDiameter} onChange={setDDiameter} options={DISCHARGE_DIAMETERS.map(d => ({ value: String(d), label: `${d}` }))} />
+              </Field>
+              <Field label="Rug. absoluta (mm)">
+                <input type="text" readOnly value={dRoughness}
+                  className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-muted text-foreground cursor-not-allowed"
+                  style={{ borderColor: "hsl(var(--border))" }} />
+              </Field>
+            </div>
 
-          {/* Discharge coefficients */}
-          <div className="bg-muted/50 rounded-xl p-4 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body">Coeficientes e Conexões — Recalque</p>
-            <div className="grid grid-cols-3 gap-3">
-              <Field label="Kvgr (registro)">
+            <div className="grid grid-cols-1 gap-3">
+              <Field label="Altura estática de recalque (m)">
+                <NumInput value={dAer} onChange={setDAer} placeholder="Ex: 10" />
+              </Field>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3">
+              <Field label="Distância entre entrada e saída da bomba (m)">
+                <NumInput value={dD} onChange={setDD} placeholder="Ex: 0.5" />
+              </Field>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3">
+              <Field label="Diâmetro do bocal na descarga da bomba (mm)">
+                <SelectInput value={dNozzleDiam} onChange={v => setDNozzleDiam(v)} options={NOZZLE_DIAMETERS.map(d => ({ value: String(d), label: `${d}` }))} />
+              </Field>
+            </div>
+          </fieldset>
+
+          <fieldset className="border border-border rounded-xl p-4 space-y-3">
+            <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-2 font-body">
+              Peças / Singularidades
+            </legend>
+            <div className="grid grid-cols-5 gap-2">
+              <Field label="Krgaveta">
                 <NumInput value={dKvgr} onChange={setDKvgr} placeholder="0.2" />
               </Field>
-              <Field label="Kvr (válv. retenção)">
+              <Field label="Kvretenção">
                 <NumInput value={dKvr} onChange={setDKvr} placeholder="2.5" />
               </Field>
-              <Field label="Kcr (curvas)">
+              <Field label="Kcurvas">
                 <NumInput value={dKcr} onChange={setDKcr} placeholder="0.4" />
               </Field>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="Diam. bocal descarga (mm)">
-                <NumInput value={dNozzleDiam} onChange={setDNozzleDiam} placeholder="100" />
-              </Field>
-              <Field label="Kac (ampl. concêntrica)">
+              <Field label="Ka concêntrica">
                 <NumInput value={dKac} onChange={setDKac} placeholder="0.3" />
               </Field>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="Kagd (ampl. gradual)">
+              <Field label="Ka gradual">
                 <NumInput value={dKagd} onChange={setDKagd} placeholder="0.3" />
               </Field>
-              <Field label="Diam. registro gaveta (mm)">
-                <NumInput value={dGavDiam} onChange={setDGavDiam} placeholder="200" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Diâmetro do registro de gaveta (mm)">
+                <SelectInput value={dGavDiam} onChange={setDGavDiam} options={GATE_VALVE_DIAMETERS.map(d => ({ value: String(d), label: `${d}` }))} />
+              </Field>
+              <Field label="Rendimento da Bomba (%)">
+                <NumInput value={dEff} onChange={setDEff} placeholder="Ex: 75" />
               </Field>
             </div>
+          </fieldset>
+
+          <div className="grid grid-cols-1 gap-3">
+            <Field label="Filtros">
+              <NumInput value={dFilt} onChange={setDFilt} placeholder="Ex: 0" />
+            </Field>
           </div>
 
           {dError && (
@@ -681,36 +708,38 @@ export default function PumpingCalculator() {
 
           <button onClick={calcDischarge} className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
             <Gauge size={18} />
-            Calcular Recalque
+            CALCULAR
           </button>
 
           {dResults && (
             <div className="space-y-3 pt-2">
-              <h3 className="font-display font-semibold text-foreground text-sm">Resultados — Recalque</h3>
-              <div className="grid grid-cols-2 gap-2">
-                <ResCard label="Velocidade" value={`${dResults.velocity} m/s`} />
-                <ResCard label="Nº de Reynolds" value={dResults.reynolds} />
-                <ResCard label="Fator de atrito (f)" value={dResults.frictionFactor} highlight />
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <ResCard label="hf distribuída" value={`${dResults.distributedLoss} m`} />
-                <ResCard label="hf singular" value={`${dResults.singularLoss} m`} />
-                <ResCard label="hf total recalque" value={`${dResults.totalLoss} m`} highlight />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <ResCard label="hf total sistema" value={`${dResults.totalSystemLoss} m`} />
-                <ResCard label="Alt. dinâmica recalque" value={`${dResults.dynamicHeight} m`} />
-                <ResCard label="P. saída (mca)" value={`${dResults.outletPressureMca} m`} />
-                <ResCard label="P. saída (KPa)" value={`${dResults.outletPressureKpa} KPa`} />
-              </div>
-              <div className="equation-block px-5 py-4">
-                <p className="text-xs text-muted-foreground font-body mb-1">Carga da Bomba (Hb)</p>
-                <p className="font-display text-2xl font-bold text-primary">{dResults.pumpHead} <span className="text-base font-body font-normal">m.c.a.</span></p>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <ResCard label="Potência (kW)" value={`${dResults.powerKw} kW`} highlight />
-                <ResCard label="Potência (CV)" value={`${dResults.powerCv} CV`} highlight />
-              </div>
+              <fieldset className="border border-border rounded-xl p-4 space-y-3">
+                <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-2 font-body">Resultados</legend>
+                <div className="grid grid-cols-2 gap-2">
+                  <ResCard label="Número de Reynolds" value={dResults.reynolds} />
+                  <ResCard label="Fator de atrito (f)" value={dResults.frictionFactor} highlight />
+                  <ResCard label="Velocidade da água (m/s)" value={dResults.velocity} />
+                  <ResCard label="Perda de carga distribuída (m)" value={dResults.distributedLoss} />
+                  <ResCard label="Perda de carga singular (m)" value={dResults.singularLoss} />
+                  <ResCard label="Perda de carga total no recalque (m)" value={dResults.totalLoss} highlight />
+                  <ResCard label="Perda de carga total na canalização (m)" value={dResults.totalSystemLoss} />
+                  <ResCard label="Altura dinâmica no recalque (m)" value={dResults.dynamicHeight} />
+                </div>
+                <div className="grid grid-cols-1 gap-2">
+                  <ResCard label="Carga da bomba (m)" value={dResults.pumpHead} highlight />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <ResCard label="Pressão na saída - Em (KPa)" value={dResults.outletPressureKpa} />
+                  <ResCard label="Pressão na saída - Em (mca)" value={dResults.outletPressureMca} />
+                </div>
+              </fieldset>
+              <fieldset className="border border-border rounded-xl p-4">
+                <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-2 font-body">Potência da Bomba</legend>
+                <div className="grid grid-cols-2 gap-2">
+                  <ResCard label="Em (kW)" value={dResults.powerKw} highlight />
+                  <ResCard label="Em (CV)" value={dResults.powerCv} highlight />
+                </div>
+              </fieldset>
             </div>
           )}
         </div>
