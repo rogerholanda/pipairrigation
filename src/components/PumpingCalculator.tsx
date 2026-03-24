@@ -135,16 +135,16 @@ export default function PumpingCalculator() {
   // ── Suction state ──
   const [sFlow, setSFlow] = useState("");
   const [sLength, setSLength] = useState("");
-  const [sDiameter, setSDiameter] = useState("97.6");
+  const [sDiameter, setSDiameter] = useState("250");
   const [sMaterialIdx, setSMaterialIdx] = useState(1);
   const [sKe, setSKe] = useState("0.5");
   const [sKvg, setSKvg] = useState("0.2");
   const [sKc, setSKc] = useState("0.4");
-  const [sKvpc, setSKvpc] = useState("0.75");
+  const [sKvpc, setSKvpc] = useState("10");
   const [sKrex, setSKrex] = useState("0.2");
-  const [sNozzleDiam, setSNozzleDiam] = useState("100");
+  const [sNozzleDiam, setSNozzleDiam] = useState("125");
   const [sAltitude, setSAltitude] = useState("");
-  const [sTemp, setSTemp] = useState("25");
+  const [sTemp, setSTemp] = useState("20");
   const [sNpsh, setSNpsh] = useState("");
   const [sMode, setSMode] = useState<SuctionMode>("critical");
   const [sZspre, setSZspre] = useState("");
@@ -154,7 +154,7 @@ export default function PumpingCalculator() {
 
   // ── Discharge state ──
   const [dLength, setDLength] = useState("");
-  const [dDiameter, setDDiameter] = useState("97.6");
+  const [dDiameter, setDDiameter] = useState("200");
   const [dMaterialIdx, setDMaterialIdx] = useState(1);
   const [dAer, setDAer] = useState("");
   const [dD, setDD] = useState("");
@@ -163,11 +163,12 @@ export default function PumpingCalculator() {
   const [dKcr, setDKcr] = useState("0.4");
   const [dPsd, setDPsd] = useState("");
   const [dFilt, setDFilt] = useState("0");
-  const [dEff, setDEff] = useState("70");
+  const [dEff, setDEff] = useState("75");
   const [dNozzleDiam, setDNozzleDiam] = useState("100");
   const [dKac, setDKac] = useState("0.3");
   const [dKagd, setDKagd] = useState("0.3");
   const [dGavDiam, setDGavDiam] = useState("200");
+  const [dDischargeType, setDDischargeType] = useState<"livre" | "imersa" | "pressurizada">("livre");
   const [dResults, setDResults] = useState<DischargeResults | null>(null);
   const [dError, setDError] = useState("");
 
