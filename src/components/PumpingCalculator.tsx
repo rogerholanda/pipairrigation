@@ -403,6 +403,9 @@ export default function PumpingCalculator() {
     }
   };
 
+  const sRoughness = PIPE_MATERIALS[sMaterialIdx].roughness;
+  const dRoughness = PIPE_MATERIALS[dMaterialIdx].roughness;
+
   return (
     <div className="p-6 space-y-5">
       {/* Sub-tabs */}
@@ -416,7 +419,7 @@ export default function PumpingCalculator() {
           }`}
         >
           <ArrowDown size={14} />
-          Sucção
+          Montagem à montante
         </button>
         <button
           onClick={() => setTab("discharge")}
@@ -427,7 +430,7 @@ export default function PumpingCalculator() {
           }`}
         >
           <ArrowUp size={14} />
-          Recalque
+          Montagem à jusante
         </button>
       </div>
 
