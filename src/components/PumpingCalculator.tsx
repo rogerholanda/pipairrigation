@@ -186,7 +186,7 @@ export default function PumpingCalculator() {
       const L = parseFloat(sLength);
       const D = parseFloat(sDiameter);
       const Dboc = parseFloat(sNozzleDiam);
-      const mat = PIPE_MATERIALS[sMaterialIdx];
+      const roughness = sCustomRoughness && sRoughnessValue !== "" ? parseFloat(sRoughnessValue) : PIPE_MATERIALS[sMaterialIdx].roughness;
       const Ke = parseFloat(sKe);
       const Kvg = parseFloat(sKvg);
       const Kc = parseFloat(sKc);
@@ -224,7 +224,7 @@ export default function PumpingCalculator() {
       const Re = fmt(mespa * V * (D / 1000) / u, 0);
 
       // Friction factor (VBA uses integer Re in Colebrook, result formatted to 4 decimals)
-      const { f, regime } = calcFrictionFactor(Re, mat.roughness, D);
+      const { f, regime } = calcFrictionFactor(Re, roughness, D);
 
       // Distributed loss (VBA: Format(..., "0.000"))
       const Hfls = fmt(6.376e6 * f * Q ** 2 * L / D ** 5, 3);
@@ -313,7 +313,7 @@ export default function PumpingCalculator() {
       const Q = parseFloat(sFlow);
       const L = parseFloat(dLength);
       const D = parseFloat(dDiameter);
-      const mat = PIPE_MATERIALS[dMaterialIdx];
+      const dRough = dCustomRoughness && dRoughnessValue !== "" ? parseFloat(dRoughnessValue) : PIPE_MATERIALS[dMaterialIdx].roughness;
       const Aer = parseFloat(dAer);
       const d = parseFloat(dD) || 0;
       const Kvgr = parseFloat(dKvgr);
@@ -344,7 +344,7 @@ export default function PumpingCalculator() {
       const Re = fmt(mespa * Vrec * (D / 1000) / u, 0);
 
       // Friction (VBA: Format(..., "0.0000"))
-      const { f } = calcFrictionFactor(Re, mat.roughness, D);
+      const { f } = calcFrictionFactor(Re, dRough, D);
 
       // Distributed loss (VBA: Format(6.3735 * f * (1000*Q)^2 * L / D^5, "0.00"))
       const HfLr = fmt(6.3735 * f * (1000 * Q) ** 2 * L / D ** 5, 2);
