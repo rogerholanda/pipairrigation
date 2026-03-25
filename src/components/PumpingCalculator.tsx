@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useId } from "react";
 import { Droplets, ArrowUp, ArrowDown, Gauge, Pencil, RotateCcw } from "lucide-react";
 
 // ── Constants ──
@@ -7,6 +7,19 @@ const DISCHARGE_DIAMETERS = [48.1, 72.5, 97.6, 120, 144, 200, 250, 300, 350];
 const NOZZLE_DIAMETERS = [100, 125, 200, 250];
 const GATE_VALVE_DIAMETERS = [200, 250];
 const TEMPERATURES = [15, 20, 25, 30];
+
+// Preset values for singularity coefficients
+const S_KE_OPTIONS = [0.5, 1.0, 0.78];
+const S_KC_OPTIONS = [0.4, 0.6, 0.9, 1.2];
+const S_KVG_OPTIONS = [0.2, 0.1, 0.15];
+const S_KVPC_OPTIONS = [10, 8, 12];
+const S_KREX_OPTIONS = [0.2, 0.3, 0.5];
+
+const D_KVGR_OPTIONS = [0.2, 0.1, 0.15];
+const D_KVR_OPTIONS = [2.5, 1.5, 3.5];
+const D_KCR_OPTIONS = [0.4, 0.6, 0.9, 1.2];
+const D_KAC_OPTIONS = [0.3, 0.2, 0.5];
+const D_KAGD_OPTIONS = [0.3, 0.2, 0.1];
 
 const PIPE_MATERIALS = [
   { label: "PEBD", roughness: 0.008116 },
@@ -114,6 +127,26 @@ function SelectInput({ value, onChange, options }: { value: string; onChange: (v
     >
       {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
+  );
+}
+
+function ComboInput({ value, onChange, options, placeholder }: { value: string; onChange: (v: string) => void; options: number[]; placeholder?: string }) {
+  const id = useId();
+  return (
+    <>
+      <input
+        type="number"
+        list={id}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground"
+        style={{ borderColor: "hsl(var(--border))" }}
+      />
+      <datalist id={id}>
+        {options.map(o => <option key={o} value={o} />)}
+      </datalist>
+    </>
   );
 }
 
@@ -496,19 +529,19 @@ export default function PumpingCalculator() {
             </legend>
             <div className="grid grid-cols-5 gap-2">
               <Field label="Kentrada">
-                <NumInput value={sKe} onChange={setSKe} placeholder="0.5" />
+                <ComboInput value={sKe} onChange={setSKe} options={S_KE_OPTIONS} placeholder="0.5" />
               </Field>
               <Field label="Kcurva/união">
-                <NumInput value={sKc} onChange={setSKc} placeholder="0.4" />
+                <ComboInput value={sKc} onChange={setSKc} options={S_KC_OPTIONS} placeholder="0.4" />
               </Field>
               <Field label="Kregistro">
-                <NumInput value={sKvg} onChange={setSKvg} placeholder="0.2" />
+                <ComboInput value={sKvg} onChange={setSKvg} options={S_KVG_OPTIONS} placeholder="0.2" />
               </Field>
               <Field label="Kvpé-crivo">
-                <NumInput value={sKvpc} onChange={setSKvpc} placeholder="10" />
+                <ComboInput value={sKvpc} onChange={setSKvpc} options={S_KVPC_OPTIONS} placeholder="10" />
               </Field>
               <Field label="Kr excêntrica">
-                <NumInput value={sKrex} onChange={setSKrex} placeholder="0.2" />
+                <ComboInput value={sKrex} onChange={setSKrex} options={S_KREX_OPTIONS} placeholder="0.2" />
               </Field>
             </div>
           </fieldset>
@@ -703,19 +736,19 @@ export default function PumpingCalculator() {
             </legend>
             <div className="grid grid-cols-5 gap-2">
               <Field label="Krgaveta">
-                <NumInput value={dKvgr} onChange={setDKvgr} placeholder="0.2" />
+                <ComboInput value={dKvgr} onChange={setDKvgr} options={D_KVGR_OPTIONS} placeholder="0.2" />
               </Field>
               <Field label="Kvretenção">
-                <NumInput value={dKvr} onChange={setDKvr} placeholder="2.5" />
+                <ComboInput value={dKvr} onChange={setDKvr} options={D_KVR_OPTIONS} placeholder="2.5" />
               </Field>
               <Field label="Kcurvas">
-                <NumInput value={dKcr} onChange={setDKcr} placeholder="0.4" />
+                <ComboInput value={dKcr} onChange={setDKcr} options={D_KCR_OPTIONS} placeholder="0.4" />
               </Field>
               <Field label="Ka concêntrica">
-                <NumInput value={dKac} onChange={setDKac} placeholder="0.3" />
+                <ComboInput value={dKac} onChange={setDKac} options={D_KAC_OPTIONS} placeholder="0.3" />
               </Field>
               <Field label="Ka gradual">
-                <NumInput value={dKagd} onChange={setDKagd} placeholder="0.3" />
+                <ComboInput value={dKagd} onChange={setDKagd} options={D_KAGD_OPTIONS} placeholder="0.3" />
               </Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
