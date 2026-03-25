@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useId } from "react";
 import { Droplets, ArrowUp, ArrowDown, Gauge, Pencil, RotateCcw } from "lucide-react";
 
 // ── Constants ──
@@ -7,6 +7,19 @@ const DISCHARGE_DIAMETERS = [48.1, 72.5, 97.6, 120, 144, 200, 250, 300, 350];
 const NOZZLE_DIAMETERS = [100, 125, 200, 250];
 const GATE_VALVE_DIAMETERS = [200, 250];
 const TEMPERATURES = [15, 20, 25, 30];
+
+// Preset values for singularity coefficients
+const S_KE_OPTIONS = [0.5, 1.0, 0.78];
+const S_KC_OPTIONS = [0.4, 0.6, 0.9, 1.2];
+const S_KVG_OPTIONS = [0.2, 0.1, 0.15];
+const S_KVPC_OPTIONS = [10, 8, 12];
+const S_KREX_OPTIONS = [0.2, 0.3, 0.5];
+
+const D_KVGR_OPTIONS = [0.2, 0.1, 0.15];
+const D_KVR_OPTIONS = [2.5, 1.5, 3.5];
+const D_KCR_OPTIONS = [0.4, 0.6, 0.9, 1.2];
+const D_KAC_OPTIONS = [0.3, 0.2, 0.5];
+const D_KAGD_OPTIONS = [0.3, 0.2, 0.1];
 
 const PIPE_MATERIALS = [
   { label: "PEBD", roughness: 0.008116 },
