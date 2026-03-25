@@ -529,19 +529,19 @@ export default function PumpingCalculator() {
             </legend>
             <div className="grid grid-cols-5 gap-2">
               <Field label="Kentrada">
-                <NumInput value={sKe} onChange={setSKe} placeholder="0.5" />
+                <ComboInput value={sKe} onChange={setSKe} options={S_KE_OPTIONS} placeholder="0.5" />
               </Field>
               <Field label="Kcurva/união">
-                <NumInput value={sKc} onChange={setSKc} placeholder="0.4" />
+                <ComboInput value={sKc} onChange={setSKc} options={S_KC_OPTIONS} placeholder="0.4" />
               </Field>
               <Field label="Kregistro">
-                <NumInput value={sKvg} onChange={setSKvg} placeholder="0.2" />
+                <ComboInput value={sKvg} onChange={setSKvg} options={S_KVG_OPTIONS} placeholder="0.2" />
               </Field>
               <Field label="Kvpé-crivo">
-                <NumInput value={sKvpc} onChange={setSKvpc} placeholder="10" />
+                <ComboInput value={sKvpc} onChange={setSKvpc} options={S_KVPC_OPTIONS} placeholder="10" />
               </Field>
               <Field label="Kr excêntrica">
-                <NumInput value={sKrex} onChange={setSKrex} placeholder="0.2" />
+                <ComboInput value={sKrex} onChange={setSKrex} options={S_KREX_OPTIONS} placeholder="0.2" />
               </Field>
             </div>
           </fieldset>
