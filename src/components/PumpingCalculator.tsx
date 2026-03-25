@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Droplets, ArrowUp, ArrowDown, Gauge } from "lucide-react";
+import { Droplets, ArrowUp, ArrowDown, Gauge, Pencil, RotateCcw } from "lucide-react";
 
 // ── Constants ──
 const SUCTION_DIAMETERS = [48.1, 72.5, 97.6, 120, 144, 200, 250, 300, 350];
@@ -149,6 +149,8 @@ export default function PumpingCalculator() {
   const [sMode, setSMode] = useState<SuctionMode>("critical");
   const [sZspre, setSZspre] = useState("");
   const [sZsAfog, setSZsAfog] = useState("");
+  const [sCustomRoughness, setSCustomRoughness] = useState(false);
+  const [sRoughnessValue, setSRoughnessValue] = useState("");
   const [sResults, setSResults] = useState<SuctionResults | null>(null);
   const [sError, setSError] = useState("");
 
@@ -169,6 +171,8 @@ export default function PumpingCalculator() {
   const [dKagd, setDKagd] = useState("0.3");
   const [dGavDiam, setDGavDiam] = useState("200");
   const [dDischargeType, setDDischargeType] = useState<"livre" | "imersa" | "pressurizada">("livre");
+  const [dCustomRoughness, setDCustomRoughness] = useState(false);
+  const [dRoughnessValue, setDRoughnessValue] = useState("");
   const [dResults, setDResults] = useState<DischargeResults | null>(null);
   const [dError, setDError] = useState("");
 
@@ -403,8 +407,8 @@ export default function PumpingCalculator() {
     }
   };
 
-  const sRoughness = PIPE_MATERIALS[sMaterialIdx].roughness;
-  const dRoughness = PIPE_MATERIALS[dMaterialIdx].roughness;
+  const sRoughness = sCustomRoughness && sRoughnessValue !== "" ? parseFloat(sRoughnessValue) : PIPE_MATERIALS[sMaterialIdx].roughness;
+  const dRoughness = dCustomRoughness && dRoughnessValue !== "" ? parseFloat(dRoughnessValue) : PIPE_MATERIALS[dMaterialIdx].roughness;
 
   return (
     <div className="p-6 space-y-5">
@@ -456,15 +460,29 @@ export default function PumpingCalculator() {
                 <NumInput value={sLength} onChange={setSLength} placeholder="Ex: 12" />
               </Field>
               <Field label="Material do tubo">
-                <SelectInput value={String(sMaterialIdx)} onChange={v => setSMaterialIdx(Number(v))} options={PIPE_MATERIALS.map((m, i) => ({ value: String(i), label: m.label }))} />
+                <SelectInput value={String(sMaterialIdx)} onChange={v => { setSMaterialIdx(Number(v)); setSCustomRoughness(false); setSRoughnessValue(""); }} options={PIPE_MATERIALS.map((m, i) => ({ value: String(i), label: m.label }))} />
               </Field>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <Field label="Rugosidade absoluta (mm)">
-                <input type="text" readOnly value={sRoughness}
-                  className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-muted text-foreground cursor-not-allowed"
-                  style={{ borderColor: "hsl(var(--border))" }} />
+                <div className="flex gap-1.5">
+                  {sCustomRoughness ? (
+                    <NumInput value={sRoughnessValue} onChange={setSRoughnessValue} placeholder="Valor personalizado" />
+                  ) : (
+                    <input type="text" readOnly value={PIPE_MATERIALS[sMaterialIdx].roughness}
+                      className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-muted text-foreground cursor-not-allowed"
+                      style={{ borderColor: "hsl(var(--border))" }} />
+                  )}
+                  <button
+                    onClick={() => { setSCustomRoughness(!sCustomRoughness); setSRoughnessValue(""); }}
+                    title={sCustomRoughness ? "Usar valor do material" : "Digitar valor personalizado"}
+                    className="shrink-0 w-9 h-9 flex items-center justify-center rounded-lg border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+                    style={{ borderColor: "hsl(var(--border))" }}
+                  >
+                    {sCustomRoughness ? <RotateCcw size={14} /> : <Pencil size={14} />}
+                  </button>
+                </div>
               </Field>
               <Field label="Diâmetro do bocal da bomba (mm)">
                 <SelectInput value={sNozzleDiam} onChange={setSNozzleDiam} options={NOZZLE_DIAMETERS.map(d => ({ value: String(d), label: `${d}` }))} />
@@ -631,7 +649,7 @@ export default function PumpingCalculator() {
                 <NumInput value={dLength} onChange={setDLength} placeholder="Ex: 272.8" />
               </Field>
               <Field label="Material do tubo">
-                <SelectInput value={String(dMaterialIdx)} onChange={v => setDMaterialIdx(Number(v))} options={PIPE_MATERIALS.map((m, i) => ({ value: String(i), label: m.label }))} />
+                <SelectInput value={String(dMaterialIdx)} onChange={v => { setDMaterialIdx(Number(v)); setDCustomRoughness(false); setDRoughnessValue(""); }} options={PIPE_MATERIALS.map((m, i) => ({ value: String(i), label: m.label }))} />
               </Field>
             </div>
 
@@ -640,9 +658,23 @@ export default function PumpingCalculator() {
                 <SelectInput value={dDiameter} onChange={setDDiameter} options={DISCHARGE_DIAMETERS.map(d => ({ value: String(d), label: `${d}` }))} />
               </Field>
               <Field label="Rug. absoluta (mm)">
-                <input type="text" readOnly value={dRoughness}
-                  className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-muted text-foreground cursor-not-allowed"
-                  style={{ borderColor: "hsl(var(--border))" }} />
+                <div className="flex gap-1.5">
+                  {dCustomRoughness ? (
+                    <NumInput value={dRoughnessValue} onChange={setDRoughnessValue} placeholder="Valor personalizado" />
+                  ) : (
+                    <input type="text" readOnly value={PIPE_MATERIALS[dMaterialIdx].roughness}
+                      className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-muted text-foreground cursor-not-allowed"
+                      style={{ borderColor: "hsl(var(--border))" }} />
+                  )}
+                  <button
+                    onClick={() => { setDCustomRoughness(!dCustomRoughness); setDRoughnessValue(""); }}
+                    title={dCustomRoughness ? "Usar valor do material" : "Digitar valor personalizado"}
+                    className="shrink-0 w-9 h-9 flex items-center justify-center rounded-lg border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+                    style={{ borderColor: "hsl(var(--border))" }}
+                  >
+                    {dCustomRoughness ? <RotateCcw size={14} /> : <Pencil size={14} />}
+                  </button>
+                </div>
               </Field>
             </div>
 
