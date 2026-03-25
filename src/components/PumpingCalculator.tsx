@@ -736,19 +736,19 @@ export default function PumpingCalculator() {
             </legend>
             <div className="grid grid-cols-5 gap-2">
               <Field label="Krgaveta">
-                <NumInput value={dKvgr} onChange={setDKvgr} placeholder="0.2" />
+                <ComboInput value={dKvgr} onChange={setDKvgr} options={D_KVGR_OPTIONS} placeholder="0.2" />
               </Field>
               <Field label="Kvretenção">
-                <NumInput value={dKvr} onChange={setDKvr} placeholder="2.5" />
+                <ComboInput value={dKvr} onChange={setDKvr} options={D_KVR_OPTIONS} placeholder="2.5" />
               </Field>
               <Field label="Kcurvas">
-                <NumInput value={dKcr} onChange={setDKcr} placeholder="0.4" />
+                <ComboInput value={dKcr} onChange={setDKcr} options={D_KCR_OPTIONS} placeholder="0.4" />
               </Field>
               <Field label="Ka concêntrica">
-                <NumInput value={dKac} onChange={setDKac} placeholder="0.3" />
+                <ComboInput value={dKac} onChange={setDKac} options={D_KAC_OPTIONS} placeholder="0.3" />
               </Field>
               <Field label="Ka gradual">
-                <NumInput value={dKagd} onChange={setDKagd} placeholder="0.3" />
+                <ComboInput value={dKagd} onChange={setDKagd} options={D_KAGD_OPTIONS} placeholder="0.3" />
               </Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
