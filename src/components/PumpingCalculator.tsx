@@ -704,7 +704,7 @@ export default function PumpingCalculator() {
 
             <div className="grid grid-cols-2 gap-3">
               <Field label="Diâmetro (mm)">
-                <SelectInput value={dDiameter} onChange={setDDiameter} options={DISCHARGE_DIAMETERS.map(d => ({ value: String(d), label: `${d}` }))} />
+                <ComboInput value={dDiameter} onChange={setDDiameter} options={DISCHARGE_DIAMETERS} placeholder="Ex: 120" />
               </Field>
               <Field label="Rug. absoluta (mm)">
                 <div className="flex gap-1.5">
@@ -741,7 +741,7 @@ export default function PumpingCalculator() {
 
             <div className="grid grid-cols-1 gap-3">
               <Field label="Diâmetro do bocal na descarga da bomba (mm)">
-                <SelectInput value={dNozzleDiam} onChange={v => setDNozzleDiam(v)} options={NOZZLE_DIAMETERS.map(d => ({ value: String(d), label: `${d}` }))} />
+                <ComboInput value={dNozzleDiam} onChange={setDNozzleDiam} options={NOZZLE_DIAMETERS} placeholder="Ex: 125" />
               </Field>
             </div>
           </fieldset>
@@ -769,7 +769,7 @@ export default function PumpingCalculator() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Diâmetro do registro de gaveta (mm)">
-                <SelectInput value={dGavDiam} onChange={setDGavDiam} options={GATE_VALVE_DIAMETERS.map(d => ({ value: String(d), label: `${d}` }))} />
+                <ComboInput value={dGavDiam} onChange={setDGavDiam} options={GATE_VALVE_DIAMETERS} placeholder="Ex: 200" />
               </Field>
               <Field label="Rendimento da Bomba (%)">
                 <NumInput value={dEff} onChange={setDEff} placeholder="Ex: 75" />
