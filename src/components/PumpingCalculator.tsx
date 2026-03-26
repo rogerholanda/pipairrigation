@@ -500,7 +500,7 @@ export default function PumpingCalculator() {
                 <NumInput value={sFlow} onChange={setSFlow} placeholder="Ex: 210" />
               </Field>
               <Field label="Diâmetro (mm)">
-                <SelectInput value={sDiameter} onChange={setSDiameter} options={SUCTION_DIAMETERS.map(d => ({ value: String(d), label: `${d}` }))} />
+                <ComboInput value={sDiameter} onChange={setSDiameter} options={SUCTION_DIAMETERS} placeholder="Ex: 250" />
               </Field>
             </div>
 
@@ -534,7 +534,7 @@ export default function PumpingCalculator() {
                 </div>
               </Field>
               <Field label="Diâmetro do bocal da bomba (mm)">
-                <SelectInput value={sNozzleDiam} onChange={setSNozzleDiam} options={NOZZLE_DIAMETERS.map(d => ({ value: String(d), label: `${d}` }))} />
+                <ComboInput value={sNozzleDiam} onChange={setSNozzleDiam} options={NOZZLE_DIAMETERS} placeholder="Ex: 125" />
               </Field>
             </div>
           </fieldset>
