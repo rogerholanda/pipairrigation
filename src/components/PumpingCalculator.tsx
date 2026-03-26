@@ -1,4 +1,4 @@
-import { useState, useId } from "react";
+import { useState } from "react";
 import { Droplets, ArrowUp, ArrowDown, Gauge, Pencil, RotateCcw } from "lucide-react";
 
 // ── Constants ──
