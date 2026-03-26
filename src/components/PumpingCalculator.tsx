@@ -131,22 +131,38 @@ function SelectInput({ value, onChange, options }: { value: string; onChange: (v
 }
 
 function ComboInput({ value, onChange, options, placeholder }: { value: string; onChange: (v: string) => void; options: number[]; placeholder?: string }) {
-  const id = useId();
+  const [custom, setCustom] = useState(false);
+  const isPreset = !custom && options.map(String).includes(value);
   return (
-    <>
-      <input
-        type="number"
-        list={id}
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground"
+    <div className="flex gap-1">
+      {custom ? (
+        <input
+          type="number"
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="w-full px-2 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground no-spinner"
+          style={{ borderColor: "hsl(var(--border))" }}
+        />
+      ) : (
+        <select
+          value={isPreset ? value : ""}
+          onChange={e => onChange(e.target.value)}
+          className="w-full px-1 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+          style={{ borderColor: "hsl(var(--border))" }}
+        >
+          {options.map(o => <option key={o} value={String(o)}>{o}</option>)}
+        </select>
+      )}
+      <button
+        onClick={() => { setCustom(!custom); if (custom) { onChange(String(options[0])); } }}
+        title={custom ? "Usar valores predefinidos" : "Digitar valor personalizado"}
+        className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
         style={{ borderColor: "hsl(var(--border))" }}
-      />
-      <datalist id={id}>
-        {options.map(o => <option key={o} value={o} />)}
-      </datalist>
-    </>
+      >
+        {custom ? <RotateCcw size={12} /> : <Pencil size={12} />}
+      </button>
+    </div>
   );
 }
 
