@@ -704,11 +704,21 @@ export default function SubunidadeCalculator() {
               Rugosidade Absoluta (mm)
             </label>
             <div className="flex gap-2">
-              <input type="number" value={rugTcVal}
-                onChange={e => { if (customRugTc) setRugTcVal(e.target.value); }}
-                readOnly={!customRugTc}
-                className={`flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner ${!customRugTc ? 'cursor-default' : ''}`}
-                style={{ borderColor: "hsl(var(--border))" }} />
+              {customRugTc ? (
+                <input type="number" value={rugTcVal}
+                  onChange={e => setRugTcVal(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
+                  style={{ borderColor: "hsl(var(--border))" }}
+                  placeholder="Valor personalizado" />
+              ) : (
+                <select value={rugTcVal}
+                  onChange={e => { const v = e.target.value; setRugTcVal(v); const mat = v === "0.0015" ? "PEBD" : "PVC"; setMaterialTerc(mat as any); }}
+                  className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  style={{ borderColor: "hsl(var(--border))" }}>
+                  <option value="0.0015">PEBD — 0.0015</option>
+                  <option value="0.003334">PVC — 0.003334</option>
+                </select>
+              )}
               <button type="button"
                 onClick={() => { if (customRugTc) { setCustomRugTc(false); setRugTcVal(getRoughnessTc(materialTerc).toString()); } else setCustomRugTc(true); }}
                 className={`px-3 py-2 rounded-lg border text-xs font-semibold font-body transition-all ${
