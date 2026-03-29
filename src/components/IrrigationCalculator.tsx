@@ -39,7 +39,7 @@ const calcCards = [
   { id: "pivot", title: "Pivô Central", desc: "Dimensionamento de pivô", icon: Waves },
   { id: "pumping", title: "Bombeamento", desc: "Potência e carga da bomba", icon: Gauge },
   { id: "localized", title: "Sub Trapezoidal", desc: "Subunidade trapezoidal", icon: CircleDot },
-  { id: "subunidade", title: "Subunidade", desc: "Projeto de subunidade", icon: LayoutGrid },
+  { id: "subunidade", title: "Rede de distribuição/Irrigação", desc: "Projeto de subunidade", icon: LayoutGrid },
   { id: "twodiam", title: "2 Diâmetros", desc: "Tubulação com dois diâmetros", icon: GitBranch },
   { id: "paired", title: "Emparelhadas", desc: "Laterais emparelhadas", icon: Link2 },
 ];
