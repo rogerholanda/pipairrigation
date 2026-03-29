@@ -570,7 +570,7 @@ export default function SubunidadeCalculator() {
         {([
           { key: "lateral" as const, label: "Dados" },
           { key: "terciaria" as const, label: "Cálculo Numérico" },
-          { key: "subunidade" as const, label: "Análise da UE" },
+          { key: "subunidade" as const, label: "Cálculos Complementares" },
         ]).map(t => (
           <button
             key={t.key}
