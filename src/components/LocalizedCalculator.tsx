@@ -35,6 +35,8 @@ export default function LocalizedCalculator() {
   // Inputs
   const [materialLat, setMaterialLat] = useState<"PEBD" | "PVC">("PEBD");
   const [materialTerc, setMaterialTerc] = useState<"PEBD" | "PVC">("PEBD");
+  const [customRoughnessTerc, setCustomRoughnessTerc] = useState(false);
+  const [roughnessTerc, setRoughnessTerc] = useState("0.0015");
   const [customRoughnessLat, setCustomRoughnessLat] = useState(false);
   const [roughnessLat, setRoughnessLat] = useState("0.0015");
   const [llat1, setLlat1] = useState("");
@@ -103,7 +105,7 @@ export default function LocalizedCalculator() {
       const Cdk = parseFloat(cdk);
       const Vq = parseFloat(vq);
       const rugLat = customRoughnessLat ? parseFloat(roughnessLat) : getRoughness(materialLat);
-      const eT = getRoughness(materialTerc);
+      const eT = customRoughnessTerc ? parseFloat(roughnessTerc) : getRoughness(materialTerc);
 
       if ([Llat1, Llatu, Di, Conex, Eem, Qem, PSem, Tempa, Lterc, Elat, Dseg1, Nep, Cvf, Exp, Cdk, Vq].some(isNaN)) {
         setError("Preencha todos os campos corretamente.");
@@ -361,13 +363,48 @@ export default function LocalizedCalculator() {
           <FieldLabel label="Material da Terciária" />
           <div className="flex gap-3">
             {(["PEBD", "PVC"] as const).map(m => (
-              <button key={m} onClick={() => setMaterialTerc(m)}
+              <button key={m} onClick={() => { setMaterialTerc(m); if (!customRoughnessTerc) setRoughnessTerc(getRoughness(m).toString()); }}
                 className={`flex-1 py-2 rounded-lg text-sm font-semibold font-body transition-all border ${
                   materialTerc === m
                     ? "gradient-primary text-primary-foreground border-transparent shadow-md"
                     : "bg-muted text-muted-foreground border-border hover:border-primary"
                 }`}>{m}</button>
             ))}
+          </div>
+          <div className="mt-3">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
+              Rugosidade Absoluta (mm)
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                value={roughnessTerc}
+                onChange={e => { if (customRoughnessTerc) setRoughnessTerc(e.target.value); }}
+                readOnly={!customRoughnessTerc}
+                placeholder="Ex: 0.0015"
+                className={`flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner ${!customRoughnessTerc ? 'cursor-default' : ''}`}
+                style={{ borderColor: "hsl(var(--border))" }}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (customRoughnessTerc) {
+                    setCustomRoughnessTerc(false);
+                    setRoughnessTerc(getRoughness(materialTerc).toString());
+                  } else {
+                    setCustomRoughnessTerc(true);
+                  }
+                }}
+                className={`px-3 py-2 rounded-lg border text-xs font-semibold font-body transition-all ${
+                  customRoughnessTerc
+                    ? "gradient-primary text-primary-foreground border-transparent"
+                    : "bg-muted text-muted-foreground border-border hover:border-primary"
+                }`}
+                title={customRoughnessTerc ? "Usar valores pré-definidos" : "Digitar valor personalizado"}
+              >
+                {customRoughnessTerc ? "Lista" : "✎"}
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
