@@ -569,8 +569,8 @@ export default function SubunidadeCalculator() {
       <div className="flex border-b border-border">
         {([
           { key: "lateral" as const, label: "Dados" },
-          { key: "terciaria" as const, label: "Cálculo Numérico" },
-          { key: "subunidade" as const, label: "Cálculos Complementares" },
+          { key: "terciaria" as const, label: "Cálculos" },
+          { key: "subunidade" as const, label: "Análise da UE" },
         ]).map(t => (
           <button
             key={t.key}
