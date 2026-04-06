@@ -265,9 +265,9 @@ export default function LocalizedCalculator() {
       {/* Sub-tabs */}
       <div className="flex border-b border-border">
         {([
-          { key: "lateral" as const, label: "Lateral" },
-          { key: "terciaria" as const, label: "Terciária" },
-          { key: "subunidade" as const, label: "Subunidade" },
+          { key: "lateral" as const, label: "Dados" },
+          { key: "terciaria" as const, label: "Cálculos" },
+          { key: "subunidade" as const, label: "Cálculos Complementares" },
         ]).map(t => (
           <button
             key={t.key}
