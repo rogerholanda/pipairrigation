@@ -35,6 +35,8 @@ export default function LocalizedCalculator() {
   // Inputs
   const [materialLat, setMaterialLat] = useState<"PEBD" | "PVC">("PEBD");
   const [materialTerc, setMaterialTerc] = useState<"PEBD" | "PVC">("PEBD");
+  const [customRoughnessTerc, setCustomRoughnessTerc] = useState(false);
+  const [roughnessTerc, setRoughnessTerc] = useState("0.0015");
   const [customRoughnessLat, setCustomRoughnessLat] = useState(false);
   const [roughnessLat, setRoughnessLat] = useState("0.0015");
   const [llat1, setLlat1] = useState("");
