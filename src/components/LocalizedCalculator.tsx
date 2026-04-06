@@ -105,7 +105,7 @@ export default function LocalizedCalculator() {
       const Cdk = parseFloat(cdk);
       const Vq = parseFloat(vq);
       const rugLat = customRoughnessLat ? parseFloat(roughnessLat) : getRoughness(materialLat);
-      const eT = getRoughness(materialTerc);
+      const eT = customRoughnessTerc ? parseFloat(roughnessTerc) : getRoughness(materialTerc);
 
       if ([Llat1, Llatu, Di, Conex, Eem, Qem, PSem, Tempa, Lterc, Elat, Dseg1, Nep, Cvf, Exp, Cdk, Vq].some(isNaN)) {
         setError("Preencha todos os campos corretamente.");
