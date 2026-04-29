@@ -291,7 +291,7 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                     <label>Configuração de diâmetros</label><span className="v">{diamLabel}</span>
                   </div>
                 </div>
-                <p className="rpt-note">Método: Darcy-Weisbach com fator de atrito Colebrook-White (iterativo). Fator de Christiansen (F) para tubulações com múltiplas saídas.</p>
+                
               </div>
 
               {/* ── 2. Método Analítico ── */}
