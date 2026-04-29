@@ -331,9 +331,6 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                       <div className="rpt-field"><label>Hf total na lateral</label><span className="v">{results.Hftotal} m</span></div>
                       <div className="rpt-field"><label>Carga cinética (Hvel)</label><span className="v">{results.Hvel} m</span></div>
                     </div>
-                    <div className="rpt-formula">
-                      Hf = (6,376 × 10⁶ × f × Q² × L × F) / D⁵ &nbsp;|&nbsp; Ho = Hfin + Hf + (Aclv × Lp / 100) − Hvel &nbsp;|&nbsp; Hpp = Ho + Hf_subida + Alts
-                    </div>
                     <div className="rpt-result-row">
                       <div className="rpt-result-box">
                         <div className="rlabel">Pressão no início da lateral — Ho</div>
