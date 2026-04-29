@@ -108,6 +108,8 @@ body {
   color: #777;
   margin-bottom: 2px;
 }
+.rpt-field label::after { content: " ="; }
+.rpt-result-box .rlabel::after { content: " ="; }
 .rpt-field .v {
   font-size: 11px;
   font-weight: 600;
@@ -262,12 +264,6 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
               <div className="rpt-header">
                 <div className="rpt-header-left">
                   <h1>Dimensionamento Hidráulico — Pivô Central</h1>
-                  <p>Engenharia dos Sistemas de Irrigação</p>
-                </div>
-                <div className="rpt-header-right">
-                  <strong>Colégio Técnico de Bom Jesus</strong><br />
-                  Prof. José Orlando Piauilino Ferreira<br />
-                  {dateStr}
                 </div>
               </div>
 
@@ -295,7 +291,7 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                     <label>Configuração de diâmetros</label><span className="v">{diamLabel}</span>
                   </div>
                 </div>
-                <p className="rpt-note">Método: Darcy-Weisbach com fator de atrito Colebrook-White (iterativo). Fator de Christiansen (F) para tubulações com múltiplas saídas.</p>
+                
               </div>
 
               {/* ── 2. Método Analítico ── */}
@@ -357,16 +353,12 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                 <>
                   <hr className="rpt-divider" />
                   <div className="rpt-section">
-                    <div className="rpt-section-title">3. Método Trecho a Trecho — Emissor por Emissor</div>
+                    <div className="rpt-section-title">3. Método Trecho a Trecho</div>
                     <div className="rpt-grid rpt-grid-4" style={{ marginBottom: "8px" }}>
-                      <div className="rpt-field"><label>Espaç. emissores (Eem)</label><span className="v">{trechoState.Eem} m</span></div>
-                      <div className="rpt-field"><label>Coef. descarga (Cd)</label><span className="v">{trechoState.Cd}</span></div>
+                      <div className="rpt-field"><label>Espaç. emissores</label><span className="v">{trechoState.Eem} m</span></div>
+                      <div className="rpt-field"><label>Coef. descarga</label><span className="v">{trechoState.Cd}</span></div>
                       <div className="rpt-field"><label>Modelo regulador</label><span className="v">{trechoState.modelo || "—"}</span></div>
                       <div className="rpt-field"><label>Parâmetros (a/b/c/d/f)</label><span className="v">{[trechoState.a, trechoState.b, trechoState.c, trechoState.d, trechoState.fParam].filter(Boolean).join(" / ") || "—"}</span></div>
-                    </div>
-
-                    <div className="rpt-formula">
-                      Pressão na saída do regulador: Hs = (a + b·qi + c / (1 + e^(d − Hi)/f)) × 10 × 0,1019
                     </div>
 
                     <div className="rpt-result-row" style={{ marginTop: "10px" }}>
@@ -381,7 +373,7 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                     </div>
                     <div style={{ marginTop: "6px" }}>
                       <div className="rpt-result-box dark" style={{ padding: "12px 16px" }}>
-                        <div className="rlabel">Hpp — Pressão no ponto do Pivô (Método Trecho a Trecho)</div>
+                        <div className="rlabel">Hpp — Pressão no ponto do Pivô</div>
                         <div className="rval">{trechoState.hpp} <span className="runit">m.c.a.</span></div>
                       </div>
                     </div>
@@ -393,13 +385,9 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
 
               {/* ── Footer ── */}
               <div className="rpt-footer">
-                <div>
-                  <strong style={{ color: "#1a4730" }}>Engenharia dos Sistemas de Irrigação</strong><br />
-                  Prof. José Orlando Piauilino Ferreira · Colégio Técnico de Bom Jesus
-                </div>
+                <div></div>
                 <div style={{ textAlign: "right" }}>
-                  Gerado em: {dateStr}<br />
-                  Darcy-Weisbach · Colebrook-White · Christiansen
+                  Gerado em: {dateStr}
                 </div>
               </div>
 
