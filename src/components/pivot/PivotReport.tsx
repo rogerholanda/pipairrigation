@@ -264,12 +264,6 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
               <div className="rpt-header">
                 <div className="rpt-header-left">
                   <h1>Dimensionamento Hidráulico — Pivô Central</h1>
-                  <p>Engenharia dos Sistemas de Irrigação</p>
-                </div>
-                <div className="rpt-header-right">
-                  <strong>Colégio Técnico de Bom Jesus</strong><br />
-                  Prof. José Orlando Piauilino Ferreira<br />
-                  {dateStr}
                 </div>
               </div>
 
