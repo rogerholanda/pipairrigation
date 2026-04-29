@@ -358,20 +358,18 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                       <div className="rpt-field"><label>Parâmetros (a/b/c/d/f)</label><span className="v">{[trechoState.a, trechoState.b, trechoState.c, trechoState.d, trechoState.fParam].filter(Boolean).join(" / ") || "—"}</span></div>
                     </div>
 
-                    <div className="rpt-result-row" style={{ marginTop: "10px" }}>
-                      <div className="rpt-result-box" style={{ gridColumn: "1" }}>
+                    <div className="rpt-result-row" style={{ gridTemplateColumns: "1fr 1fr 1fr", marginTop: "10px" }}>
+                      <div className="rpt-result-box">
                         <div className="rlabel">Hf Total na lateral</div>
-                        <div className="rval" style={{ fontSize: "16px" }}>{trechoState.hfTotal} <span className="runit">m</span></div>
+                        <div className="rval" style={{ fontSize: "18px" }}>{trechoState.hfTotal} <span className="runit">m</span></div>
                       </div>
                       <div className="rpt-result-box">
                         <div className="rlabel">Ho — Pressão início lateral</div>
-                        <div className="rval">{trechoState.h0} <span className="runit">m.c.a.</span></div>
+                        <div className="rval" style={{ fontSize: "18px" }}>{trechoState.h0} <span className="runit">m.c.a.</span></div>
                       </div>
-                    </div>
-                    <div style={{ marginTop: "6px" }}>
-                      <div className="rpt-result-box dark" style={{ padding: "12px 16px" }}>
+                      <div className="rpt-result-box dark">
                         <div className="rlabel">Hpp — Pressão no ponto do Pivô</div>
-                        <div className="rval">{trechoState.hpp} <span className="runit">m.c.a.</span></div>
+                        <div className="rval" style={{ fontSize: "18px" }}>{trechoState.hpp} <span className="runit">m.c.a.</span></div>
                       </div>
                     </div>
                   </div>
