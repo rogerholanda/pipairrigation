@@ -353,16 +353,12 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                 <>
                   <hr className="rpt-divider" />
                   <div className="rpt-section">
-                    <div className="rpt-section-title">3. Método Trecho a Trecho — Emissor por Emissor</div>
+                    <div className="rpt-section-title">3. Método Trecho a Trecho</div>
                     <div className="rpt-grid rpt-grid-4" style={{ marginBottom: "8px" }}>
-                      <div className="rpt-field"><label>Espaç. emissores (Eem)</label><span className="v">{trechoState.Eem} m</span></div>
-                      <div className="rpt-field"><label>Coef. descarga (Cd)</label><span className="v">{trechoState.Cd}</span></div>
+                      <div className="rpt-field"><label>Espaç. emissores</label><span className="v">{trechoState.Eem} m</span></div>
+                      <div className="rpt-field"><label>Coef. descarga</label><span className="v">{trechoState.Cd}</span></div>
                       <div className="rpt-field"><label>Modelo regulador</label><span className="v">{trechoState.modelo || "—"}</span></div>
                       <div className="rpt-field"><label>Parâmetros (a/b/c/d/f)</label><span className="v">{[trechoState.a, trechoState.b, trechoState.c, trechoState.d, trechoState.fParam].filter(Boolean).join(" / ") || "—"}</span></div>
-                    </div>
-
-                    <div className="rpt-formula">
-                      Pressão na saída do regulador: Hs = (a + b·qi + c / (1 + e^(d − Hi)/f)) × 10 × 0,1019
                     </div>
 
                     <div className="rpt-result-row" style={{ marginTop: "10px" }}>
