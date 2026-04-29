@@ -385,13 +385,9 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
 
               {/* ── Footer ── */}
               <div className="rpt-footer">
-                <div>
-                  <strong style={{ color: "#1a4730" }}>Engenharia dos Sistemas de Irrigação</strong><br />
-                  Prof. José Orlando Piauilino Ferreira · Colégio Técnico de Bom Jesus
-                </div>
+                <div></div>
                 <div style={{ textAlign: "right" }}>
-                  Gerado em: {dateStr}<br />
-                  Darcy-Weisbach · Colebrook-White · Christiansen
+                  Gerado em: {dateStr}
                 </div>
               </div>
 
