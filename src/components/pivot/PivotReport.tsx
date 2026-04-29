@@ -373,7 +373,7 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                     </div>
                     <div style={{ marginTop: "6px" }}>
                       <div className="rpt-result-box dark" style={{ padding: "12px 16px" }}>
-                        <div className="rlabel">Hpp — Pressão no ponto do Pivô (Método Trecho a Trecho)</div>
+                        <div className="rlabel">Hpp — Pressão no ponto do Pivô</div>
                         <div className="rval">{trechoState.hpp} <span className="runit">m.c.a.</span></div>
                       </div>
                     </div>
