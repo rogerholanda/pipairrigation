@@ -108,6 +108,8 @@ body {
   color: #777;
   margin-bottom: 2px;
 }
+.rpt-field label::after { content: " ="; }
+.rpt-result-box .rlabel::after { content: " ="; }
 .rpt-field .v {
   font-size: 11px;
   font-weight: 600;
