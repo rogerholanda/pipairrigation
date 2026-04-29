@@ -261,8 +261,8 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
               {/* ── Header ── */}
               <div className="rpt-header">
                 <div className="rpt-header-left">
-                  <h1>Relatório de Dimensionamento Hidráulico</h1>
-                  <p>Pivô Central · Engenharia dos Sistemas de Irrigação</p>
+                  <h1>Dimensionamento Hidráulico — Pivô Central</h1>
+                  <p>Engenharia dos Sistemas de Irrigação</p>
                 </div>
                 <div className="rpt-header-right">
                   <strong>Colégio Técnico de Bom Jesus</strong><br />
