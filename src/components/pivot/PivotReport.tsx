@@ -365,45 +365,9 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                       <div className="rpt-field"><label>Parâmetros (a/b/c/d/f)</label><span className="v">{[trechoState.a, trechoState.b, trechoState.c, trechoState.d, trechoState.fParam].filter(Boolean).join(" / ") || "—"}</span></div>
                     </div>
 
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Emissor</th>
-                          <th>Ri (m)</th>
-                          <th>Trecho</th>
-                          <th>Di (mm)</th>
-                          <th>qi (m³/h)</th>
-                          <th>QTrecho (m³/h)</th>
-                          <th>Vel. (m/s)</th>
-                          <th>NR</th>
-                          <th>f</th>
-                          <th>Hf (m)</th>
-                          <th>Aclive (m)</th>
-                          <th>Hi Aclive (mca)</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {trechoState.rows.slice(0, 60).map((row, i) => (
-                          <tr key={i}>
-                            <td className="td-em">{row.emissor}</td>
-                            <td>{row.Ri}</td>
-                            <td>{row.trecho}</td>
-                            <td>{row.Di}</td>
-                            <td>{row.qi}</td>
-                            <td>{row.QTrecho}</td>
-                            <td>{row.v}</td>
-                            <td>{row.NR}</td>
-                            <td>{row.f}</td>
-                            <td>{row.hf}</td>
-                            <td>{row.Aclive}</td>
-                            <td className="td-em">{row.HiAclive}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    {trechoState.rows.length > 60 && (
-                      <p className="rpt-note">... {trechoState.rows.length - 60} linhas omitidas. Tabela completa disponível na calculadora.</p>
-                    )}
+                    <div className="rpt-formula">
+                      Pressão na saída do regulador: Hs = (a + b·qi + c / (1 + e^(d − Hi)/f)) × 10 × 0,1019
+                    </div>
 
                     <div className="rpt-result-row" style={{ marginTop: "10px" }}>
                       <div className="rpt-result-box" style={{ gridColumn: "1" }}>
