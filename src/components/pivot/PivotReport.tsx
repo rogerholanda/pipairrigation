@@ -417,11 +417,11 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                         <div className="rpt-field"><label>Modelo regulador</label><span className="v">{trechoState.modelo || "—"}</span></div>
                       </div>
                       <div className="rpt-reg-params">
-                        <div className="rp-label">a</div><div className="rp-value">{trechoState.a || "—"}</div>
-                        <div className="rp-label">b</div><div className="rp-value">{trechoState.b || "—"}</div>
-                        <div className="rp-label">c</div><div className="rp-value">{trechoState.c || "—"}</div>
-                        <div className="rp-label">d</div><div className="rp-value">{trechoState.d || "—"}</div>
-                        <div className="rp-label">f</div><div className="rp-value">{trechoState.fParam || "—"}</div>
+                        <div className="rpt-reg-row"><span className="rp-label">a</span><span className="rp-value">{trechoState.a || "—"}</span></div>
+                        <div className="rpt-reg-row"><span className="rp-label">b</span><span className="rp-value">{trechoState.b || "—"}</span></div>
+                        <div className="rpt-reg-row"><span className="rp-label">c</span><span className="rp-value">{trechoState.c || "—"}</span></div>
+                        <div className="rpt-reg-row"><span className="rp-label">d</span><span className="rp-value">{trechoState.d || "—"}</span></div>
+                        <div className="rpt-reg-row"><span className="rp-label">f</span><span className="rp-value">{trechoState.fParam || "—"}</span></div>
                       </div>
                     </div>
 
