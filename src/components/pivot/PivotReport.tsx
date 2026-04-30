@@ -99,16 +99,17 @@ body {
   border-radius: 5px;
   padding: 6px 8px;
   background: #f8fdf9;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  flex-wrap: wrap;
 }
 .rpt-field label {
-  display: block;
-  font-size: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #777;
-  margin-bottom: 2px;
+  font-size: 9px;
+  color: #555;
+  font-weight: 500;
 }
-.rpt-field label::after { content: " ="; }
+.rpt-field label::after { content: " ="; font-weight: 600; color: #333; }
 .rpt-result-box .rlabel::after { content: " ="; }
 .rpt-field .v {
   font-size: 11px;
@@ -119,7 +120,58 @@ body {
   border-color: #2d7a4f;
   background: #eef8f2;
 }
+.rpt-field-highlight label { font-size: 10px; }
 .rpt-field-highlight .v { color: #1a4730; font-size: 13px; }
+
+/* Inline result row: label = value on the same line */
+.rpt-inline-result {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  background: #1f5e38;
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  text-align: center;
+}
+.rpt-inline-result .rlabel {
+  font-size: 10px;
+  opacity: 0.85;
+  font-weight: 500;
+}
+.rpt-inline-result .rlabel::after { content: " ="; }
+.rpt-inline-result .rval {
+  font-size: 16px;
+  font-weight: 700;
+  color: #a8e6c1;
+}
+.rpt-inline-result .runit { font-size: 10px; font-weight: 400; opacity: 0.8; margin-left: 2px; }
+.rpt-inline-result.dark { background: #163d25; }
+
+/* Regulator params stacked block */
+.rpt-reg-params {
+  border: 1px solid #dde8e2;
+  border-radius: 5px;
+  padding: 8px 12px;
+  background: #f8fdf9;
+  display: grid;
+  grid-template-columns: max-content auto;
+  gap: 4px 10px;
+  align-items: baseline;
+}
+.rpt-reg-params .rp-label {
+  font-size: 10px;
+  color: #555;
+  font-weight: 500;
+  text-align: right;
+}
+.rpt-reg-params .rp-label::after { content: " ="; font-weight: 600; color: #333; }
+.rpt-reg-params .rp-value {
+  font-size: 11px;
+  font-weight: 600;
+  color: #1a4730;
+}
 
 /* ── Result Hero ── */
 .rpt-result-row {
@@ -351,25 +403,33 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                   <hr className="rpt-divider" />
                   <div className="rpt-section">
                     <div className="rpt-section-title">3. Método Trecho a Trecho</div>
-                    <div className="rpt-grid rpt-grid-4" style={{ marginBottom: "8px" }}>
-                      <div className="rpt-field"><label>Espaç. emissores</label><span className="v">{trechoState.Eem} m</span></div>
-                      <div className="rpt-field"><label>Coef. descarga</label><span className="v">{trechoState.Cd}</span></div>
-                      <div className="rpt-field"><label>Modelo regulador</label><span className="v">{trechoState.modelo || "—"}</span></div>
-                      <div className="rpt-field"><label>Parâmetros (a/b/c/d/f)</label><span className="v">{[trechoState.a, trechoState.b, trechoState.c, trechoState.d, trechoState.fParam].filter(Boolean).join(" / ") || "—"}</span></div>
+                    <div className="rpt-grid rpt-grid-2" style={{ marginBottom: "10px", alignItems: "start" }}>
+                      <div style={{ display: "grid", gap: "6px" }}>
+                        <div className="rpt-field"><label>Espaç. emissores</label><span className="v">{trechoState.Eem} m</span></div>
+                        <div className="rpt-field"><label>Coef. descarga</label><span className="v">{trechoState.Cd}</span></div>
+                        <div className="rpt-field"><label>Modelo regulador</label><span className="v">{trechoState.modelo || "—"}</span></div>
+                      </div>
+                      <div className="rpt-reg-params">
+                        <div className="rp-label">a</div><div className="rp-value">{trechoState.a || "—"}</div>
+                        <div className="rp-label">b</div><div className="rp-value">{trechoState.b || "—"}</div>
+                        <div className="rp-label">c</div><div className="rp-value">{trechoState.c || "—"}</div>
+                        <div className="rp-label">d</div><div className="rp-value">{trechoState.d || "—"}</div>
+                        <div className="rp-label">f</div><div className="rp-value">{trechoState.fParam || "—"}</div>
+                      </div>
                     </div>
 
                     <div className="rpt-result-row" style={{ gridTemplateColumns: "1fr 1fr 1fr", marginTop: "10px" }}>
-                      <div className="rpt-result-box">
-                        <div className="rlabel">Hf Total na lateral</div>
-                        <div className="rval" style={{ fontSize: "18px" }}>{trechoState.hfTotal} <span className="runit">m</span></div>
+                      <div className="rpt-inline-result">
+                        <span className="rlabel">Hf Total na lateral</span>
+                        <span className="rval">{trechoState.hfTotal}</span><span className="runit">m</span>
                       </div>
-                      <div className="rpt-result-box">
-                        <div className="rlabel">Ho — Pressão início lateral</div>
-                        <div className="rval" style={{ fontSize: "18px" }}>{trechoState.h0} <span className="runit">m.c.a.</span></div>
+                      <div className="rpt-inline-result">
+                        <span className="rlabel">Ho — Pressão início lateral</span>
+                        <span className="rval">{trechoState.h0}</span><span className="runit">m.c.a.</span>
                       </div>
-                      <div className="rpt-result-box dark">
-                        <div className="rlabel">Hpp — Pressão no ponto do Pivô</div>
-                        <div className="rval" style={{ fontSize: "18px" }}>{trechoState.hpp} <span className="runit">m.c.a.</span></div>
+                      <div className="rpt-inline-result dark">
+                        <span className="rlabel">Hpp — Pressão no ponto do Pivô</span>
+                        <span className="rval">{trechoState.hpp}</span><span className="runit">m.c.a.</span>
                       </div>
                     </div>
                   </div>
