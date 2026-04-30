@@ -102,7 +102,8 @@ body {
   display: flex;
   align-items: baseline;
   gap: 4px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 .rpt-field label {
   font-size: 9px;
