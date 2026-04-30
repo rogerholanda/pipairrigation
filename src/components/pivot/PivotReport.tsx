@@ -150,25 +150,31 @@ body {
 .rpt-inline-result .runit { font-size: 10px; font-weight: 400; opacity: 0.8; margin-left: 2px; }
 .rpt-inline-result.dark { background: #163d25; }
 
-/* Regulator params stacked block */
+/* Regulator params: each "label = value" on its own line, vertically aligned */
 .rpt-reg-params {
   border: 1px solid #dde8e2;
   border-radius: 5px;
   padding: 8px 12px;
   background: #f8fdf9;
-  display: grid;
-  grid-template-columns: max-content auto;
-  gap: 4px 10px;
-  align-items: baseline;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
-.rpt-reg-params .rp-label {
+.rpt-reg-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+}
+.rpt-reg-row .rp-label {
   font-size: 10px;
   color: #555;
   font-weight: 500;
-  text-align: right;
+  min-width: 14px;
+  display: inline-block;
 }
-.rpt-reg-params .rp-label::after { content: " ="; font-weight: 600; color: #333; }
-.rpt-reg-params .rp-value {
+.rpt-reg-row .rp-label::after { content: " ="; font-weight: 600; color: #333; }
+.rpt-reg-row .rp-value {
   font-size: 11px;
   font-weight: 600;
   color: #1a4730;
