@@ -251,6 +251,60 @@ tbody tr:nth-child(even) td { background: #f5faf7; }
 tbody tr:last-child td { border-bottom: none; }
 .td-em { font-weight: 600; color: #1a4730; }
 
+/* ── Data Table (Variável | Valor) ── */
+.rpt-dtable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+  margin-bottom: 8px;
+  border: 1px solid #cfe3d6;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.rpt-dtable thead th {
+  background: #2d7a4f;
+  color: #fff;
+  text-align: left;
+  padding: 6px 10px;
+  font-weight: 600;
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.rpt-dtable tbody td {
+  padding: 5px 10px;
+  border-bottom: 1px solid #eaf3ed;
+  white-space: normal;
+}
+.rpt-dtable tbody tr:nth-child(even) td { background: #f5faf7; }
+.rpt-dtable tbody tr:last-child td { border-bottom: none; }
+.rpt-dtable td.var {
+  color: #555;
+  width: 60%;
+  font-weight: 500;
+}
+.rpt-dtable td.val {
+  color: #1a4730;
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.rpt-dtable.highlight tbody tr:last-child td {
+  background: #eef8f2;
+  color: #1a4730;
+  font-weight: 700;
+  border-top: 2px solid #2d7a4f;
+}
+.rpt-subhead {
+  font-size: 10px;
+  font-weight: 700;
+  color: #1a4730;
+  margin: 10px 0 6px;
+  padding-left: 4px;
+  border-left: 3px solid #2d7a4f;
+  padding-left: 8px;
+}
+
 /* ── Note ── */
 .rpt-note { font-size: 8px; color: #888; font-style: italic; margin-top: 5px; }
 
