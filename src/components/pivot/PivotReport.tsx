@@ -403,25 +403,33 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                   <hr className="rpt-divider" />
                   <div className="rpt-section">
                     <div className="rpt-section-title">3. Método Trecho a Trecho</div>
-                    <div className="rpt-grid rpt-grid-4" style={{ marginBottom: "8px" }}>
-                      <div className="rpt-field"><label>Espaç. emissores</label><span className="v">{trechoState.Eem} m</span></div>
-                      <div className="rpt-field"><label>Coef. descarga</label><span className="v">{trechoState.Cd}</span></div>
-                      <div className="rpt-field"><label>Modelo regulador</label><span className="v">{trechoState.modelo || "—"}</span></div>
-                      <div className="rpt-field"><label>Parâmetros (a/b/c/d/f)</label><span className="v">{[trechoState.a, trechoState.b, trechoState.c, trechoState.d, trechoState.fParam].filter(Boolean).join(" / ") || "—"}</span></div>
+                    <div className="rpt-grid rpt-grid-2" style={{ marginBottom: "10px", alignItems: "start" }}>
+                      <div style={{ display: "grid", gap: "6px" }}>
+                        <div className="rpt-field"><label>Espaç. emissores</label><span className="v">{trechoState.Eem} m</span></div>
+                        <div className="rpt-field"><label>Coef. descarga</label><span className="v">{trechoState.Cd}</span></div>
+                        <div className="rpt-field"><label>Modelo regulador</label><span className="v">{trechoState.modelo || "—"}</span></div>
+                      </div>
+                      <div className="rpt-reg-params">
+                        <div className="rp-label">a</div><div className="rp-value">{trechoState.a || "—"}</div>
+                        <div className="rp-label">b</div><div className="rp-value">{trechoState.b || "—"}</div>
+                        <div className="rp-label">c</div><div className="rp-value">{trechoState.c || "—"}</div>
+                        <div className="rp-label">d</div><div className="rp-value">{trechoState.d || "—"}</div>
+                        <div className="rp-label">f</div><div className="rp-value">{trechoState.fParam || "—"}</div>
+                      </div>
                     </div>
 
                     <div className="rpt-result-row" style={{ gridTemplateColumns: "1fr 1fr 1fr", marginTop: "10px" }}>
-                      <div className="rpt-result-box">
-                        <div className="rlabel">Hf Total na lateral</div>
-                        <div className="rval" style={{ fontSize: "18px" }}>{trechoState.hfTotal} <span className="runit">m</span></div>
+                      <div className="rpt-inline-result">
+                        <span className="rlabel">Hf Total na lateral</span>
+                        <span className="rval">{trechoState.hfTotal}</span><span className="runit">m</span>
                       </div>
-                      <div className="rpt-result-box">
-                        <div className="rlabel">Ho — Pressão início lateral</div>
-                        <div className="rval" style={{ fontSize: "18px" }}>{trechoState.h0} <span className="runit">m.c.a.</span></div>
+                      <div className="rpt-inline-result">
+                        <span className="rlabel">Ho — Pressão início lateral</span>
+                        <span className="rval">{trechoState.h0}</span><span className="runit">m.c.a.</span>
                       </div>
-                      <div className="rpt-result-box dark">
-                        <div className="rlabel">Hpp — Pressão no ponto do Pivô</div>
-                        <div className="rval" style={{ fontSize: "18px" }}>{trechoState.hpp} <span className="runit">m.c.a.</span></div>
+                      <div className="rpt-inline-result dark">
+                        <span className="rlabel">Hpp — Pressão no ponto do Pivô</span>
+                        <span className="rval">{trechoState.hpp}</span><span className="runit">m.c.a.</span>
                       </div>
                     </div>
                   </div>
