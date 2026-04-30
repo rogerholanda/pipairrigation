@@ -383,28 +383,28 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
               {/* ── 1. Dados de Entrada ── */}
               <div className="rpt-section">
                 <div className="rpt-section-title">1. Dados de Entrada</div>
-                <div className="rpt-grid rpt-grid-4" style={{ marginBottom: "6px" }}>
-                  <div className="rpt-field"><label>Raio útil (Rut)</label><span className="v">{inputs.Rut || "—"} m</span></div>
-                  <div className="rpt-field"><label>Balanço (Clb)</label><span className="v">{inputs.Clb || "—"} m</span></div>
-                  <div className="rpt-field"><label>Lâmina (Lap)</label><span className="v">{inputs.Lap || "—"} mm</span></div>
-                  <div className="rpt-field"><label>Tempo irrig. (Tgi)</label><span className="v">{inputs.Tgi || "—"} h</span></div>
-                  <div className="rpt-field"><label>Eficiência (Efc)</label><span className="v">{inputs.efc || "—"} %</span></div>
-                  <div className="rpt-field"><label>Temperatura</label><span className="v">{inputs.Tempag || "—"} °C</span></div>
-                  <div className="rpt-field"><label>Aclive lateral</label><span className="v">{inputs.Aclv || "0"} %</span></div>
-                  <div className="rpt-field"><label>Declive lateral</label><span className="v">{inputs.Dclv || "0"} %</span></div>
-                  <div className="rpt-field"><label>H final (Hfin)</label><span className="v">{inputs.Hfin || "—"} m.c.a.</span></div>
-                  <div className="rpt-field"><label>Material tubulação</label><span className="v">{inputs.material}</span></div>
-                  <div className="rpt-field"><label>Rugosidade (ε)</label><span className="v">{inputs.rug} mm</span></div>
-                  <div className="rpt-field"><label>Comp. tubo subida</label><span className="v">{inputs.LTs || "—"} m</span></div>
-                  <div className="rpt-field"><label>Desnível subida</label><span className="v">{inputs.Alts || "0"} m</span></div>
-                  {inputs.hasCanonSpray && (
-                    <div className="rpt-field"><label>Vazão canhão (Qc)</label><span className="v">{inputs.Qc} m³/h</span></div>
-                  )}
-                  <div className="rpt-field" style={{ gridColumn: inputs.hasCanonSpray ? "span 1" : "span 2" }}>
-                    <label>Configuração de diâmetros</label><span className="v">{diamLabel}</span>
-                  </div>
-                </div>
-                
+                <table className="rpt-dtable">
+                  <thead><tr><th>Variável</th><th style={{ textAlign: "right" }}>Valor</th></tr></thead>
+                  <tbody>
+                    <tr><td className="var">Raio útil (Rut)</td><td className="val">{inputs.Rut || "—"} m</td></tr>
+                    <tr><td className="var">Balanço (Clb)</td><td className="val">{inputs.Clb || "—"} m</td></tr>
+                    <tr><td className="var">Lâmina (Lap)</td><td className="val">{inputs.Lap || "—"} mm</td></tr>
+                    <tr><td className="var">Tempo de irrigação (Tgi)</td><td className="val">{inputs.Tgi || "—"} h</td></tr>
+                    <tr><td className="var">Eficiência (Efc)</td><td className="val">{inputs.efc || "—"} %</td></tr>
+                    <tr><td className="var">Temperatura da água</td><td className="val">{inputs.Tempag || "—"} °C</td></tr>
+                    <tr><td className="var">Aclive da lateral</td><td className="val">{inputs.Aclv || "0"} %</td></tr>
+                    <tr><td className="var">Declive da lateral</td><td className="val">{inputs.Dclv || "0"} %</td></tr>
+                    <tr><td className="var">Pressão final (Hfin)</td><td className="val">{inputs.Hfin || "—"} m.c.a.</td></tr>
+                    <tr><td className="var">Material da tubulação</td><td className="val">{inputs.material}</td></tr>
+                    <tr><td className="var">Rugosidade (ε)</td><td className="val">{inputs.rug} mm</td></tr>
+                    <tr><td className="var">Comprimento tubo de subida (LTs)</td><td className="val">{inputs.LTs || "—"} m</td></tr>
+                    <tr><td className="var">Desnível tubo de subida (Alts)</td><td className="val">{inputs.Alts || "0"} m</td></tr>
+                    {inputs.hasCanonSpray && (
+                      <tr><td className="var">Vazão canhão (Qc)</td><td className="val">{inputs.Qc} m³/h</td></tr>
+                    )}
+                    <tr><td className="var">Configuração de diâmetros</td><td className="val">{diamLabel}</td></tr>
+                  </tbody>
+                </table>
               </div>
 
               {/* ── 2. Método Analítico ── */}
@@ -413,47 +413,47 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                   <hr className="rpt-divider" />
                   <div className="rpt-section">
                     <div className="rpt-section-title">2. Método Analítico — Resultados Globais</div>
-                    <div className="rpt-grid rpt-grid-4" style={{ marginBottom: "8px" }}>
-                      <div className="rpt-field"><label>Comp. lateral (Lp)</label><span className="v">{results.Lp} m</span></div>
-                      <div className="rpt-field"><label>Área básica (Ab)</label><span className="v">{results.Ab} ha</span></div>
-                      <div className="rpt-field"><label>Vazão lateral (Qb)</label><span className="v">{results.Qb} m³/h</span></div>
-                      <div className="rpt-field"><label>Vazão inicial (Qin)</label><span className="v">{results.Qin} m³/h</span></div>
-                      <div className="rpt-field"><label>Razão Qc/Qin</label><span className="v">{results.gr}</span></div>
-                      <div className="rpt-field"><label>Comp. equiv. (Leq)</label><span className="v">{results.Leq} m</span></div>
-                      <div className="rpt-field"><label>Viscosidade din.</label><span className="v">{results.viscosity} ×10⁻³</span></div>
-                      <div className="rpt-field"><label>Massa específica</label><span className="v">{results.density} kg/m³</span></div>
-                    </div>
+                    <table className="rpt-dtable">
+                      <thead><tr><th>Variável</th><th style={{ textAlign: "right" }}>Valor</th></tr></thead>
+                      <tbody>
+                        <tr><td className="var">Comprimento da lateral (Lp)</td><td className="val">{results.Lp} m</td></tr>
+                        <tr><td className="var">Área básica (Ab)</td><td className="val">{results.Ab} ha</td></tr>
+                        <tr><td className="var">Vazão na lateral (Qb)</td><td className="val">{results.Qb} m³/h</td></tr>
+                        <tr><td className="var">Vazão inicial (Qin)</td><td className="val">{results.Qin} m³/h</td></tr>
+                        <tr><td className="var">Razão Qc/Qin (gr)</td><td className="val">{results.gr}</td></tr>
+                        <tr><td className="var">Comprimento equivalente (Leq)</td><td className="val">{results.Leq} m</td></tr>
+                        <tr><td className="var">Viscosidade dinâmica (μ)</td><td className="val">{results.viscosity} ×10⁻³</td></tr>
+                        <tr><td className="var">Massa específica (ρ)</td><td className="val">{results.density} kg/m³</td></tr>
+                      </tbody>
+                    </table>
 
                     {results.segments.map((seg, i) => (
-                      <div key={i} className="rpt-seg">
-                        <div className="rpt-seg-title">{seg.label} — Ø {seg.d} mm</div>
-                        <div className="rpt-grid rpt-grid-4">
-                          <div className="rpt-field"><label>Vazão (Q)</label><span className="v">{seg.q} m³/h</span></div>
-                          <div className="rpt-field"><label>Velocidade (V)</label><span className="v">{seg.v} m/s</span></div>
-                          <div className="rpt-field"><label>Reynolds (NR)</label><span className="v">{seg.nr}</span></div>
-                          <div className="rpt-field"><label>Fator atrito (f)</label><span className="v">{seg.f}</span></div>
-                          <div className="rpt-field"><label>Christiansen (F)</label><span className="v">{seg.F}</span></div>
-                          <div className="rpt-field rpt-field-highlight" style={{ gridColumn: "span 3" }}>
-                            <label>Perda de carga — Hf</label><span className="v">{seg.hf} m</span>
-                          </div>
-                        </div>
+                      <div key={i}>
+                        <div className="rpt-subhead">{seg.label} — Ø {seg.d} mm</div>
+                        <table className="rpt-dtable highlight">
+                          <thead><tr><th>Variável</th><th style={{ textAlign: "right" }}>Valor</th></tr></thead>
+                          <tbody>
+                            <tr><td className="var">Vazão (Q)</td><td className="val">{seg.q} m³/h</td></tr>
+                            <tr><td className="var">Velocidade (V)</td><td className="val">{seg.v} m/s</td></tr>
+                            <tr><td className="var">Número de Reynolds (NR)</td><td className="val">{seg.nr}</td></tr>
+                            <tr><td className="var">Fator de atrito (f)</td><td className="val">{seg.f}</td></tr>
+                            <tr><td className="var">Fator de Christiansen (F)</td><td className="val">{seg.F}</td></tr>
+                            <tr><td className="var">Perda de carga (Hf)</td><td className="val">{seg.hf} m</td></tr>
+                          </tbody>
+                        </table>
                       </div>
                     ))}
 
-                    <div className="rpt-grid rpt-grid-2" style={{ marginBottom: "6px" }}>
-                      <div className="rpt-field"><label>Hf total na lateral</label><span className="v">{results.Hftotal} m</span></div>
-                      <div className="rpt-field"><label>Carga cinética (Hvel)</label><span className="v">{results.Hvel} m</span></div>
-                    </div>
-                    <div className="rpt-result-row">
-                      <div className="rpt-result-box">
-                        <div className="rlabel">Pressão no início da lateral — Ho</div>
-                        <div className="rval">{results.Hin} <span className="runit">m.c.a.</span></div>
-                      </div>
-                      <div className="rpt-result-box dark">
-                        <div className="rlabel">Pressão no ponto do Pivô — Hpp</div>
-                        <div className="rval">{results.Hpp} <span className="runit">m.c.a.</span></div>
-                      </div>
-                    </div>
+                    <div className="rpt-subhead">Resultados Hidráulicos Finais</div>
+                    <table className="rpt-dtable highlight">
+                      <thead><tr><th>Variável</th><th style={{ textAlign: "right" }}>Valor</th></tr></thead>
+                      <tbody>
+                        <tr><td className="var">Hf total na lateral</td><td className="val">{results.Hftotal} m</td></tr>
+                        <tr><td className="var">Carga cinética (Hvel)</td><td className="val">{results.Hvel} m</td></tr>
+                        <tr><td className="var">Pressão no início da lateral (Ho)</td><td className="val">{results.Hin} m.c.a.</td></tr>
+                        <tr><td className="var">Pressão no ponto do Pivô (Hpp)</td><td className="val">{results.Hpp} m.c.a.</td></tr>
+                      </tbody>
+                    </table>
                   </div>
                 </>
               )}
@@ -464,35 +464,30 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                   <hr className="rpt-divider" />
                   <div className="rpt-section">
                     <div className="rpt-section-title">3. Método Trecho a Trecho</div>
-                    <div className="rpt-grid rpt-grid-2" style={{ marginBottom: "10px", alignItems: "start" }}>
-                      <div style={{ display: "grid", gap: "6px" }}>
-                        <div className="rpt-field"><label>Espaç. emissores</label><span className="v">{trechoState.Eem} m</span></div>
-                        <div className="rpt-field"><label>Coef. descarga</label><span className="v">{trechoState.Cd}</span></div>
-                        <div className="rpt-field"><label>Modelo regulador</label><span className="v">{trechoState.modelo || "—"}</span></div>
-                      </div>
-                      <div className="rpt-reg-params">
-                        <div className="rpt-reg-row"><span className="rp-label">a</span><span className="rp-value">{trechoState.a || "—"}</span></div>
-                        <div className="rpt-reg-row"><span className="rp-label">b</span><span className="rp-value">{trechoState.b || "—"}</span></div>
-                        <div className="rpt-reg-row"><span className="rp-label">c</span><span className="rp-value">{trechoState.c || "—"}</span></div>
-                        <div className="rpt-reg-row"><span className="rp-label">d</span><span className="rp-value">{trechoState.d || "—"}</span></div>
-                        <div className="rpt-reg-row"><span className="rp-label">f</span><span className="rp-value">{trechoState.fParam || "—"}</span></div>
-                      </div>
-                    </div>
+                    <div className="rpt-subhead">Dados de Entrada</div>
+                    <table className="rpt-dtable">
+                      <thead><tr><th>Variável</th><th style={{ textAlign: "right" }}>Valor</th></tr></thead>
+                      <tbody>
+                        <tr><td className="var">Espaçamento entre emissores</td><td className="val">{trechoState.Eem} m</td></tr>
+                        <tr><td className="var">Coeficiente de descarga</td><td className="val">{trechoState.Cd}</td></tr>
+                        <tr><td className="var">Modelo do regulador</td><td className="val">{trechoState.modelo || "—"}</td></tr>
+                        <tr><td className="var">Parâmetro a</td><td className="val">{trechoState.a || "—"}</td></tr>
+                        <tr><td className="var">Parâmetro b</td><td className="val">{trechoState.b || "—"}</td></tr>
+                        <tr><td className="var">Parâmetro c</td><td className="val">{trechoState.c || "—"}</td></tr>
+                        <tr><td className="var">Parâmetro d</td><td className="val">{trechoState.d || "—"}</td></tr>
+                        <tr><td className="var">Parâmetro f</td><td className="val">{trechoState.fParam || "—"}</td></tr>
+                      </tbody>
+                    </table>
 
-                    <div className="rpt-result-row" style={{ gridTemplateColumns: "1fr 1fr 1fr", marginTop: "10px" }}>
-                      <div className="rpt-inline-result">
-                        <span className="rlabel">Hf Total na lateral</span>
-                        <span className="rval">{trechoState.hfTotal}</span><span className="runit">m</span>
-                      </div>
-                      <div className="rpt-inline-result">
-                        <span className="rlabel">Ho — Pressão início lateral</span>
-                        <span className="rval">{trechoState.h0}</span><span className="runit">m.c.a.</span>
-                      </div>
-                      <div className="rpt-inline-result dark">
-                        <span className="rlabel">Hpp — Pressão no ponto do Pivô</span>
-                        <span className="rval">{trechoState.hpp}</span><span className="runit">m.c.a.</span>
-                      </div>
-                    </div>
+                    <div className="rpt-subhead">Resultados Hidráulicos</div>
+                    <table className="rpt-dtable highlight">
+                      <thead><tr><th>Variável</th><th style={{ textAlign: "right" }}>Valor</th></tr></thead>
+                      <tbody>
+                        <tr><td className="var">Hf Total na lateral</td><td className="val">{trechoState.hfTotal} m</td></tr>
+                        <tr><td className="var">Ho — Pressão início lateral</td><td className="val">{trechoState.h0} m.c.a.</td></tr>
+                        <tr><td className="var">Hpp — Pressão no ponto do Pivô</td><td className="val">{trechoState.hpp} m.c.a.</td></tr>
+                      </tbody>
+                    </table>
                   </div>
                 </>
               )}
