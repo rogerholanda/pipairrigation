@@ -110,8 +110,8 @@ body {
   color: #555;
   font-weight: 500;
 }
-.rpt-field label::after { content: " ="; font-weight: 600; color: #333; }
-.rpt-result-box .rlabel::after { content: " ="; }
+.rpt-field label::after { content: " ="; font-weight: 700; color: #1a4730; margin-left: 2px; }
+.rpt-result-box .rlabel::after { content: " ="; margin-left: 2px; }
 .rpt-field .v {
   font-size: 11px;
   font-weight: 600;
