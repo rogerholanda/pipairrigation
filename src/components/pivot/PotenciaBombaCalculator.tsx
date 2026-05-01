@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Zap } from "lucide-react";
+import { Zap, Pencil, RotateCcw } from "lucide-react";
 
 // K values for fittings
 const KA_CONCENTRICA = [0.3, 0.5, 0.8];
