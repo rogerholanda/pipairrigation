@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Droplets } from "lucide-react";
+import { Droplets, Printer } from "lucide-react";
+import { printReport, br } from "@/lib/printReport";
 import {
   TwoDiamInputs, DadosResult, TWO_DIAM_MATERIALS, TWO_DIAM_PIPE_SIZES,
   fmt, fmtBR, colebrook, calcFluidProps, NumInput, ResultField,
@@ -212,10 +213,79 @@ export default function DadosTab({ inputs, materialIdx, onUpdate, onSetMaterial,
         <div className="bg-destructive/10 text-destructive text-sm px-4 py-2 rounded-lg font-body">⚠ {error}</div>
       )}
 
-      <button onClick={calculate}
-        className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
-        <Droplets size={18} /> CALCULAR
-      </button>
+      <div className="flex gap-2">
+        <button onClick={calculate}
+          className="flex-1 gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
+          <Droplets size={18} /> CALCULAR
+        </button>
+        <button
+          onClick={() => {
+            if (!result) { alert("Calcule primeiro para gerar o relatório."); return; }
+            const methodLabel = inputs.method === 'half' ? 'Meio a meio'
+              : inputs.method === 'deniculi' ? 'Denículi' : 'Keller';
+            printReport({
+              calculator: "2 Diâmetros",
+              subtitle: "Dimensionamento de tubulação com dois diâmetros",
+              sections: [
+                {
+                  title: "1. Dados de Entrada",
+                  rows: [
+                    { label: "Comprimento total (LT)", value: br(inputs.LT, "m") },
+                    { label: "Espaçam. aspersores (Easp)", value: br(inputs.Easp, "m") },
+                    { label: "Distância principal", value: br(inputs.distpri, "m") },
+                    { label: "Vazão emissor (qem)", value: br(inputs.qem, "m³/h") },
+                    { label: "Material", value: TWO_DIAM_MATERIALS[materialIdx].label },
+                    { label: "Rugosidade absoluta (ε)", value: br(inputs.rgd, "mm") },
+                    { label: "Temperatura", value: br(inputs.Tempa, "°C") },
+                    { label: "Variação de vazão (Δq)", value: br(inputs.dq, "%") },
+                    { label: "Pressão de serviço (Ps)", value: br(inputs.Ps, "m.c.a.") },
+                    { label: "Altura do tubo (hast)", value: br(inputs.hast, "m") },
+                    { label: "Expoente (x)", value: br(inputs.epx) },
+                    { label: "Diâmetro superior (Dsup)", value: br(inputs.Dsup, "mm") },
+                    { label: "Diâmetro inferior (Dinf)", value: br(inputs.Dinf, "mm") },
+                    { label: "Topologia", value: inputs.topology === 'nivel' ? 'Em nível' : 'Em aclive' },
+                    ...(inputs.topology === 'aclive' ? [{ label: "Desnível", value: br(inputs.Desn, "m") }] : []),
+                    { label: "Método de cálculo", value: methodLabel },
+                  ],
+                },
+                {
+                  title: "2. Propriedades do Fluido",
+                  rows: [
+                    { label: "Viscosidade dinâmica (μ)", value: `${result.uc.toFixed(2)} × 10⁻³ N.s/m²` },
+                    { label: "Massa específica (ρ)", value: br(result.mespa.toFixed(2), "kg/m³") },
+                  ],
+                },
+                {
+                  title: "3. Resultados Globais",
+                  highlightLast: true,
+                  rows: [
+                    { label: "Decréscimo de carga permitido (Hmax)", value: br(result.Hmax.toFixed(2), "m") },
+                    { label: "Nº total de emissores (Ntem)", value: br(String(result.Ntem)) },
+                    { label: "Vazão total (Qt)", value: br(result.Qt.toFixed(2), "m³/h") },
+                    { label: "Variação máxima de pressão", value: br(result.varMaxPressao.toFixed(0), "%") },
+                    { label: "Diâmetro calculado (Dcalc)", value: br(result.Dcalc.toFixed(2), "mm") },
+                  ],
+                },
+                {
+                  title: "4. Segmentação dos Diâmetros",
+                  rows: [
+                    { label: "1º seg. — Comprimento", value: br(result.L1s.toFixed(0), "m") },
+                    { label: "1º seg. — Nº de emissores", value: br(String(result.Ne1s)) },
+                    { label: "1º seg. — Vazão", value: br(result.Qt.toFixed(2), "m³/h") },
+                    { label: "2º seg. — Comprimento", value: br(result.L2s.toFixed(0), "m") },
+                    { label: "2º seg. — Nº de emissores", value: br(String(result.Ne2s)) },
+                    { label: "2º seg. — Vazão", value: br(result.Q2s.toFixed(2), "m³/h") },
+                  ],
+                },
+              ],
+            });
+          }}
+          className="px-4 py-3 rounded-xl border border-border bg-muted text-foreground font-semibold font-body flex items-center justify-center gap-2 hover:border-primary hover:text-primary transition-colors"
+          title="Imprimir / Salvar PDF"
+        >
+          <Printer size={16} />
+        </button>
+      </div>
 
       {result && (
         <div className="space-y-3 pt-2">
