@@ -31,7 +31,7 @@ function CEInput({ label, value, onChange, placeholder }: { label: string; value
     <div>
       <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 font-body">{label}</label>
       <input type="number" value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} step="any"
-        className="w-full px-2 py-1.5 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+        className="w-full px-2 py-1.5 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
         style={{ borderColor: "hsl(var(--border))" }} />
     </div>
   );
