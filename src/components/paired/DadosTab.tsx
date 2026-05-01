@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Droplets } from "lucide-react";
+import { Droplets, Printer } from "lucide-react";
+import { printReport, br } from "@/lib/printReport";
 import {
   PairedInputs, DadosResult, PAIRED_MATERIALS, PAIRED_PIPE_SIZES, PAIRED_CONEXOES,
   fmt, fmtBR, colebrook, calcFluidProps, NumInput, ResultField,
@@ -239,10 +240,65 @@ export default function DadosTab({ inputs, setInputs, onResult }: Props) {
 
       {error && <div className="bg-destructive/10 text-destructive text-sm px-4 py-2 rounded-lg font-body">⚠ {error}</div>}
 
-      <button onClick={calculate}
-        className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
-        <Droplets size={18} /> Calcular
-      </button>
+      <div className="flex gap-2">
+        <button onClick={calculate}
+          className="flex-1 gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
+          <Droplets size={18} /> Calcular
+        </button>
+        <button
+          onClick={() => {
+            if (!result) { alert("Calcule primeiro para gerar o relatório."); return; }
+            printReport({
+              calculator: "Laterais Emparelhadas",
+              subtitle: "Dimensionamento de laterais emparelhadas",
+              sections: [
+                {
+                  title: "1. Dados de Entrada",
+                  rows: [
+                    { label: "Expoente (x)", value: br(inputs.exp) },
+                    { label: "Temperatura", value: br(inputs.Temp, "°C") },
+                    { label: "Conexão", value: br(inputs.conex, "mm") },
+                    { label: "Diâmetro interno (Di)", value: br(inputs.Di, "mm") },
+                    { label: "Comprimento total (Ltotal)", value: br(inputs.Ltotal, "m") },
+                    { label: "Espaçam. emissores (Eem)", value: br(inputs.Eem, "m") },
+                    { label: "Distância da 1ª planta (Dist1)", value: br(inputs.Dist1, "m") },
+                    { label: "Desnível", value: br(inputs.desn, "m") },
+                    { label: "Vazão emissor (qem)", value: br(inputs.qem, "L/h") },
+                    { label: "Altura tubo (hast)", value: br(inputs.hast, "m") },
+                    { label: "Variação de vazão (Vq)", value: br(inputs.vq, "%") },
+                    { label: "Material", value: PAIRED_MATERIALS[inputs.materialIdx].label },
+                    { label: "Rugosidade (ε)", value: br(inputs.Rug, "mm") },
+                    { label: "Pressão nominal (Pn)", value: br(inputs.Pn, "m.c.a.") },
+                    { label: "Unidade de vazão", value: inputs.flowUnit === "m3h" ? "m³/h" : "L/h" },
+                  ],
+                },
+                {
+                  title: "2. Resultados — Lateral",
+                  highlightLast: true,
+                  rows: [
+                    { label: "Número total de emissores (Nem)", value: br(result.Nem.toFixed(0)) },
+                    { label: "Vazão total (Qt)", value: br(result.Qt.toFixed(2)) },
+                    { label: "Velocidade (V)", value: br(result.Vel.toFixed(2), "m/s") },
+                    { label: "Número de Reynolds (Re)", value: br(String(result.Re)) },
+                    { label: "Expoente m", value: br(result.m.toFixed(0)) },
+                    { label: "Fator de atrito (f)", value: br(result.f.toFixed(4)) },
+                    { label: "Fa de Scaloppi", value: br(result.Fa.toFixed(3)) },
+                    { label: "HfL contínuo", value: br(result.Hfl.toFixed(2), "m") },
+                    { label: "HfL corrigido", value: br(result.Hflcor.toFixed(2), "m") },
+                    { label: "Desnível (Δz)", value: br(result.dz.toFixed(2), "m") },
+                    { label: "Variação de pressão admissível", value: br(result.Vpadm.toFixed(2), "m.c.a.") },
+                    { label: "Decréscimo de carga máximo (Hfladm)", value: br(result.Hfladm.toFixed(2), "m") },
+                  ],
+                },
+              ],
+            });
+          }}
+          className="px-4 py-3 rounded-xl border border-border bg-muted text-foreground font-semibold font-body flex items-center justify-center gap-2 hover:border-primary hover:text-primary transition-colors"
+          title="Imprimir / Salvar PDF"
+        >
+          <Printer size={16} />
+        </button>
+      </div>
 
       {result && (
         <div className="space-y-3">
