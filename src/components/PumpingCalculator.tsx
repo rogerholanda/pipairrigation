@@ -896,10 +896,13 @@ export default function PumpingCalculator() {
             <div className="bg-destructive/10 text-destructive text-sm px-4 py-2 rounded-lg font-body">⚠ {dError}</div>
           )}
 
-          <button onClick={calcDischarge} className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
-            <Gauge size={18} />
-            CALCULAR
-          </button>
+          <div className="flex gap-2">
+            <button onClick={calcDischarge} className="flex-1 gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
+              <Gauge size={18} />
+              CALCULAR
+            </button>
+            <PrintBtn />
+          </div>
 
           {dResults && (
             <div className="space-y-3 pt-2">
