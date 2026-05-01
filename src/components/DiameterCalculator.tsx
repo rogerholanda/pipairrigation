@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Ruler, Droplets } from "lucide-react";
+import { Ruler, Droplets, Printer } from "lucide-react";
+import { printReport, br } from "@/lib/printReport";
 
 interface DiamResults {
   diameter: string;
@@ -245,13 +246,69 @@ export default function DiameterCalculator() {
       )}
 
       {/* Calculate button */}
-      <button
-        onClick={calculate}
-        className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity"
-      >
-        <Ruler size={18} />
-        Calcular Diâmetro
-      </button>
+      <div className="flex gap-2">
+        <button
+          onClick={calculate}
+          className="flex-1 gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity"
+        >
+          <Ruler size={18} />
+          Calcular Diâmetro
+        </button>
+        <button
+          onClick={() => {
+            if (!results) { alert("Calcule primeiro para gerar o relatório."); return; }
+            printReport({
+              calculator: "Diâmetro",
+              subtitle: "Dimensionamento do diâmetro comercial da tubulação",
+              sections: [
+                {
+                  title: "1. Dados de Entrada",
+                  rows: [
+                    { label: "Vazão (Q)", value: br(flow, "m³/h") },
+                    { label: "Comprimento (L)", value: br(length, "m") },
+                    { label: "Desnível admissível (Δz)", value: br(headLossAllowed, "m") },
+                    { label: "Temperatura", value: br(temp, "°C") },
+                    { label: "Material da tubulação", value: DIAM_MATERIALS[materialIdx].label },
+                    { label: "Rugosidade absoluta (ε)", value: br(roughness, "mm") },
+                  ],
+                },
+                {
+                  title: "2. Coeficientes de Perda Localizada",
+                  rows: [
+                    { label: "Ke (entrada)", value: br(ke) },
+                    { label: "Ks (saída)", value: br(ks) },
+                    { label: "KRg (registro de gaveta)", value: br(krg) },
+                    { label: "Kc (curva 90°)", value: br(kc) },
+                    { label: "Soma ΣK", value: br((parseFloat(ke)+parseFloat(ks)+parseFloat(krg)+parseFloat(kc)).toFixed(2)) },
+                  ],
+                },
+                {
+                  title: "3. Propriedades do Fluido",
+                  rows: [
+                    { label: "Viscosidade dinâmica (μ)", value: `${br(results.viscosity)} × 10⁻³ N.s/m²` },
+                    { label: "Massa específica (ρ)", value: br(results.density, "kg/m³") },
+                  ],
+                },
+                {
+                  title: "4. Resultados",
+                  highlightLast: true,
+                  rows: [
+                    { label: "Velocidade (V)", value: br(results.velocity, "m/s") },
+                    { label: "Número de Reynolds (Re)", value: br(results.reynolds) },
+                    { label: "Fator de atrito (f)", value: br(results.frictionFactor) },
+                    { label: "Perda de carga (hf)", value: br(results.headLoss, "m.c.a.") },
+                    { label: "Diâmetro calculado (D)", value: br(results.diameter, "mm") },
+                  ],
+                },
+              ],
+            });
+          }}
+          className="px-4 py-3 rounded-xl border border-border bg-muted text-foreground font-semibold font-body flex items-center justify-center gap-2 hover:border-primary hover:text-primary transition-colors"
+          title="Imprimir / Salvar PDF"
+        >
+          <Printer size={16} />
+        </button>
+      </div>
 
       {/* Results */}
       {results && (

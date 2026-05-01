@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Droplets, ArrowUp, ArrowDown, Gauge, Pencil, RotateCcw } from "lucide-react";
+import { Droplets, ArrowUp, ArrowDown, Gauge, Pencil, RotateCcw, Printer } from "lucide-react";
+import { printReport, br } from "@/lib/printReport";
 
 // ── Constants ──
 const SUCTION_DIAMETERS = [48.1, 72.5, 97.6, 120, 144, 200, 250, 300, 350];
@@ -459,6 +460,111 @@ export default function PumpingCalculator() {
   const sRoughness = sCustomRoughness && sRoughnessValue !== "" ? parseFloat(sRoughnessValue) : PIPE_MATERIALS[sMaterialIdx].roughness;
   const dRoughness = dCustomRoughness && dRoughnessValue !== "" ? parseFloat(dRoughnessValue) : PIPE_MATERIALS[dMaterialIdx].roughness;
 
+  const handlePrint = () => {
+    if (!sResults && !dResults) {
+      alert("Calcule primeiro a aba Sucção (e opcionalmente o Recalque) para gerar o relatório.");
+      return;
+    }
+    const sections: any[] = [];
+    if (sResults) {
+      sections.push({
+        title: "1. Sucção — Dados de Entrada",
+        rows: [
+          { label: "Vazão (Q)", value: br(sFlow, "m³/h") },
+          { label: "Comprimento (L)", value: br(sLength, "m") },
+          { label: "Diâmetro (D)", value: br(sDiameter, "mm") },
+          { label: "Material", value: PIPE_MATERIALS[sMaterialIdx].label },
+          { label: "Rugosidade absoluta (ε)", value: br(String(sRoughness), "mm") },
+          { label: "Diâmetro do bocal", value: br(sNozzleDiam, "mm") },
+          { label: "Altitude", value: br(sAltitude, "m") },
+          { label: "Temperatura", value: br(sTemp, "°C") },
+          { label: "NPSH requerido", value: br(sNpsh, "m") },
+          { label: "Ke / Kc / Kreg / Kvpc / Krex", value: `${br(sKe)} / ${br(sKc)} / ${br(sKvg)} / ${br(sKvpc)} / ${br(sKrex)}` },
+        ],
+      });
+      sections.push({
+        title: "2. Sucção — Resultados",
+        highlightLast: true,
+        rows: [
+          { label: "Viscosidade dinâmica (μ)", value: `${sResults.viscosity} × 10⁻³ N.s/m²` },
+          { label: "Massa específica (ρ)", value: br(sResults.density, "kg/m³") },
+          { label: "Peso específico (γ)", value: br(sResults.specificWeight, "N/m³") },
+          { label: "Velocidade (V)", value: br(sResults.velocity, "m/s") },
+          { label: "Número de Reynolds (Re)", value: br(sResults.reynolds) },
+          { label: "Fator de atrito (f)", value: br(sResults.frictionFactor) },
+          { label: "Regime de escoamento", value: sResults.regime },
+          { label: "Perda de carga distribuída", value: br(sResults.distributedLoss, "m") },
+          { label: "Perda de carga singular", value: br(sResults.singularLoss, "m") },
+          { label: "Pressão atmosférica local (Patm)", value: br(sResults.atmPressure, "m") },
+          { label: "Pressão de vapor d'água", value: br(sResults.vaporPressure, "m") },
+          { label: "Altura crítica de sucção", value: br(sResults.criticalHeight, "m") },
+          { label: "NPSH disponível", value: br(sResults.npshAvailable, "m") },
+          ...(sResults.inletPressureMca ? [
+            { label: "Pressão na admissão (KPa)", value: br(sResults.inletPressureKpa) },
+            { label: "Pressão na admissão (mca)", value: br(sResults.inletPressureMca) },
+          ] : []),
+          { label: "Perda de carga total na sucção", value: br(sResults.totalLoss, "m") },
+        ],
+      });
+      if (sResults.message) {
+        sections.push({
+          title: "Observação",
+          rows: [{ label: "Resultado da análise", value: sResults.message }],
+        });
+      }
+    }
+    if (dResults) {
+      sections.push({
+        title: "3. Recalque — Dados de Entrada",
+        rows: [
+          { label: "Comprimento (L)", value: br(dLength, "m") },
+          { label: "Diâmetro (D)", value: br(dDiameter, "mm") },
+          { label: "Material", value: PIPE_MATERIALS[dMaterialIdx].label },
+          { label: "Rugosidade absoluta (ε)", value: br(String(dRoughness), "mm") },
+          { label: "Altura estática de recalque", value: br(dAer, "m") },
+          { label: "Distância entrada/saída da bomba", value: br(dD, "m") },
+          { label: "Diâmetro do bocal", value: br(dNozzleDiam, "mm") },
+          { label: "Diâmetro reg. gaveta", value: br(dGavDiam, "mm") },
+          { label: "Tipo de descarga", value: dDischargeType },
+          { label: "Pressão de serviço/saída adicional", value: br(dPsd, "m") },
+          { label: "Filtros", value: br(dFilt, "m") },
+          { label: "Rendimento da bomba", value: br(dEff, "%") },
+          { label: "Krg / Kvr / Kc / Kac / Kagd", value: `${br(dKvgr)} / ${br(dKvr)} / ${br(dKcr)} / ${br(dKac)} / ${br(dKagd)}` },
+        ],
+      });
+      sections.push({
+        title: "4. Recalque — Resultados",
+        highlightLast: true,
+        rows: [
+          { label: "Velocidade (V)", value: br(dResults.velocity, "m/s") },
+          { label: "Número de Reynolds (Re)", value: br(dResults.reynolds) },
+          { label: "Fator de atrito (f)", value: br(dResults.frictionFactor) },
+          { label: "Perda de carga distribuída", value: br(dResults.distributedLoss, "m") },
+          { label: "Perda de carga singular", value: br(dResults.singularLoss, "m") },
+          { label: "Perda de carga total no recalque", value: br(dResults.totalLoss, "m") },
+          { label: "Perda de carga total no sistema", value: br(dResults.totalSystemLoss, "m") },
+          { label: "Altura dinâmica no recalque", value: br(dResults.dynamicHeight, "m") },
+          { label: "Pressão na saída (KPa)", value: br(dResults.outletPressureKpa) },
+          { label: "Pressão na saída (mca)", value: br(dResults.outletPressureMca) },
+          { label: "Altura manométrica da bomba (Hb)", value: br(dResults.pumpHead, "m") },
+          { label: "Potência da bomba", value: `${br(dResults.powerKw, "kW")} / ${br(dResults.powerCv, "CV")}` },
+        ],
+      });
+    }
+    printReport({
+      calculator: "Bombeamento",
+      subtitle: "Dimensionamento hidráulico de sucção e recalque",
+      sections,
+    });
+  };
+
+  const PrintBtn = () => (
+    <button onClick={handlePrint} title="Imprimir / Salvar PDF"
+      className="px-4 py-3 rounded-xl border border-border bg-muted text-foreground font-semibold font-body flex items-center justify-center gap-2 hover:border-primary hover:text-primary transition-colors">
+      <Printer size={16} />
+    </button>
+  );
+
   return (
     <div className="p-6 space-y-5">
       {/* Sub-tabs */}
@@ -617,10 +723,13 @@ export default function PumpingCalculator() {
             <div className="bg-destructive/10 text-destructive text-sm px-4 py-2 rounded-lg font-body">⚠ {sError}</div>
           )}
 
-          <button onClick={calcSuction} className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
-            <Droplets size={18} />
-            CALCULAR
-          </button>
+          <div className="flex gap-2">
+            <button onClick={calcSuction} className="flex-1 gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
+              <Droplets size={18} />
+              CALCULAR
+            </button>
+            <PrintBtn />
+          </div>
 
           {sResults && (
             <div className="space-y-3 pt-2">
@@ -787,10 +896,13 @@ export default function PumpingCalculator() {
             <div className="bg-destructive/10 text-destructive text-sm px-4 py-2 rounded-lg font-body">⚠ {dError}</div>
           )}
 
-          <button onClick={calcDischarge} className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
-            <Gauge size={18} />
-            CALCULAR
-          </button>
+          <div className="flex gap-2">
+            <button onClick={calcDischarge} className="flex-1 gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
+              <Gauge size={18} />
+              CALCULAR
+            </button>
+            <PrintBtn />
+          </div>
 
           {dResults && (
             <div className="space-y-3 pt-2">
