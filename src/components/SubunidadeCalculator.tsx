@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Droplets, AlertTriangle } from "lucide-react";
+import { Droplets, AlertTriangle, Printer } from "lucide-react";
+import { printReport, br } from "@/lib/printReport";
 
 type LatOrientation = "horizontal" | "ascendente" | "descendente";
 type TercOrientation = "horizontal" | "ascendente" | "descendente";
@@ -737,10 +738,121 @@ export default function SubunidadeCalculator() {
             </div>
           )}
 
-          <button onClick={calculate}
-            className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
-            <Droplets size={18} /> Calcular
-          </button>
+          <div className="flex gap-2">
+            <button onClick={calculate}
+              className="flex-1 gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
+              <Droplets size={18} /> Calcular
+            </button>
+            <button
+              onClick={() => {
+                if (!results) { alert("Calcule primeiro para gerar o relatório."); return; }
+                printReport({
+                  calculator: "Rede de Distribuição/Irrigação",
+                  subtitle: "Dimensionamento de subunidade — lateral, terciária e uniformidade",
+                  sections: [
+                    {
+                      title: "1. Dados de Entrada",
+                      rows: [
+                        { label: "Vazão emissor (Qem)", value: br(qem, "L/h") },
+                        { label: "Pressão de serviço (Ps)", value: br(ps, "m.c.a.") },
+                        { label: "Coef. descarga (k)", value: br(kCoef) },
+                        { label: "Expoente (x)", value: br(expx) },
+                        { label: "Conexão", value: br(conex, "mm") },
+                        { label: "CVf", value: br(cv) },
+                        { label: "Compr. lateral", value: br(llat, "m") },
+                        { label: "Diâmetro lateral", value: br(dlat, "mm") },
+                        { label: "Material lateral", value: materialLat },
+                        { label: "Rugosidade lateral", value: br(rugLatVal, "mm") },
+                        { label: "Orientação lateral", value: latOrient },
+                        { label: "Desnível lateral (Δz)", value: br(dzlat, "m") },
+                        { label: "Variação vazão (Vq)", value: br(vq, "%") },
+                        { label: "Nº emissores/planta", value: br(ngp) },
+                        { label: "Espaçam. emissores", value: br(eem, "m") },
+                        { label: "Compr. terciária", value: br(ltc, "m") },
+                        { label: "Diâmetro terciária", value: br(dtc, "mm") },
+                        { label: "Material terciária", value: materialTerc },
+                        { label: "Rugosidade terciária", value: br(rugTcVal, "mm") },
+                        { label: "Orientação terciária", value: tercOrient },
+                        { label: "Desnível terciária", value: br(dztc, "m") },
+                        { label: "Espaçam. laterais", value: br(eltc, "m") },
+                        { label: "Temperatura", value: br(temp, "°C") },
+                        { label: "Distância principal", value: br(distpri, "m") },
+                        { label: "Distância coletor", value: br(distc, "m") },
+                      ],
+                    },
+                    {
+                      title: "2. Propriedades do Fluido",
+                      rows: [
+                        { label: "Viscosidade dinâmica (μ)", value: `${br(String(results.viscosity * 1000))} × 10⁻³ N.s/m²` },
+                        { label: "Massa específica (ρ)", value: br(String(results.density), "kg/m³") },
+                      ],
+                    },
+                    {
+                      title: "3. Lateral",
+                      rows: [
+                        { label: "Nº emissores (Nel)", value: br(String(results.nel)) },
+                        { label: "Vazão lateral (Ql)", value: br(String(results.ql), "L/h") },
+                        { label: "Velocidade", value: br(String(results.velLat), "m/s") },
+                        { label: "Reynolds", value: br(String(results.reLat)) },
+                        { label: "Fator de atrito (f)", value: br(String(results.fLat)) },
+                        { label: "Hf lateral", value: br(String(results.hfLat), "m") },
+                        { label: "Hf eq. (com conexões)", value: br(String(results.hfeqLat), "m") },
+                        { label: "F Christiansen", value: br(String(results.fchLat)) },
+                        { label: "Fa Scaloppi", value: br(String(results.fscpLat)) },
+                        { label: "Hf corrigida lateral", value: br(String(results.hflcrg), "m") },
+                        { label: "Razão Δz/Hf lateral", value: br(String(results.rLat)) },
+                      ],
+                    },
+                    {
+                      title: "4. Terciária",
+                      rows: [
+                        { label: "Nº laterais (Nltc)", value: br(String(results.nltc)) },
+                        { label: "Vazão terciária (Qtc)", value: br(String(results.qtc), "L/h") },
+                        { label: "Velocidade", value: br(String(results.velTc), "m/s") },
+                        { label: "Reynolds", value: br(String(results.reTc)) },
+                        { label: "Fator de atrito (f)", value: br(String(results.fTc)) },
+                        { label: "Hf terciária", value: br(String(results.hfTc), "m") },
+                        { label: "Hf eq. terciária", value: br(String(results.hfeqTc), "m") },
+                        { label: "F Christiansen", value: br(String(results.fchTc)) },
+                        { label: "Fa Scaloppi", value: br(String(results.fscpTc)) },
+                        { label: "Hf corrigida terciária", value: br(String(results.hftcor), "m") },
+                        { label: "Razão Δz/Hf terciária", value: br(String(results.rTc)) },
+                      ],
+                    },
+                    {
+                      title: "5. Subunidade — Pressões e Uniformidade",
+                      highlightLast: true,
+                      rows: [
+                        { label: "H início lateral média", value: br(String(results.hIniLatMedia), "m.c.a.") },
+                        { label: "H início terciária", value: br(String(results.hIniTerc), "m.c.a.") },
+                        { label: "H final terciária", value: br(String(results.hFinalTerc), "m.c.a.") },
+                        { label: "Variação na terciária", value: br(String(results.varTerc), "m.c.a.") },
+                        { label: "H início lateral acoplada", value: br(String(results.hIniLatAcop), "m.c.a.") },
+                        { label: "H final lateral acoplada", value: br(String(results.hFinLatAcop), "m.c.a.") },
+                        { label: "H mínima lateral acoplada", value: br(String(results.hMinLatAcop), "m.c.a.") },
+                        { label: "Variação na lateral", value: br(String(results.varLat), "m.c.a.") },
+                        { label: "Pressão máxima (Hmax)", value: br(String(results.hMax), "m.c.a.") },
+                        { label: "Pressão mínima (Hmin)", value: br(String(results.hMin), "m.c.a.") },
+                        { label: "Variação na subunidade", value: br(String(results.varSub), "m.c.a.") },
+                        { label: "Variação admissível terciária", value: br(String(results.varAdmTerc), "m.c.a.") },
+                        { label: "Vazão máxima", value: br(String(results.qMax), "L/h") },
+                        { label: "Vazão mínima", value: br(String(results.qMin), "L/h") },
+                        { label: "Localização Hmin terciária", value: results.locMinTerc },
+                        { label: "Localização Hmin lateral", value: results.locMinLat },
+                        { label: "Situação", value: results.situacao },
+                        { label: "Projeto adequado?", value: results.projectOk ? "Sim" : "Não" },
+                        { label: "Uniformidade de aplicação", value: br(String(results.uniformity), "%") },
+                      ],
+                    },
+                  ],
+                });
+              }}
+              className="px-4 py-3 rounded-xl border border-border bg-muted text-foreground font-semibold font-body flex items-center justify-center gap-2 hover:border-primary hover:text-primary transition-colors"
+              title="Imprimir / Salvar PDF"
+            >
+              <Printer size={16} />
+            </button>
+          </div>
         </div>
       )}
 
