@@ -456,10 +456,113 @@ export default function LocalizedCalculator() {
             </div>
           )}
 
-          <button onClick={calculate}
-            className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
-            <Droplets size={18} /> Calcular
-          </button>
+          <div className="flex gap-2">
+            <button onClick={calculate}
+              className="flex-1 gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
+              <Droplets size={18} /> Calcular
+            </button>
+            <button
+              onClick={() => {
+                if (!results) { alert("Calcule primeiro para gerar o relatório."); return; }
+                const inputSection = {
+                  title: "1. Dados de Entrada",
+                  rows: [
+                    { label: "Material da lateral", value: materialLat },
+                    { label: "Rugosidade lateral (ε)", value: br(roughnessLat, "mm") },
+                    { label: "Compr. 1ª lateral", value: br(llat1, "m") },
+                    { label: "Compr. última lateral", value: br(llatu, "m") },
+                    { label: "Diâmetro interno", value: br(di, "mm") },
+                    { label: "Conexão emissor", value: br(conex, "mm") },
+                    { label: "Espaçam. emissores", value: br(eem, "m") },
+                    { label: "Vazão emissor (Qem)", value: br(qem, "L/h") },
+                    { label: "Pressão de serviço (PSem)", value: br(psem, "m.c.a.") },
+                    { label: "Temperatura", value: br(temp, "°C") },
+                    { label: "Material terciária", value: materialTerc },
+                    { label: "Rugosidade terciária (ε)", value: br(roughnessTerc, "mm") },
+                    { label: "Compr. terciária", value: br(lterc, "m") },
+                    { label: "Espaçam. laterais", value: br(elat, "m") },
+                    { label: "Diâm. 1º segmento", value: br(dseg1, "mm") },
+                    ...(tercOption === "2" ? [{ label: "Diâm. 2º segmento", value: br(dseg2, "mm") }] : []),
+                    { label: "Configuração da terciária", value: tercOption === "1" ? "1 Diâmetro" : "2 Diâmetros" },
+                    { label: "Expoente (x)", value: br(expVal) },
+                    { label: "Coef. descarga (Cd·k)", value: br(cdk) },
+                    { label: "Variação de vazão", value: br(vq, "%") },
+                    { label: "Nº emissores/planta", value: br(nep) },
+                    { label: "CVf", value: br(cvf) },
+                  ],
+                };
+                const fluidSection = {
+                  title: "2. Propriedades do Fluido",
+                  rows: [
+                    { label: "Viscosidade dinâmica (μ)", value: `${results.viscosity} × 10⁻³ N.s/m²` },
+                    { label: "Massa específica (ρ)", value: br(String(results.density), "kg/m³") },
+                  ],
+                };
+                const lateralSection = {
+                  title: "3. Resultados — Lateral",
+                  highlightLast: true,
+                  rows: [
+                    { label: "Vazão 1ª lateral", value: br(String(results.qLat1), "L/h") },
+                    { label: "Vazão última lateral", value: br(String(results.qLatu), "L/h") },
+                    { label: "Velocidade", value: br(String(results.vel), "m/s") },
+                    { label: "Número de Reynolds (Re)", value: br(String(results.nr)) },
+                    { label: "Fator de atrito (f)", value: br(String(results.f)) },
+                    { label: "Nº emissores (Nte)", value: br(String(results.nte)) },
+                    { label: "F Christiansen", value: br(String(results.fch)) },
+                    { label: "Fa Scaloppi", value: br(String(results.fa)) },
+                    { label: "Compr. equivalente (Leq)", value: br(String(results.leq), "m") },
+                    { label: "VH", value: br(String(results.vh)) },
+                    { label: "Hf máximo permitido", value: br(String(results.hfmax), "m.c.a.") },
+                    { label: "Carga pressão início lateral (HiL)", value: br(String(results.hiL), "m.c.a.") },
+                    { label: "Perda de carga na lateral (Hf)", value: br(String(results.hflat), "m.c.a.") },
+                  ],
+                };
+                const tercRows: any[] = [
+                  { label: "Número de laterais", value: br(String(results.nLat)) },
+                  { label: "Vazão na entrada da terciária (QT)", value: br(String(results.qt), "L/h") },
+                  { label: "Fator de atrito (f)", value: br(String(results.ft)) },
+                  { label: "Fator F' (Keller)", value: br(String(results.frC)) },
+                  { label: "Fator de forma (Sf)", value: br(String(results.sf)) },
+                  { label: "Hf na terciária", value: br(results.hfT.toFixed(3), "m") },
+                ];
+                if (results.isTwoDiam && results.hf1s !== undefined) {
+                  tercRows.push(
+                    { label: "Vazão 1ª lateral 2º seg.", value: br(String(results.qseg2), "L/h") },
+                    { label: "Vazão 2º seg.", value: br(String(results.Qes2), "L/h") },
+                    { label: "Sf-II", value: br(String(results.Sf2s)) },
+                    { label: "Fr2s", value: br(String(results.Fr2s)) },
+                    { label: "Hf com D1 maior", value: br(results.hfComD1?.toFixed(2), "m") },
+                    { label: "Hf com D2 menor", value: br(results.hfComD2?.toFixed(3), "m") },
+                    { label: "Hf 1º seg.", value: br(results.hf1s.toFixed(2), "m") },
+                    { label: "Hf 2º seg.", value: br(results.hfdm?.toFixed(3), "m") },
+                  );
+                }
+                tercRows.push({ label: "Decréscimo total na terciária (HfTerc)", value: br(String(results.hfTerc), "m.c.a.") });
+                const tercSection = { title: "4. Resultados — Terciária", highlightLast: true, rows: tercRows };
+                const subSection = {
+                  title: "5. Subunidade — Pressões e Uniformidade",
+                  highlightLast: true,
+                  rows: [
+                    { label: "Carga de pressão máxima (HTerc)", value: br(results.hTerc.toFixed(2), "m.c.a.") },
+                    { label: "Carga de pressão mínima (Hmins)", value: br(results.hmins.toFixed(2), "m.c.a.") },
+                    { label: "Variação de carga de pressão", value: br(results.vhs.toFixed(2), "m.c.a.") },
+                    { label: "Variação admissível na terciária", value: br(results.vhTerc.toFixed(2), "m.c.a.") },
+                    { label: "Vazão mínima (qmin)", value: br(String(results.qmin), "L/h") },
+                    { label: "Uniformidade de aplicação", value: br(String(results.uniformity), "%") },
+                  ],
+                };
+                printReport({
+                  calculator: "Sub Trapezoidal",
+                  subtitle: "Dimensionamento de subunidade trapezoidal de irrigação",
+                  sections: [inputSection, fluidSection, lateralSection, tercSection, subSection],
+                });
+              }}
+              className="px-4 py-3 rounded-xl border border-border bg-muted text-foreground font-semibold font-body flex items-center justify-center gap-2 hover:border-primary hover:text-primary transition-colors"
+              title="Imprimir / Salvar PDF"
+            >
+              <Printer size={16} />
+            </button>
+          </div>
         </div>
       )}
 
