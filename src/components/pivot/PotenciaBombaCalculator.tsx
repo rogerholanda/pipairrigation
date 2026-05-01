@@ -224,11 +224,11 @@ export default function PotenciaBombaCalculator({ Qin, Hpp, rug, Tempag, state, 
           <PBInput label="Alt. geom. de recalque (m)" value={state.Zrec} onChange={v => set("Zrec", v)} placeholder="Ex: 5" />
         </div>
         <div className="grid grid-cols-5 gap-2 items-end">
-          <PBSelect label="Ka concêntrica" value={state.Ampc} onChange={v => set("Ampc", v)} options={KA_CONCENTRICA} />
-          <PBSelect label="Kv retenção" value={state.Rgv} onChange={v => set("Rgv", v)} options={KV_RETENCAO} />
-          <PBSelect label="Kr gaveta" value={state.Vrt} onChange={v => set("Vrt", v)} options={KR_GAVETA} />
-          <PBSelect label="Kcurva 90°" value={state.Curv} onChange={v => set("Curv", v)} options={K_CURVA_90} />
-          <PBSelect label="Ka gradual" value={state.aplg} onChange={v => set("aplg", v)} options={KA_GRADUAL} />
+          <PBComboField label="Ka concêntrica" value={state.Ampc} onChange={v => set("Ampc", v)} options={KA_CONCENTRICA} />
+          <PBComboField label="Kv retenção" value={state.Rgv} onChange={v => set("Rgv", v)} options={KV_RETENCAO} />
+          <PBComboField label="Kr gaveta" value={state.Vrt} onChange={v => set("Vrt", v)} options={KR_GAVETA} />
+          <PBComboField label="Kcurva 90°" value={state.Curv} onChange={v => set("Curv", v)} options={K_CURVA_90} />
+          <PBComboField label="Ka gradual" value={state.aplg} onChange={v => set("aplg", v)} options={KA_GRADUAL} />
         </div>
       </fieldset>
 
