@@ -412,14 +412,63 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
             </div>
           )}
 
-          {/* Calculate button */}
-          <button
-            onClick={calculate}
-            className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity"
-          >
-            <Droplets size={18} />
-            Calcular Perda de Carga
-          </button>
+          {/* Calculate button + Print button */}
+          <div className="flex gap-2">
+            <button
+              onClick={calculate}
+              className="flex-1 gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity"
+            >
+              <Droplets size={18} />
+              Calcular Perda de Carga
+            </button>
+            <button
+              onClick={() => {
+                if (!results) { alert("Calcule primeiro para gerar o relatório."); return; }
+                printReport({
+                  calculator: "Colebrook",
+                  subtitle: "Perda de carga em tubulações pelo método Colebrook-White",
+                  sections: [
+                    {
+                      title: "1. Dados de Entrada",
+                      rows: [
+                        { label: "Vazão", value: br(flow, flowUnit === "m3h" ? "m³/h" : "L/h") },
+                        { label: "Comprimento", value: br(length, "m") },
+                        { label: "Temperatura", value: br(temp, "°C") },
+                        { label: "Diâmetro interno", value: br(diameter, "mm") },
+                        { label: "Material da tubulação", value: PIPE_MATERIALS[materialIdx].name },
+                        { label: "Rugosidade absoluta (ε)", value: br(roughness, "mm") },
+                      ],
+                    },
+                    {
+                      title: "2. Propriedades do Fluido",
+                      rows: [
+                        { label: "Viscosidade dinâmica (μ)", value: `${br(results.viscosity)} × 10⁻³ N.s/m²` },
+                        { label: "Massa específica (ρ)", value: br(results.density, "kg/m³") },
+                      ],
+                    },
+                    {
+                      title: "3. Resultados Hidráulicos",
+                      highlightLast: true,
+                      rows: [
+                        { label: "Velocidade (V)", value: br(results.velocity, "m/s") },
+                        { label: "Número de Reynolds (Re)", value: br(results.reynolds) },
+                        { label: "Rugosidade hidráulica adimensional", value: br(results.rugosidade) },
+                        { label: "Fator de atrito (f)", value: br(results.frictionFactor) },
+                        { label: "Regime de escoamento", value: results.regime },
+                        ...(results.tubeType ? [{ label: "Tipo de tubo", value: results.tubeType }] : []),
+                        { label: "Método de cálculo", value: results.frictionMethod },
+                        { label: "Perda de carga (hf)", value: br(results.headLoss, "m.c.a.") },
+                      ],
+                    },
+                  ],
+                });
+              }}
+              className="px-4 py-3 rounded-xl border border-border bg-muted text-foreground font-semibold font-body flex items-center justify-center gap-2 hover:border-primary hover:text-primary transition-colors"
+              title="Imprimir / Salvar PDF"
+            >
+              <Printer size={16} />
+            </button>
+          </div>
 
           {/* Results */}
           {results && (
