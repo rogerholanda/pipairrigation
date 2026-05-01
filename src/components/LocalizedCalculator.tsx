@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Droplets, AlertTriangle } from "lucide-react";
+import { Droplets, AlertTriangle, Printer } from "lucide-react";
+import { printReport, br } from "@/lib/printReport";
 
 const LATERAL_DIAMETERS = [5.3, 13, 13.6, 16, 20.6, 26.9];
 const TERTIARY_DIAMETERS = [35.7, 48.1, 72.5, 97.6];
