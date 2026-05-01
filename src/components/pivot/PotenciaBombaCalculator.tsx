@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Zap } from "lucide-react";
+import { Zap, Pencil, RotateCcw } from "lucide-react";
 
 // K values for fittings
 const KA_CONCENTRICA = [0.3, 0.5, 0.8];
@@ -77,6 +77,46 @@ function PBSelect({ label, value, onChange, options }: { label: string; value: s
         style={{ borderColor: "hsl(var(--border))" }}>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
+    </div>
+  );
+}
+
+function PBComboField({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: number[] }) {
+  const [custom, setCustom] = useState(false);
+  const isPreset = !custom && options.map(String).includes(value);
+  return (
+    <div>
+      <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 font-body">{label}</label>
+      <div className="flex gap-1">
+        {custom ? (
+          <input
+            type="number"
+            step="any"
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            className="w-full px-2 py-1.5 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
+            style={{ borderColor: "hsl(var(--border))" }}
+          />
+        ) : (
+          <select
+            value={isPreset ? value : ""}
+            onChange={e => onChange(e.target.value)}
+            className="w-full px-1 py-1.5 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+            style={{ borderColor: "hsl(var(--border))" }}
+          >
+            {options.map(o => <option key={o} value={String(o)}>{o}</option>)}
+          </select>
+        )}
+        <button
+          type="button"
+          onClick={() => { const next = !custom; setCustom(next); if (!next) { onChange(String(options[0])); } }}
+          title={custom ? "Usar valores predefinidos" : "Digitar valor personalizado"}
+          className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+          style={{ borderColor: "hsl(var(--border))" }}
+        >
+          {custom ? <RotateCcw size={11} /> : <Pencil size={11} />}
+        </button>
+      </div>
     </div>
   );
 }
@@ -184,11 +224,11 @@ export default function PotenciaBombaCalculator({ Qin, Hpp, rug, Tempag, state, 
           <PBInput label="Alt. geom. de recalque (m)" value={state.Zrec} onChange={v => set("Zrec", v)} placeholder="Ex: 5" />
         </div>
         <div className="grid grid-cols-5 gap-2 items-end">
-          <PBSelect label="Ka concêntrica" value={state.Ampc} onChange={v => set("Ampc", v)} options={KA_CONCENTRICA} />
-          <PBSelect label="Kv retenção" value={state.Rgv} onChange={v => set("Rgv", v)} options={KV_RETENCAO} />
-          <PBSelect label="Kr gaveta" value={state.Vrt} onChange={v => set("Vrt", v)} options={KR_GAVETA} />
-          <PBSelect label="Kcurva 90°" value={state.Curv} onChange={v => set("Curv", v)} options={K_CURVA_90} />
-          <PBSelect label="Ka gradual" value={state.aplg} onChange={v => set("aplg", v)} options={KA_GRADUAL} />
+          <PBComboField label="Ka concêntrica" value={state.Ampc} onChange={v => set("Ampc", v)} options={KA_CONCENTRICA} />
+          <PBComboField label="Kv retenção" value={state.Rgv} onChange={v => set("Rgv", v)} options={KV_RETENCAO} />
+          <PBComboField label="Kr gaveta" value={state.Vrt} onChange={v => set("Vrt", v)} options={KR_GAVETA} />
+          <PBComboField label="Kcurva 90°" value={state.Curv} onChange={v => set("Curv", v)} options={K_CURVA_90} />
+          <PBComboField label="Ka gradual" value={state.aplg} onChange={v => set("aplg", v)} options={KA_GRADUAL} />
         </div>
       </fieldset>
 
