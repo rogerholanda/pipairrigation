@@ -62,7 +62,7 @@ function PBInput({ label, value, onChange, placeholder }: { label: string; value
     <div>
       <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 font-body">{label}</label>
       <input type="number" value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} step="any"
-        className="w-full px-2 py-1.5 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+        className="w-full px-2 py-1.5 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
         style={{ borderColor: "hsl(var(--border))" }} />
     </div>
   );
@@ -242,11 +242,11 @@ export default function PotenciaBombaCalculator({ Qin, Hpp, rug, Tempag, state, 
         <div className="grid grid-cols-2 gap-3">
           <PBSelect label="Diâm. bocal de sucção da bomba (mm)" value={state.Dbsuc} onChange={v => set("Dbsuc", v)} options={DIAMETROS_BOCAL} />
         </div>
-        <div className="grid grid-cols-4 gap-2">
-          <PBSelect label="Kr excêntrica" value={state.Rex} onChange={v => set("Rex", v)} options={K_EXCENTRICA} />
-          <PBSelect label="Kv pé c/ crivo" value={state.Vpc} onChange={v => set("Vpc", v)} options={KV_PE_CRIVO} />
-          <PBSelect label="Kr gaveta" value={state.Rgs} onChange={v => set("Rgs", v)} options={KR_GAVETA_SUC} />
-          <PBSelect label="K curvas" value={state.Csuc} onChange={v => set("Csuc", v)} options={K_CURVAS_SUC} />
+        <div className="grid grid-cols-4 gap-2 items-end">
+          <PBComboField label="Kr excêntrica" value={state.Rex} onChange={v => set("Rex", v)} options={K_EXCENTRICA} />
+          <PBComboField label="Kv pé c/ crivo" value={state.Vpc} onChange={v => set("Vpc", v)} options={KV_PE_CRIVO} />
+          <PBComboField label="Kr gaveta" value={state.Rgs} onChange={v => set("Rgs", v)} options={KR_GAVETA_SUC} />
+          <PBComboField label="K curvas" value={state.Csuc} onChange={v => set("Csuc", v)} options={K_CURVAS_SUC} />
         </div>
       </fieldset>
 
