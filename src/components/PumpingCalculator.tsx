@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Droplets, ArrowUp, ArrowDown, Gauge, Pencil, RotateCcw } from "lucide-react";
+import { Droplets, ArrowUp, ArrowDown, Gauge, Pencil, RotateCcw, Printer } from "lucide-react";
+import { printReport, br } from "@/lib/printReport";
 
 // ── Constants ──
 const SUCTION_DIAMETERS = [48.1, 72.5, 97.6, 120, 144, 200, 250, 300, 350];
