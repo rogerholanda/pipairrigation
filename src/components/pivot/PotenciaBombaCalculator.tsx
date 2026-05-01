@@ -81,6 +81,46 @@ function PBSelect({ label, value, onChange, options }: { label: string; value: s
   );
 }
 
+function PBComboField({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: number[] }) {
+  const [custom, setCustom] = useState(false);
+  const isPreset = !custom && options.map(String).includes(value);
+  return (
+    <div>
+      <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 font-body">{label}</label>
+      <div className="flex gap-1">
+        {custom ? (
+          <input
+            type="number"
+            step="any"
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            className="w-full px-2 py-1.5 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
+            style={{ borderColor: "hsl(var(--border))" }}
+          />
+        ) : (
+          <select
+            value={isPreset ? value : ""}
+            onChange={e => onChange(e.target.value)}
+            className="w-full px-1 py-1.5 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+            style={{ borderColor: "hsl(var(--border))" }}
+          >
+            {options.map(o => <option key={o} value={String(o)}>{o}</option>)}
+          </select>
+        )}
+        <button
+          type="button"
+          onClick={() => { const next = !custom; setCustom(next); if (!next) { onChange(String(options[0])); } }}
+          title={custom ? "Usar valores predefinidos" : "Digitar valor personalizado"}
+          className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+          style={{ borderColor: "hsl(var(--border))" }}
+        >
+          {custom ? <RotateCcw size={11} /> : <Pencil size={11} />}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function ResultBox({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-muted rounded-xl p-3">
