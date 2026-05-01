@@ -492,7 +492,49 @@ export default function PivotReport({ inputs, results, trechoState, potenciaStat
                 </>
               )}
 
+              {/* ── 4. Potência da Bomba ── */}
+              {potenciaState && (potenciaState.Hmt || potenciaState.Pb || potenciaState.Pabs) && (
+                <>
+                  <hr className="rpt-divider" />
+                  <div className="rpt-section">
+                    <div className="rpt-section-title">4. Potência da Bomba</div>
+                    <table className="rpt-dtable highlight">
+                      <thead><tr><th>Variável</th><th style={{ textAlign: "right" }}>Valor</th></tr></thead>
+                      <tbody>
+                        <tr><td className="var">Altura dinâmica na sucção</td><td className="val">{potenciaState.Hftsuc || "—"} m</td></tr>
+                        <tr><td className="var">Velocidade da água na sucção</td><td className="val">{potenciaState.Vsuc_res || "—"} m/s</td></tr>
+                        <tr><td className="var">Altura dinâmica no recalque</td><td className="val">{potenciaState.Hftadu || "—"} m</td></tr>
+                        <tr><td className="var">Velocidade da água no recalque</td><td className="val">{potenciaState.Vad_res || "—"} m/s</td></tr>
+                        <tr><td className="var">Altura manométrica total (Hmt)</td><td className="val">{potenciaState.Hmt || "—"} m</td></tr>
+                        <tr><td className="var">Potência no eixo (Pb)</td><td className="val">{potenciaState.Pb || "—"} CV</td></tr>
+                        <tr><td className="var">Potência absorvida (Pabs)</td><td className="val">{potenciaState.Pabs || "—"} CV</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
 
+              {/* ── 5. Custo de Energia ── */}
+              {custoState && (custoState.custoFinal || custoState.energiaTotal || custoState.volumeBombeado) && (
+                <>
+                  <hr className="rpt-divider" />
+                  <div className="rpt-section">
+                    <div className="rpt-section-title">5. Custo de Energia</div>
+                    <table className="rpt-dtable highlight">
+                      <thead><tr><th>Variável</th><th style={{ textAlign: "right" }}>Valor</th></tr></thead>
+                      <tbody>
+                        <tr><td className="var">Volume bombeado</td><td className="val">{custoState.volumeBombeado || "—"} m³</td></tr>
+                        <tr><td className="var">Energia total</td><td className="val">{custoState.energiaTotal || "—"} kWh</td></tr>
+                        <tr><td className="var">Custo da energia</td><td className="val">R$ {custoState.custoEnergia || "—"}</td></tr>
+                        <tr><td className="var">Custo da demanda</td><td className="val">R$ {custoState.custoDemanda || "—"}</td></tr>
+                        <tr><td className="var">Custo final da energia</td><td className="val">R$ {custoState.custoFinal || "—"}</td></tr>
+                        <tr><td className="var">Custo por m³</td><td className="val">R$ {custoState.custoPorM3 || "—"}/m³</td></tr>
+                        <tr><td className="var">Custo por mm d'água</td><td className="val">R$ {custoState.custoPorMm || "—"}/mm</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
 
               {/* ── Footer ── */}
               <div className="rpt-footer">
