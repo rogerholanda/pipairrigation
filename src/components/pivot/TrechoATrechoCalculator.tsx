@@ -147,25 +147,20 @@ export default function TrechoATrechoCalculator({ shared, state, onStateChange, 
       const gr = Qc / Qinic;
       const Leq = LT / (1 - gr) ** 0.5;
 
-      // Determine diameter per row index (1-based, row 1 = last/outermost emissor)
-      // In the VBA: first row = emissor Nem (outermost), last row = emissor 1 (innermost)
-      // getDiam: given the row index (1-based), what diameter?
+      // Determine diameter per emissor based on its physical position (Ri) from the pivot.
+      // emissor 1 = innermost (closest to pivot), emissor Nem = outermost.
+      // Position approx: Ri = em*eem + distpri (≈ em*eem near pivot).
       const getDiam = (emissorNum: number): number => {
         if (diamConfig === "1") return Diu;
+        // Approximate radial position of this emissor from the pivot center
+        const pos = emissorNum * eem + distpri;
         if (diamConfig === "2") {
-          // Segmento 1 (interno, próximo ao pivô) usa Diu=Ds1, comprimento Lseg1
-          // Segmento 2 (externo, próximo ao canhão) usa D2s=Ds2
-          // Emissores internos (números baixos) ocupam Lseg1 → Diu
-          // Emissores externos (números altos) ocupam Lseg2 → D2s
-          const NinDiu = Math.floor(Lseg1 / eem); // emissores internos com Diu
-          return emissorNum <= NinDiu ? Diu : D2s;
+          // Segmento 1 interno (Diu=Ds1) até Lseg1; depois D2s=Ds2
+          return pos <= Lseg1 ? Diu : D2s;
         }
         if (diamConfig === "3") {
-          // Segmento 1 interno (Diu), Segmento 2 meio (D2s), Segmento 3 externo (D3s)
-          const NinDiu = Math.floor(Lseg1 / eem);
-          const NinD2s = Math.floor(Lseg2 / eem);
-          if (emissorNum <= NinDiu) return Diu;
-          if (emissorNum <= NinDiu + NinD2s) return D2s;
+          if (pos <= Lseg1) return Diu;
+          if (pos <= Lseg1 + Lseg2) return D2s;
           return D3s;
         }
         return Diu;
