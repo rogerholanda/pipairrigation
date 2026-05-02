@@ -153,16 +153,20 @@ export default function TrechoATrechoCalculator({ shared, state, onStateChange, 
       const getDiam = (emissorNum: number): number => {
         if (diamConfig === "1") return Diu;
         if (diamConfig === "2") {
-          // Nest = Lseg2/Eem  (VBA line 706: Nest = Format(Lseg2/Eem))
-          const Nest = Math.floor(Lseg1 / eem); // emissores no trecho final (D2s)
-          return emissorNum <= Nest ? D2s : Diu;
+          // Segmento 1 (interno, próximo ao pivô) usa Diu=Ds1, comprimento Lseg1
+          // Segmento 2 (externo, próximo ao canhão) usa D2s=Ds2
+          // Emissores internos (números baixos) ocupam Lseg1 → Diu
+          // Emissores externos (números altos) ocupam Lseg2 → D2s
+          const NinDiu = Math.floor(Lseg1 / eem); // emissores internos com Diu
+          return emissorNum <= NinDiu ? Diu : D2s;
         }
         if (diamConfig === "3") {
-          const Neut = Math.floor(Lseg3 / eem);
-          const Neti = Math.floor(Lseg2 / eem);
-          if (emissorNum <= Neut) return D3s;
-          if (emissorNum <= Neut + Neti) return D2s;
-          return Diu;
+          // Segmento 1 interno (Diu), Segmento 2 meio (D2s), Segmento 3 externo (D3s)
+          const NinDiu = Math.floor(Lseg1 / eem);
+          const NinD2s = Math.floor(Lseg2 / eem);
+          if (emissorNum <= NinDiu) return Diu;
+          if (emissorNum <= NinDiu + NinD2s) return D2s;
+          return D3s;
         }
         return Diu;
       };
