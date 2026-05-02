@@ -133,8 +133,10 @@ export default function TrechoATrechoCalculator({ shared, state, onStateChange, 
 
       const LT = Rut + Clb;
       const Acb = parseFloat((3.14159 * LT ** 2 / 10000).toFixed(2));
-      const Qb = parseFloat((10 * Acb * Lap / (efir * Tgi)).toFixed(2));
-      const Qinic = Qb + Qc;
+      // Qinic = vazão total na entrada do pivô (área irrigada × lâmina)
+      // Qb (lateral) = vazão distribuída pelos emissores ao longo da lateral = Qinic - Qc (vazão do canhão)
+      const Qinic = parseFloat((10 * Acb * Lap / (efir * Tgi)).toFixed(2));
+      const Qb = parseFloat((Qinic - Qc).toFixed(2));
 
       // VBA: Nem = Int(LT/Eem) + 1
       const Nem = Math.floor(LT / eem) + 1;
