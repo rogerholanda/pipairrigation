@@ -134,19 +134,22 @@ export default function CustoEnergiaCalculator({ Qin, Tgi, PabsCV, state, onStat
         </div>
         <div className="grid grid-cols-2 gap-3">
           <CEInput label="Horas em horário fora de ponta" value={state.horasForaPonta} onChange={v => set("horasForaPonta", v)} placeholder="Ex: 18" />
-          <CEInput label="Horas em horário de ponta" value={state.horasPonta} onChange={v => set("horasPonta", v)} placeholder="Ex: 6" />
+          {state.tarifaHoro === "Azul" ? (
+            <CEInput label="Preço da Demanda NP (R$/kW)" value={state.tarifaBandeira} onChange={v => set("tarifaBandeira", v)} placeholder="Ex: 8.00" />
+          ) : <div />}
         </div>
         <div className="grid grid-cols-2 gap-3">
+          <CEInput label="Horas em horário de ponta" value={state.horasPonta} onChange={v => set("horasPonta", v)} placeholder="Ex: 6" />
           <CESelect label="Potência do motor comercial (CV)" value={state.potenciaComercial} onChange={v => set("potenciaComercial", v)} options={POTENCIAS_MOTOR} />
-          <CESelect label="Período do ano" value={state.periodo} onChange={v => set("periodo", v)} options={PERIODOS} />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <CEInput label="Tarifa em horário de ponta (R$/kW)" value={state.tarifaPonta} onChange={v => set("tarifaPonta", v)} placeholder="Ex: 0.85" />
-          <CEInput label="Tarifa em horário fora de ponta (R$/kW)" value={state.tarifaForaPonta} onChange={v => set("tarifaForaPonta", v)} placeholder="Ex: 0.45" />
+          <CESelect label="Período do ano" value={state.periodo} onChange={v => set("periodo", v)} options={PERIODOS} />
         </div>
-        {state.tarifaHoro === "Azul" && (
-          <CEInput label="Preço da Demanda NP (R$/kW)" value={state.tarifaBandeira} onChange={v => set("tarifaBandeira", v)} placeholder="Ex: 8.00" />
-        )}
+        <div className="grid grid-cols-2 gap-3">
+          <CEInput label="Tarifa em horário fora de ponta (R$/kW)" value={state.tarifaForaPonta} onChange={v => set("tarifaForaPonta", v)} placeholder="Ex: 0.45" />
+          <div />
+        </div>
       </fieldset>
 
       {error && (
