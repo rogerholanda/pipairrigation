@@ -134,9 +134,7 @@ export default function CustoEnergiaCalculator({ Qin, Tgi, PabsCV, state, onStat
         </div>
         <div className="grid grid-cols-2 gap-3">
           <CEInput label="Horas em horário fora de ponta" value={state.horasForaPonta} onChange={v => set("horasForaPonta", v)} placeholder="Ex: 18" />
-          {state.tarifaHoro === "Azul" ? (
-            <CEInput label="Preço da Demanda NP (R$/kW)" value={state.tarifaBandeira} onChange={v => set("tarifaBandeira", v)} placeholder="Ex: 8.00" />
-          ) : <div />}
+          <CEInput label="Preço da Demanda NP (R$/kW)" value={state.tarifaBandeira} onChange={v => set("tarifaBandeira", v)} placeholder="Ex: 44.28" />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <CEInput label="Horas em horário de ponta" value={state.horasPonta} onChange={v => set("horasPonta", v)} placeholder="Ex: 6" />
