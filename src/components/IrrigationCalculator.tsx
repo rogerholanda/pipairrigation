@@ -386,7 +386,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
                   onChange={e => { if (customRoughness) setRoughness(e.target.value); }}
                   readOnly={!customRoughness}
                   placeholder="Ex: 0.003334"
-                  className={`flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner ${!customRoughness ? 'cursor-default' : ''}`}
+                  className={`max-w-xs px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner ${!customRoughness ? 'cursor-default' : ''}`}
                   style={{ borderColor: "hsl(var(--border))" }}
                 />
                 <button
