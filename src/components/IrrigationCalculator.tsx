@@ -312,7 +312,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
                 style={{ borderColor: "hsl(var(--border))" }}
               />
             </div>
-            <div className="max-w-xs">
+            <div className="w-full max-w-xs">
               <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
                 Diâmetro Interno (mm)
               </label>
