@@ -308,7 +308,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
                 type="number"
                 value={temp}
                 onChange={e => setTemp(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
+                className="w-full max-w-xs px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
                 style={{ borderColor: "hsl(var(--border))" }}
               />
             </div>
