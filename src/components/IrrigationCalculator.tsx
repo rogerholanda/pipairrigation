@@ -271,7 +271,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
         {/* Colebrook tab */}
         {activeTab === "colebrook" && <div className="p-6 space-y-5">
           {/* Flow unit */}
-          <div>
+          <div className="max-w-lg mx-auto">
             <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 font-body">
               Unidade de Vazão
             </label>
