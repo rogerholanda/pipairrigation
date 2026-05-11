@@ -293,13 +293,13 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
           </div>
 
           {/* Inputs row 1 */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
             <InputField label={`Vazão (${flowUnit === "m3h" ? "m³/h" : "L/h"})`} value={flow} onChange={setFlow} placeholder="Ex: 2.5" />
             <InputField label="Comprimento (m)" value={length} onChange={setLength} placeholder="Ex: 100" />
           </div>
 
           {/* Inputs row 2 */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
             <div className="max-w-xs">
               <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
                 Temperatura (°C)
@@ -312,7 +312,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
                 style={{ borderColor: "hsl(var(--border))" }}
               />
             </div>
-            <div>
+            <div className="max-w-xs">
               <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
                 Diâmetro Interno (mm)
               </label>
@@ -323,14 +323,14 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
                     value={diameter}
                     onChange={e => setDiameter(e.target.value)}
                     placeholder="Ex: 26.9"
-                    className="max-w-xs px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
+                    className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
                     style={{ borderColor: "hsl(var(--border))" }}
                   />
                 ) : (
                   <select
                     value={diameter}
                     onChange={e => setDiameter(e.target.value)}
-                    className="max-w-xs px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                    className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
                     style={{ borderColor: "hsl(var(--border))" }}
                   >
                     {PIPE_DIAMETERS.map(d => <option key={d} value={d}>{d} mm</option>)}
