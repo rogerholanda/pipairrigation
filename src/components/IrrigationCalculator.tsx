@@ -330,7 +330,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
                   <select
                     value={diameter}
                     onChange={e => setDiameter(e.target.value)}
-                    className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                    className="max-w-xs px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
                     style={{ borderColor: "hsl(var(--border))" }}
                   >
                     {PIPE_DIAMETERS.map(d => <option key={d} value={d}>{d} mm</option>)}
