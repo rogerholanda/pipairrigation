@@ -300,7 +300,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
 
           {/* Inputs row 2 */}
           <div className="grid grid-cols-2 gap-4">
-            <div>
+            <div className="max-w-xs">
               <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
                 Temperatura (°C)
               </label>
@@ -308,7 +308,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
                 type="number"
                 value={temp}
                 onChange={e => setTemp(e.target.value)}
-                className="w-full max-w-xs px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
+                className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
                 style={{ borderColor: "hsl(var(--border))" }}
               />
             </div>
@@ -505,7 +505,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
 
 function InputField({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
-    <div>
+    <div className="max-w-xs">
       <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
         {label}
       </label>
@@ -514,7 +514,7 @@ function InputField({ label, value, onChange, placeholder }: { label: string; va
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full max-w-xs px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground no-spinner"
+        className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground no-spinner"
         style={{ borderColor: "hsl(var(--border))" }}
       />
     </div>
