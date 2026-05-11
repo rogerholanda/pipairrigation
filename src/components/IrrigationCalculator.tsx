@@ -375,7 +375,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
             <p className="text-xs text-muted-foreground mt-1.5 font-body">
               {material.name}
             </p>
-            <div className="mt-3 max-w-xs">
+            <div className="mt-3 mx-auto max-w-xs">
               <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
                 Rugosidade Absoluta (mm)
               </label>
