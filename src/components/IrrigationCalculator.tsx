@@ -353,7 +353,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
           </div>
 
           {/* Material */}
-          <div>
+          <div className="max-w-lg mx-auto">
             <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 font-body">
               Material da Tubulação
             </label>
@@ -375,7 +375,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
             <p className="text-xs text-muted-foreground mt-1.5 font-body">
               {material.name}
             </p>
-            <div className="mt-3">
+            <div className="mt-3 max-w-xs">
               <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
                 Rugosidade Absoluta (mm)
               </label>
@@ -386,7 +386,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
                   onChange={e => { if (customRoughness) setRoughness(e.target.value); }}
                   readOnly={!customRoughness}
                   placeholder="Ex: 0.003334"
-                  className={`max-w-xs px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner ${!customRoughness ? 'cursor-default' : ''}`}
+                  className={`flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner ${!customRoughness ? 'cursor-default' : ''}`}
                   style={{ borderColor: "hsl(var(--border))" }}
                 />
                 <button
