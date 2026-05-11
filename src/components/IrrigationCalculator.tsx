@@ -308,7 +308,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
                 type="number"
                 value={temp}
                 onChange={e => setTemp(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
+                className="w-full max-w-xs px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
                 style={{ borderColor: "hsl(var(--border))" }}
               />
             </div>
@@ -323,14 +323,14 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
                     value={diameter}
                     onChange={e => setDiameter(e.target.value)}
                     placeholder="Ex: 26.9"
-                    className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
+                    className="max-w-xs px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
                     style={{ borderColor: "hsl(var(--border))" }}
                   />
                 ) : (
                   <select
                     value={diameter}
                     onChange={e => setDiameter(e.target.value)}
-                    className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                    className="max-w-xs px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
                     style={{ borderColor: "hsl(var(--border))" }}
                   >
                     {PIPE_DIAMETERS.map(d => <option key={d} value={d}>{d} mm</option>)}
@@ -386,7 +386,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
                   onChange={e => { if (customRoughness) setRoughness(e.target.value); }}
                   readOnly={!customRoughness}
                   placeholder="Ex: 0.003334"
-                  className={`flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner ${!customRoughness ? 'cursor-default' : ''}`}
+                  className={`max-w-xs px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner ${!customRoughness ? 'cursor-default' : ''}`}
                   style={{ borderColor: "hsl(var(--border))" }}
                 />
                 <button
@@ -514,7 +514,7 @@ function InputField({ label, value, onChange, placeholder }: { label: string; va
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground no-spinner"
+        className="w-full max-w-xs px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground no-spinner"
         style={{ borderColor: "hsl(var(--border))" }}
       />
     </div>
