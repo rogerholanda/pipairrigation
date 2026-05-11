@@ -505,7 +505,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
 
 function InputField({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
-    <div className="max-w-xs">
+    <div className="w-full max-w-xs">
       <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
         {label}
       </label>
