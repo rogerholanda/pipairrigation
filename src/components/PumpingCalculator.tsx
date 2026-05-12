@@ -649,7 +649,7 @@ export default function PumpingCalculator() {
             <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-2 font-body">
               Peças / Singularidades
             </legend>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <Field label="Kentrada">
                 <ComboInput value={sKe} onChange={setSKe} options={S_KE_OPTIONS} placeholder="0.5" />
               </Field>
@@ -659,6 +659,8 @@ export default function PumpingCalculator() {
               <Field label="Kregistro">
                 <ComboInput value={sKvg} onChange={setSKvg} options={S_KVG_OPTIONS} placeholder="0.2" />
               </Field>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
               <Field label="Kvpé-crivo">
                 <ComboInput value={sKvpc} onChange={setSKvpc} options={S_KVPC_OPTIONS} placeholder="10" />
               </Field>
