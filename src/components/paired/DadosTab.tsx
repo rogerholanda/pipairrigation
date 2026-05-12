@@ -213,7 +213,7 @@ export default function DadosTab({ inputs, setInputs, onResult }: Props) {
               type="number"
               value={inputs.qem}
               onChange={e => set("qem")(e.target.value)}
-              className="flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
+              className="w-1/3 max-w-xs px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner"
               style={{ borderColor: "hsl(var(--border))" }}
             />
           </div>
