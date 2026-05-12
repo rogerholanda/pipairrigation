@@ -398,7 +398,7 @@ export default function PivotCalculator() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <PInput label="Comp. tubo de subida — LTs (m)" value={LTs} onChange={setLTs} placeholder="Ex: 3" />
-            <PInput label="Desnível tubo de subida — Alts (m)" value={Alts} onChange={setAlts} placeholder="Ex: 3" />
+            <PInput label="ALTURA DO TUBO DE SUBIDA — ALTS (M)" value={Alts} onChange={setAlts} placeholder="Ex: 3" />
           </div>
 
           {/* Material */}
