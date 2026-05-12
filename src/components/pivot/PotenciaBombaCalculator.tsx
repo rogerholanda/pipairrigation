@@ -244,9 +244,11 @@ export default function PotenciaBombaCalculator({ Qin, Hpp, rug, Tempag, state, 
         <div className="grid grid-cols-2 gap-3">
           <PBSelect label="Diâm. bocal de sucção da bomba (mm)" value={state.Dbsuc} onChange={v => set("Dbsuc", v)} options={DIAMETROS_BOCAL} />
         </div>
-        <div className="grid grid-cols-4 gap-2 items-end">
+        <div className="grid grid-cols-2 gap-2 items-end">
           <PBComboField label="Kr excêntrica" value={state.Rex} onChange={v => set("Rex", v)} options={K_EXCENTRICA} />
           <PBComboField label="Kv pé c/ crivo" value={state.Vpc} onChange={v => set("Vpc", v)} options={KV_PE_CRIVO} />
+        </div>
+        <div className="grid grid-cols-2 gap-2 items-end">
           <PBComboField label="Kr gaveta" value={state.Rgs} onChange={v => set("Rgs", v)} options={KR_GAVETA_SUC} />
           <PBComboField label="K curvas" value={state.Csuc} onChange={v => set("Csuc", v)} options={K_CURVAS_SUC} />
         </div>
