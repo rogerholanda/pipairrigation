@@ -293,14 +293,14 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
           </div>
 
           {/* Inputs row 1 */}
-          <div className="flex flex-col items-center gap-4 max-w-xs mx-auto">
+          <div className="grid grid-cols-2 gap-4">
             <InputField label={`Vazão (${flowUnit === "m3h" ? "m³/h" : "L/h"})`} value={flow} onChange={setFlow} placeholder="Ex: 2.5" />
             <InputField label="Comprimento (m)" value={length} onChange={setLength} placeholder="Ex: 100" />
           </div>
 
           {/* Inputs row 2 */}
-          <div className="flex flex-col items-center gap-4 max-w-xs mx-auto">
-            <div className="w-full max-w-xs">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="w-full">
               <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
                 Temperatura (°C)
               </label>
@@ -312,7 +312,7 @@ export default function IrrigationCalculator({ open, onClose }: IrrigationCalcul
                 style={{ borderColor: "hsl(var(--border))" }}
               />
             </div>
-            <div className="w-full max-w-xs">
+            <div className="w-full">
               <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
                 Diâmetro Interno (mm)
               </label>
