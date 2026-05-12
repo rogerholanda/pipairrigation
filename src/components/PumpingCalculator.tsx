@@ -656,7 +656,7 @@ export default function PumpingCalculator() {
               <Field label="CURVA/UNIÃO">
                 <ComboInput value={sKc} onChange={setSKc} options={S_KC_OPTIONS} placeholder="0.4" />
               </Field>
-              <Field label="Kregistro">
+              <Field label="REGISTRO">
                 <ComboInput value={sKvg} onChange={setSKvg} options={S_KVG_OPTIONS} placeholder="0.2" />
               </Field>
             </div>
