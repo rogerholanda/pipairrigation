@@ -653,7 +653,7 @@ export default function PumpingCalculator() {
               <Field label="ENTRADA">
                 <ComboInput value={sKe} onChange={setSKe} options={S_KE_OPTIONS} placeholder="0.5" />
               </Field>
-              <Field label="Kcurva/união">
+              <Field label="RED. EXCÊNTRICA">
                 <ComboInput value={sKc} onChange={setSKc} options={S_KC_OPTIONS} placeholder="0.4" />
               </Field>
               <Field label="Kregistro">
