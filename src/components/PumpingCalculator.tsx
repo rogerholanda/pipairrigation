@@ -861,7 +861,7 @@ export default function PumpingCalculator() {
             <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-2 font-body">
               Peças / Singularidades
             </legend>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <Field label="Krgaveta">
                 <ComboInput value={dKvgr} onChange={setDKvgr} options={D_KVGR_OPTIONS} placeholder="0.2" />
               </Field>
@@ -871,6 +871,8 @@ export default function PumpingCalculator() {
               <Field label="Kcurvas">
                 <ComboInput value={dKcr} onChange={setDKcr} options={D_KCR_OPTIONS} placeholder="0.4" />
               </Field>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
               <Field label="Ka concêntrica">
                 <ComboInput value={dKac} onChange={setDKac} options={D_KAC_OPTIONS} placeholder="0.3" />
               </Field>
