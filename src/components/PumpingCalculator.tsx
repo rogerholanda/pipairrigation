@@ -661,7 +661,7 @@ export default function PumpingCalculator() {
               </Field>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <Field label="Kvpé-crivo">
+              <Field label="VPÉ-CRIVO">
                 <ComboInput value={sKvpc} onChange={setSKvpc} options={S_KVPC_OPTIONS} placeholder="10" />
               </Field>
               <Field label="Kr excêntrica">
