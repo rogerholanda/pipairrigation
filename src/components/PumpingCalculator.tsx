@@ -650,7 +650,7 @@ export default function PumpingCalculator() {
               Peças / Singularidades
             </legend>
             <div className="grid grid-cols-3 gap-2">
-              <Field label="RED. EXCÊNTRICA">
+              <Field label="ENTRADA">
                 <ComboInput value={sKe} onChange={setSKe} options={S_KE_OPTIONS} placeholder="0.5" />
               </Field>
               <Field label="Kcurva/união">
