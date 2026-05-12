@@ -664,7 +664,7 @@ export default function PumpingCalculator() {
               <Field label="VPÉ-CRIVO">
                 <ComboInput value={sKvpc} onChange={setSKvpc} options={S_KVPC_OPTIONS} placeholder="10" />
               </Field>
-              <Field label="Kr excêntrica">
+              <Field label="RED. EXCÊNTRICA">
                 <ComboInput value={sKrex} onChange={setSKrex} options={S_KREX_OPTIONS} placeholder="0.2" />
               </Field>
             </div>
