@@ -227,7 +227,7 @@ export default function Index() {
                       <Icon size={16} className="text-primary" />
                       <h3 className="font-display font-semibold text-foreground">{sys.title}</h3>
                     </div>
-                    <p className={cn("text-xs text-muted-foreground font-body leading-relaxed", sys.title !== "Gotejamento" && "text-justify")}>{sys.desc}</p>
+                    <p className={`text-xs text-muted-foreground font-body leading-relaxed ${sys.title !== "Gotejamento" ? "text-justify" : ""}`}>{sys.desc}</p>
                   </div>
                 </div>
               );
