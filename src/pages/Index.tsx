@@ -57,6 +57,7 @@ const irrigationTypes = [
     title: "Pivô Central",
     desc: "É o sistema em que a tubulação lateral é sustentada por torres com propulsão própria, que se deslocam desenvolvendo órbitas circulares em torno da torre central.",
     img: pivotImg,
+    img2: pivotImg2,
     icon: Leaf,
     efficiency: "80–90%",
   },
