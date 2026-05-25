@@ -218,7 +218,14 @@ export default function Index() {
               return (
                 <div key={sys.title} className="bg-card rounded-2xl overflow-hidden shadow-card border border-border group hover:-translate-y-1 transition-transform duration-300">
                   <div className="relative h-44 overflow-hidden">
-                    <img src={sys.img} alt={sys.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    {(sys as any).img2 ? (
+                      <div className="flex w-full h-full">
+                        <img src={sys.img} alt={sys.title} className="w-1/2 h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <img src={(sys as any).img2} alt={sys.title} className="w-1/2 h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      </div>
+                    ) : (
+                      <img src={sys.img} alt={sys.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    )}
                     <div className="absolute inset-0 gradient-hero opacity-40" />
                     <div className="absolute top-3 right-3 bg-primary/90 text-primary-foreground text-xs font-bold font-body px-2.5 py-1 rounded-full">
                       {sys.efficiency}
