@@ -123,9 +123,9 @@ export default function Index() {
             José Orlando Piauilino Ferreira
           </div>
           <h1 className="font-display text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
-            Engenharia dos<br />
+            Programas Computacionais<br />
             <span className="text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(90deg, hsl(152 80% 70%), hsl(200 80% 75%))" }}>
-              Sistemas de Irrigação
+              para Irrigação
             </span>
           </h1>
           <p className="text-white/80 text-lg md:text-xl mb-10 max-w-2xl mx-auto font-body font-light">
