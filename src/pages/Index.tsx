@@ -85,7 +85,7 @@ export default function Index() {
           <div className="flex items-center gap-2.5">
             <Droplets size={22} className="text-primary" />
             <span className="font-display font-semibold text-foreground text-base leading-tight">
-              Eng. Sistemas de Irrigação
+              Computação para Irrigação
             </span>
           </div>
           <div className="hidden md:flex items-center gap-6 text-sm font-body text-muted-foreground">
