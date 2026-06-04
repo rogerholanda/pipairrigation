@@ -317,7 +317,7 @@ export default function Index() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <Droplets size={20} className="text-primary" style={{ color: "hsl(152 55% 55%)" }} />
-              <span className="font-display font-semibold text-white/90">Engenharia dos Sistemas de Irrigação</span>
+              <span className="font-display font-semibold text-white/90">Programas Computacionais para Irrigação</span>
             </div>
             <div className="text-center">
               <p className="text-white/50 text-xs font-body">
