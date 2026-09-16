@@ -2,92 +2,76 @@ import { useState } from "react";
 import { Droplets, AlertTriangle, Printer } from "lucide-react";
 import { printReport, br } from "@/lib/printReport";
 
-type LatOrientation = "horizontal" | "ascendente" | "descendente";
-type TercOrientation = "horizontal" | "ascendente" | "descendente";
+type Orientation = "nivel" | "ascendente" | "descendente";
 
-const LATERAL_DIAMETERS = [5.3, 13, 13.6, 16, 20.6, 26.9, 35.7];
-const TERTIARY_DIAMETERS = [48.1, 72.5, 97.6];
+const LATERAL_DIAMETERS = ["5.3", "13", "13.6", "16", "20.6", "26.9", "35.7"];
+const TERTIARY_DIAMETERS = ["48.1", "72.5", "97.6"];
 const CONNECTION_SIZES = ["3.8", "5", "7.6"];
 const CVF_OPTIONS = ["0.03", "0.05", "0.07"];
 
 interface SubResults {
-  // Fluid
-  viscosity: number; density: number;
   // Lateral
-  nel: number; ql: number; velLat: number; reLat: number; fLat: number;
-  hfLat: number; hfeqLat: number; m: number; fchLat: number; fscpLat: number;
+  ql: number; velLat: number; reLat: number; fLat: number;
+  hfLat: number; hfeqLat: number; mLat: number; fscpLat: number;
   hflcrg: number; rLat: number;
-  // Tertiary
+  // Terciária
   nltc: number; qtc: number; velTc: number; reTc: number; fTc: number;
-  hfTc: number; hfeqTc: number; fchTc: number; fscpTc: number;
+  hfTc: number; hfeqTc: number; mTc: number; fscpTc: number;
   hftcor: number; rTc: number;
-  // Subunit intermediates
-  ilat: number; jlat: number; itc: number; jtc: number;
-  // Subunit pressures
+  // Subunidade
   hIniLatMedia: number; hIniTerc: number; hFinalTerc: number; varTerc: number;
-  hIniLatAcop: number; hFinLatAcop: number;
-  hMinLatAcop: number; varLat: number;
+  hIniLatAcop: number; hFinLatAcop: number; hMinLatAcop: number; varLat: number;
   hMax: number; hMin: number; varSub: number; varAdmTerc: number;
-  // Flow & uniformity
   qMax: number; qMin: number; uniformity: number;
-  // Location strings
   locMinTerc: string; locMinLat: string; situacao: string;
-  // Project assessment
   projectOk: boolean;
 }
 
+// Brazilian format with fixed decimals
+const fmt = (v: number, dec: number) =>
+  v.toLocaleString("pt-BR", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+
 export default function SubunidadeCalculator() {
-  const [subTab, setSubTab] = useState<"lateral" | "terciaria" | "subunidade">("lateral");
+  const [subTab, setSubTab] = useState<"dados" | "calculos" | "analise">("dados");
 
-  // Orientation options
-  const [latOrient, setLatOrient] = useState<LatOrientation>("horizontal");
-  const [tercOrient, setTercOrient] = useState<TercOrientation>("horizontal");
+  // Orientations
+  const [tercOrient, setTercOrient] = useState<Orientation>("nivel");
+  const [latOrient, setLatOrient] = useState<Orientation>("nivel");
 
-  // Material
-  const [materialLat, setMaterialLat] = useState<"PEBD">("PEBD");
+  // Do Emissor
+  const [qem, setQem] = useState("");
+  const [cv, setCv] = useState("0.03");
+  const [ps, setPs] = useState("");
+  const [conex, setConex] = useState("3.8");
+  const [kCoef, setKCoef] = useState("");
+  const [expx, setExpx] = useState("");
+
+  // Da Terciária
+  const [dztc, setDztc] = useState("");
+  const [ltc, setLtc] = useState("");
+  const [distc, setDistc] = useState("");
+  const [temp, setTemp] = useState("20");
+  const [dtc, setDtc] = useState("48.1");
   const [materialTerc, setMaterialTerc] = useState<"PEBD" | "PVC">("PEBD");
-  const [customRugLat, setCustomRugLat] = useState(false);
-  const [rugLatVal, setRugLatVal] = useState("0.0015");
+  const [eltc, setEltc] = useState("");
   const [customRugTc, setCustomRugTc] = useState(false);
   const [rugTcVal, setRugTcVal] = useState("0.0015");
 
-  // Inputs
-  const [qem, setQem] = useState("");
-  const [ps, setPs] = useState("");
-  const [kCoef, setKCoef] = useState("");
-  const [expx, setExpx] = useState("");
-  const [conex, setConex] = useState("3.8");
-  const [cv, setCv] = useState("0.03");
+  // Da Lateral
+  const [dzlat, setDzlat] = useState("");
   const [llat, setLlat] = useState("");
-  const [dlat, setDlat] = useState("26.9");
-  const [dzlat, setDzlat] = useState("0");
-  const [vq, setVq] = useState("");
-  const [ngp, setNgp] = useState("");
-  const [eem, setEem] = useState("");
-  const [ltc, setLtc] = useState("");
-  const [dtc, setDtc] = useState("48.1");
-  const [dztc, setDztc] = useState("0");
-  const [eltc, setEltc] = useState("");
-  const [temp, setTemp] = useState("20");
   const [distpri, setDistpri] = useState("");
-  const [distc, setDistc] = useState("");
+  const [ngp, setNgp] = useState("");
+  const [dlat, setDlat] = useState("26.9");
+  const [vq, setVq] = useState("");
+  const [eem, setEem] = useState("");
+  const [customRugLat, setCustomRugLat] = useState(false);
+  const [rugLatVal, setRugLatVal] = useState("0.0015");
 
   const [results, setResults] = useState<SubResults | null>(null);
   const [error, setError] = useState("");
 
-  const getRoughnessLat = () => 0.0015;
   const getRoughnessTc = (mat: string) => (mat === "PEBD" ? 0.0015 : 0.003334);
-
-  const calcViscosity = (T: number) => {
-    const K = T + 273.16;
-    const Lgu = -11.73 + 1828 / K + 0.01966 * K - 0.00001466 * K ** 2;
-    return (10 ** Lgu) / 100;
-  };
-
-  const calcDensity = (T: number) => {
-    const Fct = ((T - 3.983035) ** 2) * (T + 301.797) / (522528.9 * (T + 69.34881));
-    return 1000 * (1 - Fct);
-  };
 
   const colebrookIter = (rug: number, diam: number, re: number) => {
     let oldf = 1;
@@ -110,70 +94,71 @@ export default function SubunidadeCalculator() {
       const Cv = parseFloat(cv);
       const Llat = parseFloat(llat);
       const Dlat = parseFloat(dlat);
-      const Dzlat = latOrient === "horizontal" ? 0 : parseFloat(dzlat);
-      const Vq = parseFloat(vq);
+      const Dzlat = latOrient === "nivel" ? 0 : parseFloat(dzlat);
       const Ngp = parseFloat(ngp);
       const Eem = parseFloat(eem);
       const Ltc = parseFloat(ltc);
       const Dtc = parseFloat(dtc);
-      const Dztc = tercOrient === "horizontal" ? 0 : parseFloat(dztc);
+      const Dztc = tercOrient === "nivel" ? 0 : parseFloat(dztc);
       const Eltc = parseFloat(eltc);
       const Tempa = parseFloat(temp);
       const Distpri = parseFloat(distpri);
       const Distc = parseFloat(distc);
-      const rugLat = customRugLat ? parseFloat(rugLatVal) : getRoughnessLat();
+      const rugLat = customRugLat ? parseFloat(rugLatVal) : 0.0015;
       const rugTc = customRugTc ? parseFloat(rugTcVal) : getRoughnessTc(materialTerc);
 
-      const allVals = [Qem, Ps, K, Expx, Conex, Cv, Llat, Dlat, Vq, Ngp, Eem, Ltc, Dtc, Eltc, Tempa, Distpri, Distc];
-      if (allVals.some(isNaN)) {
-        setError("Preencha todos os campos corretamente.");
+      const required = [Qem, Ps, K, Expx, Conex, Cv, Llat, Dlat, Dzlat, Ngp, Eem, Ltc, Dtc, Dztc, Eltc, Tempa, Distpri, Distc, rugLat, rugTc];
+      if (required.some(isNaN)) {
+        setError("Verifique se os dados estão corretos.");
         return;
       }
 
-      // Fluid properties (VBA: u = Format(..., "0.00000"))
-      const u = parseFloat(calcViscosity(Tempa).toFixed(5));
+      // ===== Propriedades do fluido (VBA parity) =====
+      const Kelv = Tempa + 273.16;
+      const Lgu = -11.73 + 1828 / Kelv + 0.01966 * Kelv - 0.00001466 * Kelv ** 2;
+      const u = parseFloat(((10 ** Lgu) / 100).toFixed(5));
       const Uc = u * 1000;
-      const mespa = parseFloat(calcDensity(Tempa).toFixed(2));
+      const Fct = ((Tempa - 3.983035) ** 2) * (Tempa + 301.797) / (522528.9 * (Tempa + 69.34881));
+      const mespa = parseFloat((1000 * (1 - Fct)).toFixed(2));
 
-      // ===== LATERAL =====
+      // ===== CÁLCULOS PARA A LATERAL =====
       const Nel = Llat / Eem;
-      const Ql = Nel * Qem;
+      // VBA: TextBox16 = Nel * qem * Ngp
+      const Ql = Nel * Qem * Ngp;
       const velLat = parseFloat((Ql / (2.8274 * Dlat ** 2)).toFixed(2));
       const ReLat = parseFloat((mespa * velLat * Dlat / Uc).toFixed(0));
 
       let fLat: number;
       let hfLat: number;
       if (ReLat < 2000) {
-        fLat = 64 / ReLat;
-        hfLat = parseFloat((11.536e5 * u / mespa * Ql * Llat / (Dlat ** 4)).toFixed(2));
+        fLat = parseFloat((64 / ReLat).toFixed(4));
+        hfLat = parseFloat((11.536e5 * u / mespa * Ql * Llat / (Dlat ** 4)).toFixed(3));
       } else {
-        fLat = colebrookIter(rugLat, Dlat, ReLat);
-        hfLat = parseFloat((6.376 * parseFloat(fLat.toFixed(4)) * Ql ** 2 * Llat / (Dlat ** 5)).toFixed(2));
+        fLat = parseFloat(colebrookIter(rugLat, Dlat, ReLat).toFixed(4));
+        hfLat = parseFloat((6.376 * fLat * Ql ** 2 * Llat / (Dlat ** 5)).toFixed(2));
       }
-      fLat = parseFloat(fLat.toFixed(4));
 
-      // Connection equivalent
+      // Decréscimo devido à conexão
       const fe = 0.25 * Conex * 19 * (Dlat ** -1.9);
       const Hfeq = parseFloat((hfLat * ((Eem + fe) / Eem)).toFixed(2));
 
-      // m value
-      let m: number;
-      if (ReLat > 100000) m = 2;
-      else if (ReLat > 2000) m = 1.75;
-      else m = 1.75;
+      // m do regime de fluxo (lateral) — VBA TextBox22
+      let mLat = 1.75;
+      if (ReLat > 100000) mLat = 2;
+      else if (ReLat > 2000) mLat = 1.75;
 
-      // Christiansen F & Scaloppi for lateral
-      const FchLat = parseFloat(((1 / (m + 1)) + (1 / (2 * Nel)) + (Math.sqrt(m - 1) / (6 * Nel ** 2))).toFixed(4));
+      // F de Christiansen e Scaloppi (lateral)
+      const FchLat = parseFloat(((1 / (mLat + 1)) + (1 / (2 * Nel)) + (Math.sqrt(mLat - 1) / (6 * Nel ** 2))).toFixed(4));
       const x = Eem / Distpri;
-      const FscpLat = parseFloat(((Nel * FchLat + x - 1) / (Nel + x - 1)).toFixed(4));
+      const FscpLat = (Nel * FchLat + x - 1) / (Nel + x - 1);
 
-      // Corrected head loss lateral
+      // Decréscimo corrigido na lateral
       const Hflcrg = parseFloat((FscpLat * Hfeq).toFixed(3));
 
-      // dz/Hf ratio lateral
+      // Relação dz/Hf na lateral
       const Rlat = parseFloat((Dzlat / Hflcrg).toFixed(2));
 
-      // ===== TERTIARY =====
+      // ===== CÁLCULOS PARA A TERCIÁRIA =====
       const Nltc = parseFloat((Ltc / Eltc).toFixed(2));
       const Qtc = parseFloat((Nltc * Ql).toFixed(2));
       const velTc = parseFloat((Qtc / (2.8274 * Dtc ** 2)).toFixed(2));
@@ -182,57 +167,56 @@ export default function SubunidadeCalculator() {
       let fTc: number;
       let hfTc: number;
       if (ReTc < 2000) {
-        fTc = 64 / ReTc;
-        hfTc = parseFloat((11.536e5 * u / mespa * Qtc * Ltc / (Dtc ** 4)).toFixed(2));
+        fTc = parseFloat((64 / ReTc).toFixed(4));
+        hfTc = parseFloat((11.536e5 * u / mespa * Qtc * Ltc / (Dtc ** 4)).toFixed(3));
       } else {
-        fTc = colebrookIter(rugTc, Dtc, ReTc);
-        hfTc = parseFloat((6.376 * parseFloat(fTc.toFixed(4)) * Qtc ** 2 * Ltc / (Dtc ** 5)).toFixed(2));
+        fTc = parseFloat(colebrookIter(rugTc, Dtc, ReTc).toFixed(4));
+        hfTc = parseFloat((6.376 * fTc * Qtc ** 2 * Ltc / (Dtc ** 5)).toFixed(2));
       }
-      fTc = parseFloat(fTc.toFixed(4));
 
-      // Connection equivalent tertiary
+      // Decréscimo devido à conexão (terciária)
       const fetc = 23.04 * (Dtc ** -1.84);
       const HfeqTc = parseFloat((hfTc * ((Eltc + fetc) / Eltc)).toFixed(2));
 
-      // m for tertiary
-      let mTc: number;
+      // m do regime de fluxo (terciária) — VBA TextBox33 (variável m compartilhada)
+      let mTc = 1.75;
       if (ReTc > 100000) mTc = 2;
       else if (ReTc > 2000) mTc = 1.75;
-      else mTc = 1.75;
+      const m = mTc; // VBA reutiliza a mesma variável m daqui em diante
 
-      // Christiansen F & Scaloppi for tertiary
-      const FchTc = parseFloat(((1 / (mTc + 1)) + (1 / (2 * Nltc)) + (Math.sqrt(mTc - 1) / (6 * Nltc ** 2))).toFixed(4));
+      // F de Christiansen e Scaloppi (terciária)
+      const FchTc = parseFloat(((1 / (m + 1)) + (1 / (2 * Nltc)) + (Math.sqrt(m - 1) / (6 * Nltc ** 2))).toFixed(4));
       const y = Distc / Eltc;
       const FscpTc = parseFloat(((Nltc * FchTc + y - 1) / (Nltc + y - 1)).toFixed(4));
 
-      // Corrected head loss tertiary
+      // Decréscimo corrigido na terciária
       const Hftcor = parseFloat((FscpTc * HfeqTc).toFixed(3));
 
-      // dz/Hf ratio tertiary
+      // Relação dz/Hf na terciária
       const Rtc = parseFloat((Dztc / Hftcor).toFixed(2));
 
-      // ===== SUBUNIT CALCULATIONS =====
+      // ===== Coeficientes i e j (VBA usa m da terciária) =====
       const ilat = parseFloat((1 - (Rlat / (m + 1)) ** (1 / m)).toFixed(3));
       const jlat = parseFloat((1 - (1 - ilat) ** (m + 1)).toFixed(4));
-      const itc = parseFloat((1 - (Rtc / (mTc + 1)) ** (1 / mTc)).toFixed(3));
-      const jtc = parseFloat((1 - (1 - itc) ** (mTc + 1)).toFixed(4));
+      const itc = parseFloat((1 - (Rtc / (m + 1)) ** (1 / m)).toFixed(3));
+      const jtc = parseFloat((1 - (1 - itc) ** (m + 1)).toFixed(4));
 
-      // Determine situation based on orientations and conditions
+      // ===== Distribuição das cargas de pressão na subunidade =====
       let hIniLatMedia: number, hIniTerc: number, hFinalTerc: number, varTerc: number;
       let hIniLatAcop: number, hFinLatAcop: number, hMinLatAcop: number, varLat: number;
       let hMax: number, hMin: number;
       let locMinTerc: string, locMinLat: string, situacao: string;
 
-      const isLatHoriz = latOrient === "horizontal";
+      const isLatNivel = latOrient === "nivel";
       const isLatAsc = latOrient === "ascendente";
       const isLatDesc = latOrient === "descendente";
-      const isTcHoriz = tercOrient === "horizontal";
+      const isTcNivel = tercOrient === "nivel";
       const isTcAsc = tercOrient === "ascendente";
       const isTcDesc = tercOrient === "descendente";
 
-      // SITUAÇÃO I: Terciária Ascendente ou Horizontal
-      if (isTcAsc || isTcHoriz) {
-        if (isLatHoriz || isLatAsc) {
+      // SITUAÇÃO I: Terciária Ascendente ou em Nível
+      if (isTcAsc || isTcNivel) {
+        if (isLatNivel || isLatAsc) {
           // SIa
           hIniLatMedia = parseFloat((Ps + (0.733 * Hflcrg) + (0.5 * Dzlat)).toFixed(2));
           hIniTerc = parseFloat((hIniLatMedia + (0.733 * Hftcor) + (0.5 * Dztc)).toFixed(2));
@@ -241,15 +225,15 @@ export default function SubunidadeCalculator() {
           const Hintc = hIniTerc;
           hIniLatAcop = parseFloat((Hintc - Hftcor - Dztc).toFixed(2));
           hFinLatAcop = parseFloat((Hintc - Hftcor - Dztc - Hflcrg - Dzlat).toFixed(2));
-          hMinLatAcop = parseFloat((Hintc - Hftcor - Dztc - Hflcrg - Dzlat).toFixed(2));
+          hMinLatAcop = hFinLatAcop;
           varLat = parseFloat((hIniLatAcop - hMinLatAcop).toFixed(2));
-          hMax = parseFloat(Hintc.toFixed(2));
-          hMin = parseFloat(hMinLatAcop.toFixed(2));
+          hMax = hIniTerc;
+          hMin = hMinLatAcop;
           locMinTerc = "No final da terciária";
           locMinLat = "No final da lateral";
-          const tcLabel = isTcHoriz ? "Horizontal" : "Ascendente";
-          const latLabel = isLatHoriz ? "Horizontais" : "Ascendentes";
-          situacao = `Terciária ${tcLabel} e Laterais ${latLabel}`;
+          const tcLabel = isTcNivel ? "Horizontal" : "Ascendente";
+          const latLabel = isLatNivel ? "Horizontais" : "Ascendentes";
+          situacao = `Subunidade com Tubulação Terciária ${tcLabel} e Laterais ${latLabel}`;
         } else if (isLatDesc && Dzlat <= Hflcrg) {
           // SIb
           hIniLatMedia = parseFloat((Ps + (0.733 * Hflcrg) - (0.5 * Dzlat)).toFixed(2));
@@ -261,13 +245,12 @@ export default function SubunidadeCalculator() {
           hFinLatAcop = parseFloat((Hintc - Hftcor - Dztc - Hflcrg + Dzlat).toFixed(2));
           hMinLatAcop = parseFloat((Hintc - Hftcor - Dztc - (jlat * Hflcrg) + (ilat * Dzlat)).toFixed(2));
           varLat = parseFloat((hIniLatAcop - hFinLatAcop).toFixed(2));
-          hMax = parseFloat(Hintc.toFixed(2));
-          hMin = parseFloat(hMinLatAcop.toFixed(2));
+          hMax = hIniTerc;
+          hMin = hMinLatAcop;
           locMinTerc = "No final da terciária";
-          const LHminlat = parseFloat((ilat * Llat).toFixed(1));
-          locMinLat = `A ${LHminlat} m do início da lateral`;
-          const tcLabel = isTcHoriz ? "Horizontal" : "Ascendente";
-          situacao = `Terciária ${tcLabel} e Laterais Descendentes com dZLat <= HfLat`;
+          locMinLat = `A ${ilat * Llat} m do início da lateral`;
+          const tcLabel = isTcNivel ? "Horizontal" : "Ascendente";
+          situacao = `Tubulações Terciária ${tcLabel} e Laterais Descendentes com dZLat <= HfLat`;
         } else if (isLatDesc && Dzlat > Hflcrg && Hflcrg >= (Dzlat / (m + 1))) {
           // SIc
           hIniLatMedia = parseFloat((Ps + (0.733 * Hflcrg) - (0.5 * Dzlat)).toFixed(2));
@@ -280,14 +263,13 @@ export default function SubunidadeCalculator() {
           hMinLatAcop = parseFloat((Hintc - Hftcor - Dztc - (jlat * Hflcrg) + (ilat * Dzlat)).toFixed(2));
           varLat = parseFloat((hFinLatAcop - hIniLatAcop).toFixed(2));
           hMax = parseFloat((Hintc - Hflcrg + Dzlat).toFixed(2));
-          hMin = parseFloat(hMinLatAcop.toFixed(2));
+          hMin = hMinLatAcop;
           locMinTerc = "No final da terciária";
-          const LHminlat = parseFloat((ilat * Llat).toFixed(1));
-          locMinLat = `A ${LHminlat} m do início da lateral`;
-          const tcLabel = isTcHoriz ? "Horizontal" : "Ascendente";
+          locMinLat = `A ${ilat * Llat} m do início da lateral`;
+          const tcLabel = isTcNivel ? "Horizontal" : "Ascendente";
           situacao = `Terciária ${tcLabel} e Laterais Descendentes com dZLat >= HfLat e HfLat >= dZLat/(m+1)`;
         } else {
-          // SId: isLatDesc && Hflcrg <= Dzlat/(m+1)
+          // SId: lateral descendente com HfLat <= dZLat/(m+1)
           hIniLatMedia = parseFloat((Ps + (0.733 * Hflcrg) - (0.5 * Dzlat)).toFixed(2));
           hIniTerc = parseFloat((hIniLatMedia + (0.733 * Hftcor) + (0.5 * Dztc)).toFixed(2));
           hFinalTerc = parseFloat((hIniLatMedia - (0.27 * Hftcor) - (0.5 * Dztc)).toFixed(2));
@@ -298,17 +280,17 @@ export default function SubunidadeCalculator() {
           hMinLatAcop = parseFloat((Hintc - Hftcor - Dztc).toFixed(2));
           varLat = parseFloat((hFinLatAcop - hIniLatAcop).toFixed(2));
           hMax = parseFloat((Hintc - Hflcrg + Dzlat).toFixed(2));
-          hMin = parseFloat(hMinLatAcop.toFixed(2));
+          hMin = hMinLatAcop;
           locMinTerc = "No final da terciária";
-          const LHminlat = parseFloat((ilat * Llat).toFixed(1));
+          const LHminlat = ilat * Llat;
           locMinLat = LHminlat <= 0 ? "No início da lateral" : `A ${LHminlat} m do início da lateral`;
-          const tcLabel = isTcHoriz ? "Horizontal" : "Ascendente";
+          const tcLabel = isTcNivel ? "Horizontal" : "Ascendente";
           situacao = `Terciária ${tcLabel} e Laterais Descendentes com HfLat <= dZLat/(m+1)`;
         }
       }
       // SITUAÇÃO II: Terciária Descendente com dZTerc <= HfTerc
       else if (isTcDesc && Dztc <= Hftcor) {
-        if (isLatHoriz || isLatAsc) {
+        if (isLatNivel || isLatAsc) {
           // SIIa
           hIniLatMedia = parseFloat((Ps + (0.733 * Hflcrg) + (0.5 * Dzlat)).toFixed(2));
           hIniTerc = parseFloat((hIniLatMedia + (0.733 * Hftcor) - (0.5 * Dztc)).toFixed(2));
@@ -317,15 +299,14 @@ export default function SubunidadeCalculator() {
           const Hintc = hIniTerc;
           hIniLatAcop = parseFloat((Hintc - (jtc * Hftcor) + (itc * Dztc)).toFixed(2));
           hFinLatAcop = parseFloat((Hintc - (jtc * Hftcor) + (itc * Dztc) - Hflcrg - Dzlat).toFixed(2));
-          hMinLatAcop = parseFloat((Hintc - (jtc * Hftcor) + (itc * Dztc) - Hflcrg - Dzlat).toFixed(2));
+          hMinLatAcop = hFinLatAcop;
           varLat = parseFloat((hIniLatAcop - hFinLatAcop).toFixed(2));
-          hMax = parseFloat(Hintc.toFixed(2));
-          hMin = parseFloat(hMinLatAcop.toFixed(2));
-          const LHmintc = parseFloat((itc * Ltc).toFixed(1));
-          locMinTerc = `A ${LHmintc} m do início da terciária`;
-          locMinLat = "No final da lateral";
-          const latLabel = isLatHoriz ? "Horizontais" : "Ascendentes";
-          situacao = `Terciária descendente (dzt <= Hft) e Laterais ${latLabel}`;
+          hMax = Hintc;
+          hMin = hMinLatAcop;
+          locMinTerc = `A ${itc * Ltc} m do início da terciária`;
+          locMinLat = "No final da Tubulação Lateral";
+          const latLabel = isLatNivel ? "Horizontais" : "Ascendentes";
+          situacao = `Subunidade com Terciária descendente (dzt <= Hft) e Laterais ${latLabel}`;
         } else if (isLatDesc && Dzlat <= Hflcrg) {
           // SIIb
           hIniLatMedia = parseFloat((Ps + (0.733 * Hflcrg) - (0.5 * Dzlat)).toFixed(2));
@@ -337,13 +318,11 @@ export default function SubunidadeCalculator() {
           hFinLatAcop = parseFloat((Hintc - (jtc * Hftcor) + (itc * Dztc) - Hflcrg + Dzlat).toFixed(2));
           hMinLatAcop = parseFloat((Hintc - (jtc * Hftcor) + (itc * Dztc) - (jlat * Hflcrg) + (ilat * Dzlat)).toFixed(2));
           varLat = parseFloat((hIniLatAcop - hFinLatAcop).toFixed(2));
-          hMax = parseFloat(Hintc.toFixed(2));
-          hMin = parseFloat(hMinLatAcop.toFixed(2));
-          const LHmintc = parseFloat((itc * Ltc).toFixed(1));
-          locMinTerc = `A ${LHmintc} m do início da terciária`;
-          const LHminlat = parseFloat((ilat * Llat).toFixed(1));
-          locMinLat = `A ${LHminlat} m do início da lateral`;
-          situacao = `Terciária descendente (dzt <= Hft) e Laterais Descendentes (dzL <= HfL)`;
+          hMax = hIniTerc;
+          hMin = hMinLatAcop;
+          locMinTerc = `A ${itc * Ltc} m do início da terciária`;
+          locMinLat = `A ${ilat * Llat} m do início da lateral`;
+          situacao = `Subunidade com Terciária descendente (dzt <= Hft) e Laterais Descendentes (dzL <= HfL)`;
         } else if (isLatDesc && Dzlat > Hflcrg && Hflcrg >= Dzlat / (m + 1)) {
           // SIIc
           hIniLatMedia = parseFloat((Ps + (0.733 * Hflcrg) - (0.5 * Dzlat)).toFixed(2));
@@ -356,14 +335,12 @@ export default function SubunidadeCalculator() {
           hMinLatAcop = parseFloat((Hintc - (jtc * Hftcor) + (itc * Dztc) - (jlat * Hflcrg) + (ilat * Dzlat)).toFixed(2));
           varLat = parseFloat((hIniLatAcop - hMinLatAcop).toFixed(2));
           hMax = parseFloat((Hintc - Hflcrg + Dzlat).toFixed(2));
-          hMin = parseFloat(hMinLatAcop.toFixed(2));
-          const LHmintc = parseFloat((itc * Ltc).toFixed(1));
-          locMinTerc = `A ${LHmintc} m do início da terciária`;
-          const LHminlat = parseFloat((ilat * Llat).toFixed(1));
-          locMinLat = `A ${LHminlat} m do início da lateral`;
+          hMin = hMinLatAcop;
+          locMinTerc = `A ${itc * Ltc} m do início da terciária`;
+          locMinLat = `A ${ilat * Llat} m do início da lateral`;
           situacao = `Terciária descendente (dzt <= Hft) e Laterais Descendentes (dzL > HfL >= dzL/(m+1))`;
         } else {
-          // SIId: isLatDesc && Hflcrg < Dzlat/(m+1)
+          // SIId
           hIniLatMedia = parseFloat((Ps + (0.733 * Hflcrg) - (0.5 * Dzlat)).toFixed(2));
           hIniTerc = parseFloat((hIniLatMedia + (0.733 * Hftcor) - (0.5 * Dztc)).toFixed(2));
           hFinalTerc = parseFloat((hIniLatMedia - (0.27 * Hftcor) + (0.5 * Dztc)).toFixed(2));
@@ -374,17 +351,16 @@ export default function SubunidadeCalculator() {
           hMinLatAcop = parseFloat((Hintc - (jtc * Hftcor) + (itc * Dztc)).toFixed(2));
           varLat = parseFloat((hFinLatAcop - hIniLatAcop).toFixed(2));
           hMax = parseFloat((Hintc - Hflcrg + Dzlat).toFixed(2));
-          hMin = parseFloat(hMinLatAcop.toFixed(2));
-          const LHmintc = parseFloat((itc * Ltc).toFixed(1));
-          locMinTerc = `A ${LHmintc} m do início da terciária`;
-          const LHminlat = parseFloat((ilat * Llat).toFixed(1));
+          hMin = hMinLatAcop;
+          locMinTerc = `A ${itc * Ltc} m do início da terciária`;
+          const LHminlat = ilat * Llat;
           locMinLat = LHminlat < 0 ? "No início da lateral" : `A ${LHminlat} m do início da lateral`;
           situacao = `Terciária descendente (dzt <= Hft) e Laterais Descendentes (HfL <= dzL/(m+1))`;
         }
       }
       // SITUAÇÃO III: Terciária Descendente com dZTerc > HfTerc >= dZTerc/(m+1)
-      else if (isTcDesc && Dztc > Hftcor && Hftcor >= Dztc / (mTc + 1)) {
-        if (isLatHoriz || isLatAsc) {
+      else if (isTcDesc && Dztc > Hftcor && Hftcor >= Dztc / (m + 1)) {
+        if (isLatNivel || isLatAsc) {
           // SIIIa
           hIniLatMedia = parseFloat((Ps + (0.733 * Hflcrg) - (0.5 * Dzlat)).toFixed(2));
           hIniTerc = parseFloat((hIniLatMedia + (0.733 * Hftcor) - (0.5 * Dztc)).toFixed(2));
@@ -393,14 +369,13 @@ export default function SubunidadeCalculator() {
           const Hintc = hIniTerc;
           hIniLatAcop = parseFloat((Hintc - (jtc * Hftcor) + (itc * Dztc)).toFixed(2));
           hFinLatAcop = parseFloat((Hintc - (jtc * Hftcor) + (itc * Dztc) - Hflcrg - Dzlat).toFixed(2));
-          hMinLatAcop = parseFloat((Hintc - (jtc * Hftcor) + (itc * Dztc) - Hflcrg - Dzlat).toFixed(2));
+          hMinLatAcop = hFinLatAcop;
           varLat = parseFloat((hIniLatAcop - hMinLatAcop).toFixed(2));
           hMax = parseFloat((Hintc - Hftcor + Dztc).toFixed(2));
-          hMin = parseFloat(hMinLatAcop.toFixed(2));
-          const LHmintc = parseFloat((itc * Ltc).toFixed(1));
-          locMinTerc = `A ${LHmintc} m do início da terciária`;
-          locMinLat = "No final da lateral";
-          const latLabel = isLatHoriz ? "Horizontais" : "Ascendentes";
+          hMin = hMinLatAcop;
+          locMinTerc = `A ${itc * Ltc} m do início da terciária`;
+          locMinLat = "No final da Tubulação Lateral";
+          const latLabel = isLatNivel ? "Horizontais" : "Ascendentes";
           situacao = `Terciária descendente (dzt > HfTerc >= dZTerc/(m+1)) e Laterais ${latLabel}`;
         } else if (isLatDesc && Dzlat <= Hflcrg) {
           // SIIIb
@@ -414,11 +389,9 @@ export default function SubunidadeCalculator() {
           hMinLatAcop = parseFloat((Hintc - (jtc * Hftcor) + (itc * Dztc) - (jlat * Hflcrg) + (ilat * Dzlat)).toFixed(2));
           varLat = parseFloat((hIniLatAcop - hFinLatAcop).toFixed(2));
           hMax = parseFloat((Hintc - Hftcor + Dztc).toFixed(2));
-          hMin = parseFloat(hMinLatAcop.toFixed(2));
-          const LHmintc = parseFloat((itc * Ltc).toFixed(1));
-          locMinTerc = `A ${LHmintc} m do início da terciária`;
-          const LHminlat = parseFloat((ilat * Llat).toFixed(1));
-          locMinLat = `A ${LHminlat} m do início da lateral`;
+          hMin = hMinLatAcop;
+          locMinTerc = `A ${itc * Ltc} m do início da terciária`;
+          locMinLat = `A ${ilat * Llat} m do início da lateral`;
           situacao = `Terciária descendente (dzt > HfTerc >= dZTerc/(m+1)) e Laterais Descendentes (dzL <= HfL)`;
         } else if (isLatDesc && Dzlat > Hflcrg && Hflcrg >= Dzlat / (m + 1)) {
           // SIIIc
@@ -432,11 +405,9 @@ export default function SubunidadeCalculator() {
           hMinLatAcop = parseFloat((Hintc - (jtc * Hftcor) + (itc * Dztc) - (jlat * Hflcrg) + (ilat * Dzlat)).toFixed(2));
           varLat = parseFloat((hIniLatAcop - hMinLatAcop).toFixed(2));
           hMax = parseFloat((Hintc - Hftcor + Dztc - Hflcrg + Dzlat).toFixed(2));
-          hMin = parseFloat(hMinLatAcop.toFixed(2));
-          const LHmintc = parseFloat((itc * Ltc).toFixed(1));
-          locMinTerc = `A ${LHmintc} m do início da terciária`;
-          const LHminlat = parseFloat((ilat * Llat).toFixed(1));
-          locMinLat = `A ${LHminlat} m do início da lateral`;
+          hMin = hMinLatAcop;
+          locMinTerc = `A ${itc * Ltc} m do início da terciária`;
+          locMinLat = `A ${ilat * Llat} m do início da lateral`;
           situacao = `Terciária e Laterais descendentes (dzT >= HfT >= dzT/(m+1)) (dzL >= HfL >= dzL/(m+1))`;
         } else {
           // SIIId
@@ -450,17 +421,16 @@ export default function SubunidadeCalculator() {
           hMinLatAcop = parseFloat((Hintc - (jtc * Hftcor) + (itc * Dztc)).toFixed(2));
           varLat = parseFloat((hFinLatAcop - hIniLatAcop).toFixed(2));
           hMax = parseFloat((Hintc - Hftcor + Dztc - Hflcrg + Dzlat).toFixed(2));
-          hMin = parseFloat(hMinLatAcop.toFixed(2));
-          const LHmintc = parseFloat((itc * Ltc).toFixed(1));
-          locMinTerc = `A ${LHmintc} m do início da terciária`;
-          const LHminlat = parseFloat((ilat * Llat).toFixed(1));
+          hMin = hMinLatAcop;
+          locMinTerc = `A ${itc * Ltc} m do início da terciária`;
+          const LHminlat = ilat * Llat;
           locMinLat = LHminlat < 0 ? "No início da lateral" : `A ${LHminlat} m do início da lateral`;
           situacao = `Terciária descendente (dzt >= Hft >= dzt/(m+1)) e Laterais Descendentes (HfL <= dzL/(m+1))`;
         }
       }
       // SITUAÇÃO IV: Terciária Descendente com HfTerc <= dZTerc/(m+1)
       else {
-        if (isLatHoriz || isLatAsc) {
+        if (isLatNivel || isLatAsc) {
           // SIVa
           hIniLatMedia = parseFloat((Ps + (0.733 * Hflcrg) + (0.5 * Dzlat)).toFixed(2));
           hIniTerc = parseFloat((hIniLatMedia + (0.733 * Hftcor) - (0.5 * Dztc)).toFixed(2));
@@ -473,10 +443,10 @@ export default function SubunidadeCalculator() {
           varLat = parseFloat((hMinLatAcop - hIniLatAcop).toFixed(2));
           hMax = parseFloat((Hintc - Hftcor + Dztc).toFixed(2));
           hMin = parseFloat((Hintc - Hflcrg - Dzlat).toFixed(2));
-          const LHmintc = parseFloat((itc * Ltc).toFixed(1));
+          const LHmintc = itc * Ltc;
           locMinTerc = LHmintc <= 0 ? "No início da terciária" : `A ${LHmintc} m do início da terciária`;
-          locMinLat = "No final da lateral";
-          const latLabel = isLatHoriz ? "Horizontais" : "Ascendentes";
+          locMinLat = "No final da Tubulação Lateral";
+          const latLabel = isLatNivel ? "Horizontais" : "Ascendentes";
           situacao = `Terciária descendente (HfTerc <= dZTerc/(m+1)) e Laterais ${latLabel}`;
         } else if (isLatDesc && Dzlat <= Hflcrg) {
           // SIVb
@@ -490,11 +460,10 @@ export default function SubunidadeCalculator() {
           hMinLatAcop = parseFloat((Hintc - (jlat * Hflcrg) + (ilat * Dzlat)).toFixed(2));
           varLat = parseFloat((hIniLatAcop - hMinLatAcop).toFixed(2));
           hMax = parseFloat((Hintc - Hftcor + Dztc).toFixed(2));
-          hMin = parseFloat(hMinLatAcop.toFixed(2));
-          const LHmintc = parseFloat((itc * Ltc).toFixed(1));
+          hMin = hMinLatAcop;
+          const LHmintc = itc * Ltc;
           locMinTerc = LHmintc <= 0 ? "No início da terciária" : `A ${LHmintc} m do início da terciária`;
-          const LHminlat = parseFloat((ilat * Llat).toFixed(1));
-          locMinLat = `A ${LHminlat} m do início da lateral`;
+          locMinLat = `A ${ilat * Llat} m do início da lateral`;
           situacao = `Terciária descendente (HfTerc <= dZTerc/(m+1)) e Laterais Descendentes (dzlat <= Hflcrg)`;
         } else if (isLatDesc && Dzlat > Hflcrg && Hflcrg >= Dzlat / (m + 1)) {
           // SIVc
@@ -508,11 +477,10 @@ export default function SubunidadeCalculator() {
           hMinLatAcop = parseFloat((Hintc - (jlat * Hflcrg) + (ilat * Dzlat)).toFixed(2));
           varLat = parseFloat((hIniLatAcop - hMinLatAcop).toFixed(2));
           hMax = parseFloat((Hintc - Hftcor + Dztc - Hflcrg + Dzlat).toFixed(2));
-          hMin = parseFloat(hMinLatAcop.toFixed(2));
-          const LHmintc = parseFloat((itc * Ltc).toFixed(1));
+          hMin = hMinLatAcop;
+          const LHmintc = itc * Ltc;
           locMinTerc = LHmintc <= 0 ? "No início da terciária" : `A ${LHmintc} m do início da terciária`;
-          const LHminlat = parseFloat((ilat * Llat).toFixed(1));
-          locMinLat = `A ${LHminlat} m do início da lateral`;
+          locMinLat = `A ${ilat * Llat} m do início da lateral`;
           situacao = `Terciária e Laterais Descendentes (HfTerc <= dZTerc/(m+1))//(dzlat >= Hflcrg >= dzlat/(m+1))`;
         } else {
           // SIVd
@@ -523,13 +491,13 @@ export default function SubunidadeCalculator() {
           const Hintc = hIniTerc;
           hIniLatAcop = parseFloat((Hintc - (jtc * Hftcor) + (itc * Dztc)).toFixed(2));
           hFinLatAcop = parseFloat((Hintc - (jtc * Hftcor) + (itc * Dztc) - Hflcrg + Dzlat).toFixed(2));
-          hMinLatAcop = parseFloat(Hintc.toFixed(2));
+          hMinLatAcop = Hintc;
           varLat = parseFloat((hIniLatAcop - hMinLatAcop).toFixed(2));
           hMax = parseFloat((Hintc - Hftcor + Dztc - Hflcrg + Dzlat).toFixed(2));
-          hMin = parseFloat(hMinLatAcop.toFixed(2));
-          const LHmintc = parseFloat((itc * Ltc).toFixed(1));
+          hMin = hMinLatAcop;
+          const LHmintc = itc * Ltc;
           locMinTerc = LHmintc <= 0 ? "No início da terciária" : `A ${LHmintc} m do início da terciária`;
-          const LHminlat = parseFloat((ilat * Llat).toFixed(1));
+          const LHminlat = ilat * Llat;
           locMinLat = LHminlat <= 0 ? "No início da lateral" : `A ${LHminlat} m do início da lateral`;
           situacao = `Terciária e Laterais Descendentes (HfTerc <= dZTerc/(m+1))//(Hflcrg <= dzlat/(m+1))`;
         }
@@ -543,14 +511,10 @@ export default function SubunidadeCalculator() {
       const projectOk = uniformity >= 95;
 
       setResults({
-        viscosity: parseFloat((Uc).toFixed(2)), density: mespa,
-        nel: Nel, ql: Ql, velLat, reLat: ReLat, fLat,
-        hfLat, hfeqLat: Hfeq, m, fchLat: FchLat, fscpLat: FscpLat,
+        ql: Ql, velLat, reLat: ReLat, fLat, hfLat, hfeqLat: Hfeq, mLat, fscpLat: FscpLat,
         hflcrg: Hflcrg, rLat: Rlat,
-        nltc: Nltc, qtc: Qtc, velTc, reTc: ReTc, fTc,
-        hfTc, hfeqTc: HfeqTc, fchTc: FchTc, fscpTc: FscpTc,
+        nltc: Nltc, qtc: Qtc, velTc, reTc: ReTc, fTc, hfTc, hfeqTc: HfeqTc, mTc, fscpTc: FscpTc,
         hftcor: Hftcor, rTc: Rtc,
-        ilat, jlat, itc, jtc,
         hIniLatMedia, hIniTerc, hFinalTerc, varTerc,
         hIniLatAcop, hFinLatAcop, hMinLatAcop, varLat,
         hMax, hMin, varSub, varAdmTerc,
@@ -558,10 +522,115 @@ export default function SubunidadeCalculator() {
         locMinTerc, locMinLat, situacao, projectOk,
       });
 
-      setSubTab("terciaria");
+      setSubTab("calculos");
     } catch {
-      setError("Erro no cálculo. Verifique os dados inseridos.");
+      setError("Verifique se os dados estão corretos.");
     }
+  };
+
+  const handlePrint = () => {
+    if (!results) { alert("Calcule primeiro para gerar o relatório."); return; }
+    printReport({
+      calculator: "Rede de Irrigação",
+      subtitle: "Projeto da Rede de Distribuição/Subunidade de Irrigação",
+      sections: [
+        {
+          title: "1. Dados do Emissor",
+          rows: [
+            { label: "Vazão (L/h)", value: br(qem) },
+            { label: "Coef. de variação de fabricação", value: br(cv) },
+            { label: "Pressão de serviço (m)", value: br(ps) },
+            { label: "Tipo de conexão (mm)", value: br(conex) },
+            { label: "Coeficiente de descarga (K)", value: br(kCoef) },
+            { label: "Expoente de descarga (x)", value: br(expx) },
+          ],
+        },
+        {
+          title: "2. Dados da Terciária",
+          rows: [
+            { label: "Orientação", value: tercOrient === "nivel" ? "Em nível" : tercOrient === "ascendente" ? "Ascendente" : "Descendente" },
+            { label: "Desnível (m)", value: br(tercOrient === "nivel" ? "0" : dztc) },
+            { label: "Comprimento (m)", value: br(ltc) },
+            { label: "Dist. 1ª Lateral (m)", value: br(distc) },
+            { label: "T. da água (°C)", value: br(temp) },
+            { label: "Diâmetro (mm)", value: br(dtc) },
+            { label: "Material da tubulação", value: materialTerc },
+            { label: "Rugosidade do tubo (mm)", value: br(rugTcVal) },
+            { label: "Espac. entre Laterais (m)", value: br(eltc) },
+          ],
+        },
+        {
+          title: "3. Dados da Lateral",
+          rows: [
+            { label: "Orientação", value: latOrient === "nivel" ? "Em nível" : latOrient === "ascendente" ? "Ascendente" : "Descendente" },
+            { label: "Desnível (m)", value: br(latOrient === "nivel" ? "0" : dzlat) },
+            { label: "Comprimento (m)", value: br(llat) },
+            { label: "Dist. 1° emissor (m)", value: br(distpri) },
+            { label: "N° de got./planta", value: br(ngp) },
+            { label: "Diâmetro (mm)", value: br(dlat) },
+            { label: "Var. da vazão (%)", value: br(vq) },
+            { label: "Material do tubo", value: "PEBD" },
+            { label: "Rugosidade do tubo (mm)", value: br(rugLatVal) },
+            { label: "Espac. entre gotejadores (m)", value: br(eem) },
+          ],
+        },
+        {
+          title: "4. Cálculos para Lateral",
+          rows: [
+            { label: "Vazão no início da lateral (L/h)", value: fmt(results.ql, 2) },
+            { label: "Velocidade da água (m/s)", value: fmt(results.velLat, 2) },
+            { label: "Número de Reynolds", value: fmt(results.reLat, 0) },
+            { label: "f (Colebrook)", value: fmt(results.fLat, 4) },
+            { label: "Decréscimo de carga (m)", value: fmt(results.hfLat, 2) },
+            { label: "Decréscimo de carga Eq. (m)", value: fmt(results.hfeqLat, 2) },
+            { label: "m do Regime de fluxo", value: fmt(results.mLat, 2) },
+            { label: "Fator de correção (F)", value: fmt(results.fscpLat, 4) },
+            { label: "Decréscimo corrigido - Hf (m)", value: fmt(results.hflcrg, 3) },
+            { label: "Relação DZ/Hf", value: fmt(results.rLat, 2) },
+          ],
+        },
+        {
+          title: "5. Cálculos para Terciária",
+          rows: [
+            { label: "Número de Laterais", value: fmt(results.nltc, 2) },
+            { label: "Vazão no início da terciária (L/h)", value: fmt(results.qtc, 2) },
+            { label: "Velocidade da água (m/s)", value: fmt(results.velTc, 2) },
+            { label: "Número de Reynolds", value: fmt(results.reTc, 0) },
+            { label: "f (Colebrook)", value: fmt(results.fTc, 4) },
+            { label: "Decréscimo de carga - Hf (m)", value: fmt(results.hfTc, 2) },
+            { label: "Decréscimo de carga Eq. (m)", value: fmt(results.hfeqTc, 2) },
+            { label: "m do Regime de fluxo", value: fmt(results.mTc, 2) },
+            { label: "Fator de correção (F)", value: fmt(results.fscpTc, 4) },
+            { label: "Decréscimo corrigido - Hf (m)", value: fmt(results.hftcor, 3) },
+            { label: "Relação DZ/Hf", value: fmt(results.rTc, 2) },
+          ],
+        },
+        {
+          title: "6. Distribuição das Cargas de Pressão na Subunidade",
+          highlightLast: true,
+          rows: [
+            { label: "Pressão no início da lateral média (m)", value: fmt(results.hIniLatMedia, 2) },
+            { label: "Pressão no início da terciária (m)", value: fmt(results.hIniTerc, 2) },
+            { label: "Pressão no final da terciária (m)", value: fmt(results.hFinalTerc, 2) },
+            { label: "Variação Pressão na terciária (m)", value: fmt(results.varTerc, 2) },
+            { label: "Pressão no início da lateral acoplada no ponto de pressão mínima da terciária (m)", value: fmt(results.hIniLatAcop, 2) },
+            { label: "Pressão no final da lateral acoplada no ponto de pressão mínima da terciária (m)", value: fmt(results.hFinLatAcop, 2) },
+            { label: "Pressão mínima na lateral acoplada no ponto de pressão mínima da terciária (m)", value: fmt(results.hMinLatAcop, 2) },
+            { label: "Var. da pressão na lateral acoplada no ponto de pressão mínima da terciária (m)", value: fmt(results.varLat, 2) },
+            { label: "Pressão máxima na subunidade (m)", value: fmt(results.hMax, 2) },
+            { label: "Pressão mínima na subunidade (m)", value: fmt(results.hMin, 2) },
+            { label: "Variação da pressão na subunidade (m)", value: fmt(results.varSub, 2) },
+            { label: "Vazão máxima na subunidade (L/h)", value: fmt(results.qMax, 3) },
+            { label: "Vazão mínima na subunidade (L/h)", value: fmt(results.qMin, 3) },
+            { label: "Var. da pressão admissível na terciária (m)", value: fmt(results.varAdmTerc, 2) },
+            { label: "Local da pressão mínima na terciária", value: results.locMinTerc },
+            { label: "Local da pressão mínima na lateral", value: results.locMinLat },
+            { label: "Situação", value: results.situacao },
+            { label: "Uniformidade de Emissão (%)", value: fmt(results.uniformity, 2) },
+          ],
+        },
+      ],
+    });
   };
 
   return (
@@ -569,9 +638,9 @@ export default function SubunidadeCalculator() {
       {/* Sub-tabs */}
       <div className="flex border-b border-border">
         {([
-          { key: "lateral" as const, label: "Dados" },
-          { key: "terciaria" as const, label: "Cálculos" },
-          { key: "subunidade" as const, label: "Análise da UE" },
+          { key: "dados" as const, label: "Dados" },
+          { key: "calculos" as const, label: "Cálculos" },
+          { key: "analise" as const, label: "Análise da UE" },
         ]).map(t => (
           <button
             key={t.key}
@@ -587,150 +656,83 @@ export default function SubunidadeCalculator() {
         ))}
       </div>
 
-      {/* ── TAB: LATERAL (INPUTS) ── */}
-      {subTab === "lateral" && (
-        <div className="p-6 space-y-4">
-          {/* Orientation: Lateral */}
-          <FieldLabel label="Orientação da Lateral" />
-          <div className="flex gap-2">
-            {([
-              { v: "horizontal" as const, l: "Horizontal" },
-              { v: "ascendente" as const, l: "Ascendente" },
-              { v: "descendente" as const, l: "Descendente" },
-            ]).map(o => (
-              <button key={o.v} onClick={() => { setLatOrient(o.v); if (o.v === "horizontal") setDzlat("0"); }}
-                className={`flex-1 py-2 rounded-lg text-xs font-semibold font-body transition-all border ${
-                  latOrient === o.v
-                    ? "gradient-primary text-primary-foreground border-transparent shadow-md"
-                    : "bg-muted text-muted-foreground border-border hover:border-primary"
-                }`}>{o.l}</button>
-            ))}
-          </div>
-
-          {/* Orientation: Terciária */}
-          <FieldLabel label="Orientação da Terciária" />
-          <div className="flex gap-2">
-            {([
-              { v: "horizontal" as const, l: "Horizontal" },
-              { v: "ascendente" as const, l: "Ascendente" },
-              { v: "descendente" as const, l: "Descendente" },
-            ]).map(o => (
-              <button key={o.v} onClick={() => { setTercOrient(o.v); if (o.v === "horizontal") setDztc("0"); }}
-                className={`flex-1 py-2 rounded-lg text-xs font-semibold font-body transition-all border ${
-                  tercOrient === o.v
-                    ? "gradient-primary text-primary-foreground border-transparent shadow-md"
-                    : "bg-muted text-muted-foreground border-border hover:border-primary"
-                }`}>{o.l}</button>
-            ))}
-          </div>
-
-          <hr className="border-border" />
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body">Dados do Emissor</p>
-
-          <div className="grid grid-cols-3 gap-4">
-            <NumInput label="Vazão Emissor (L/h)" value={qem} onChange={setQem} hideSpinner />
-            <NumInput label="Pressão Serviço (m.c.a.)" value={ps} onChange={setPs} hideSpinner />
-            <NumInput label="Coeficiente K" value={kCoef} onChange={setKCoef} hideSpinner />
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <NumInput label="Expoente (x)" value={expx} onChange={setExpx} hideSpinner />
-            <SelectInput label="Conexão (mm)" value={conex} onChange={setConex}
-              options={CONNECTION_SIZES.map(c => ({ value: c, label: `${c} mm` }))} />
-            <SelectInput label="CVf" value={cv} onChange={setCv}
-              options={CVF_OPTIONS.map(c => ({ value: c, label: c }))} />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <NumInput label="Nº Emissores/Planta" value={ngp} onChange={setNgp} hideSpinner />
-            <NumInput label="Variação Vazão (%)" value={vq} onChange={setVq} hideSpinner />
-          </div>
-
-          <hr className="border-border" />
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body">Dados da Lateral</p>
-
-          {/* Material Lateral */}
-          <FieldLabel label="Material da Lateral" />
-          <div className="flex gap-3">
-            <button
-              className="flex-1 py-2 rounded-lg text-sm font-semibold font-body gradient-primary text-primary-foreground border-transparent shadow-md border"
-            >PEBD</button>
-          </div>
-          <div className="mt-2">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
-              Rugosidade Absoluta (mm)
-            </label>
-            <div className="flex gap-2">
-              <input type="number" value={rugLatVal}
-                onChange={e => { if (customRugLat) setRugLatVal(e.target.value); }}
-                readOnly={!customRugLat}
-                className={`flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner ${!customRugLat ? 'cursor-default' : ''}`}
-                style={{ borderColor: "hsl(var(--border))" }} />
-              <button type="button"
-                onClick={() => { if (customRugLat) { setCustomRugLat(false); setRugLatVal("0.0015"); } else setCustomRugLat(true); }}
-                className={`px-3 py-2 rounded-lg border text-xs font-semibold font-body transition-all ${
-                  customRugLat ? "gradient-primary text-primary-foreground border-transparent" : "bg-muted text-muted-foreground border-border hover:border-primary"
-                }`}>{customRugLat ? "Lista" : "✎"}</button>
+      {/* ── TAB: DADOS ── */}
+      {subTab === "dados" && (
+        <div className="p-6 space-y-5">
+          {/* Do Emissor */}
+          <Section title="Do Emissor">
+            <div className="grid grid-cols-2 gap-4">
+              <NumInput label="Vazão (L/h)" value={qem} onChange={setQem} />
+              <SelectInput label="Coef. de variação de fabricação" value={cv} onChange={setCv}
+                options={CVF_OPTIONS.map(c => ({ value: c, label: c }))} />
+              <NumInput label="Pressão de serviço (m)" value={ps} onChange={setPs} />
+              <SelectInput label="Tipo de conexão" value={conex} onChange={setConex}
+                options={CONNECTION_SIZES.map(c => ({ value: c, label: `${c} mm` }))} />
+              <NumInput label="Coeficiente de descarga (K)" value={kCoef} onChange={setKCoef} />
+              <NumInput label="Expoente de descarga (x)" value={expx} onChange={setExpx} />
             </div>
-          </div>
+          </Section>
 
-          <div className="grid grid-cols-2 gap-4">
-            <NumInput label="Comprimento Lateral (m)" value={llat} onChange={setLlat} hideSpinner />
-            <SelectInput label="Diâmetro Interno (mm)" value={dlat} onChange={setDlat} editable
-              options={LATERAL_DIAMETERS.map(d => ({ value: String(d), label: `${d} mm` }))} />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <NumInput label="Espaçam. Emissores (m)" value={eem} onChange={setEem} hideSpinner />
-            {latOrient !== "horizontal" && (
-              <NumInput label="Desnível Lateral (m)" value={dzlat} onChange={setDzlat} hideSpinner />
-            )}
-          </div>
-          <NumInput label="Dist. do 1° Emissor ao Início da Lateral (m)" value={distpri} onChange={setDistpri} hideSpinner />
-
-          <hr className="border-border" />
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body">Dados da Terciária</p>
-
-          {/* Material Terciária */}
-          <FieldLabel label="Material da Terciária" />
-          <div className="flex gap-3">
-            {(["PEBD", "PVC"] as const).map(m => (
-              <button key={m} onClick={() => { setMaterialTerc(m); if (!customRugTc) setRugTcVal(getRoughnessTc(m).toString()); }}
-                className={`flex-1 py-2 rounded-lg text-sm font-semibold font-body transition-all border ${
-                  materialTerc === m
-                    ? "gradient-primary text-primary-foreground border-transparent shadow-md"
-                    : "bg-muted text-muted-foreground border-border hover:border-primary"
-                }`}>{m}</button>
-            ))}
-          </div>
-          <div className="mt-2">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">
-              Rugosidade Absoluta (mm)
-            </label>
-            <div className="flex gap-2">
-              <input type="number" value={rugTcVal}
-                onChange={e => { if (customRugTc) setRugTcVal(e.target.value); }}
-                readOnly={!customRugTc}
-                className={`flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner ${!customRugTc ? 'cursor-default' : ''}`}
-                style={{ borderColor: "hsl(var(--border))" }} />
-              <button type="button"
-                onClick={() => { if (customRugTc) { setCustomRugTc(false); setRugTcVal(getRoughnessTc(materialTerc).toString()); } else setCustomRugTc(true); }}
-                className={`px-3 py-2 rounded-lg border text-xs font-semibold font-body transition-all ${
-                  customRugTc ? "gradient-primary text-primary-foreground border-transparent" : "bg-muted text-muted-foreground border-border hover:border-primary"
-                }`}>{customRugTc ? "Lista" : "✎"}</button>
+          {/* Da Terciária */}
+          <Section title="Da Terciária">
+            <OrientationRow value={tercOrient} onChange={(o) => { setTercOrient(o); if (o === "nivel") setDztc(""); }} />
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <NumInput label="Desnível (m)" value={tercOrient === "nivel" ? "" : dztc} onChange={setDztc} disabled={tercOrient === "nivel"} />
+              <NumInput label="Comprimento (m)" value={ltc} onChange={setLtc} />
+              <NumInput label="Dist. 1ª Lateral (m)" value={distc} onChange={setDistc} />
+              <NumInput label="T. da água (°C)" value={temp} onChange={setTemp} />
+              <SelectInput label="Diâmetro (mm)" value={dtc} onChange={setDtc} editable
+                options={TERTIARY_DIAMETERS.map(d => ({ value: d, label: `${d} mm` }))} />
+              <SelectInput label="Material da tubulação" value={materialTerc}
+                onChange={(v) => { const mat = v as "PEBD" | "PVC"; setMaterialTerc(mat); if (!customRugTc) setRugTcVal(getRoughnessTc(mat).toString()); }}
+                options={[{ value: "PEBD", label: "PEBD" }, { value: "PVC", label: "PVC" }]} />
+              <NumInput label="Espac. entre Laterais (m)" value={eltc} onChange={setEltc} />
+              <RugInput value={rugTcVal} onChange={setRugTcVal} custom={customRugTc}
+                onToggle={() => { if (customRugTc) { setCustomRugTc(false); setRugTcVal(getRoughnessTc(materialTerc).toString()); } else setCustomRugTc(true); }} />
             </div>
-          </div>
+          </Section>
 
-          <div className="grid grid-cols-2 gap-4">
-            <NumInput label="Comprimento Terciária (m)" value={ltc} onChange={setLtc} hideSpinner />
-            <SelectInput label="Diâmetro Interno (mm)" value={dtc} onChange={setDtc} editable
-              options={TERTIARY_DIAMETERS.map(d => ({ value: String(d), label: `${d} mm` }))} />
+          {/* Da Lateral */}
+          <Section title="Da Lateral">
+            <OrientationRow value={latOrient} onChange={(o) => { setLatOrient(o); if (o === "nivel") setDzlat(""); }} />
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <NumInput label="Desnível (m)" value={latOrient === "nivel" ? "" : dzlat} onChange={setDzlat} disabled={latOrient === "nivel"} />
+              <NumInput label="Comprimento (m)" value={llat} onChange={setLlat} />
+              <NumInput label="Dist. 1° emissor (m)" value={distpri} onChange={setDistpri} />
+              <NumInput label="N° de got./planta" value={ngp} onChange={setNgp} />
+              <SelectInput label="Diâmetro (mm)" value={dlat} onChange={setDlat} editable
+                options={LATERAL_DIAMETERS.map(d => ({ value: d, label: `${d} mm` }))} />
+              <NumInput label="Var. da vazão (%)" value={vq} onChange={setVq} />
+              <SelectInput label="Material do tubo" value="PEBD" onChange={() => {}}
+                options={[{ value: "PEBD", label: "PEBD" }]} />
+              <RugInput value={rugLatVal} onChange={setRugLatVal} custom={customRugLat}
+                onToggle={() => { if (customRugLat) { setCustomRugLat(false); setRugLatVal("0.0015"); } else setCustomRugLat(true); }} />
+              <NumInput label="Espac. entre gotejadores (m)" value={eem} onChange={setEem} />
+            </div>
+          </Section>
+
+          {error && (
+            <div className="bg-destructive/10 text-destructive text-sm px-4 py-2 rounded-lg font-body flex items-center gap-2">
+              <AlertTriangle size={16} /> {error}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── TAB: CÁLCULOS ── */}
+      {subTab === "calculos" && (
+        <div className="p-6 space-y-5">
+          <div className="flex gap-2 max-w-md mx-auto">
+            <button onClick={calculate}
+              className="flex-1 gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity uppercase tracking-wider text-sm">
+              <Droplets size={18} /> Calcular
+            </button>
+            <button onClick={handlePrint}
+              className="px-4 py-3 rounded-xl border border-border bg-muted text-foreground font-semibold font-body flex items-center justify-center gap-2 hover:border-primary hover:text-primary transition-colors"
+              title="Imprimir / Salvar PDF">
+              <Printer size={16} />
+            </button>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <NumInput label="Espaçam. Laterais (m)" value={eltc} onChange={setEltc} hideSpinner />
-            {tercOrient !== "horizontal" && (
-              <NumInput label="Desnível Terciária (m)" value={dztc} onChange={setDztc} hideSpinner />
-            )}
-          </div>
-          <NumInput label="Dist. da 1ª Lateral ao Início da Terciária (m)" value={distc} onChange={setDistc} hideSpinner />
-          <NumInput label="Temperatura (°C)" value={temp} onChange={setTemp} hideSpinner />
 
           {error && (
             <div className="bg-destructive/10 text-destructive text-sm px-4 py-2 rounded-lg font-body flex items-center gap-2">
@@ -738,246 +740,97 @@ export default function SubunidadeCalculator() {
             </div>
           )}
 
-          <div className="flex gap-2">
-            <button onClick={calculate}
-              className="flex-1 gradient-primary text-primary-foreground font-semibold py-3 rounded-xl font-body flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity">
-              <Droplets size={18} /> Calcular
-            </button>
-            <button
-              onClick={() => {
-                if (!results) { alert("Calcule primeiro para gerar o relatório."); return; }
-                printReport({
-                  calculator: "Rede de Distribuição/Irrigação",
-                  subtitle: "Dimensionamento de subunidade — lateral, terciária e uniformidade",
-                  sections: [
-                    {
-                      title: "1. Dados de Entrada",
-                      rows: [
-                        { label: "Vazão emissor (Qem)", value: br(qem, "L/h") },
-                        { label: "Pressão de serviço (Ps)", value: br(ps, "m.c.a.") },
-                        { label: "Coef. descarga (k)", value: br(kCoef) },
-                        { label: "Expoente (x)", value: br(expx) },
-                        { label: "Conexão", value: br(conex, "mm") },
-                        { label: "CVf", value: br(cv) },
-                        { label: "Compr. lateral", value: br(llat, "m") },
-                        { label: "Diâmetro lateral", value: br(dlat, "mm") },
-                        { label: "Material lateral", value: materialLat },
-                        { label: "Rugosidade lateral", value: br(rugLatVal, "mm") },
-                        { label: "Orientação lateral", value: latOrient },
-                        { label: "Desnível lateral (Δz)", value: br(dzlat, "m") },
-                        { label: "Variação vazão (Vq)", value: br(vq, "%") },
-                        { label: "Nº emissores/planta", value: br(ngp) },
-                        { label: "Espaçam. emissores", value: br(eem, "m") },
-                        { label: "Compr. terciária", value: br(ltc, "m") },
-                        { label: "Diâmetro terciária", value: br(dtc, "mm") },
-                        { label: "Material terciária", value: materialTerc },
-                        { label: "Rugosidade terciária", value: br(rugTcVal, "mm") },
-                        { label: "Orientação terciária", value: tercOrient },
-                        { label: "Desnível terciária", value: br(dztc, "m") },
-                        { label: "Espaçam. laterais", value: br(eltc, "m") },
-                        { label: "Temperatura", value: br(temp, "°C") },
-                        { label: "Distância principal", value: br(distpri, "m") },
-                        { label: "Distância coletor", value: br(distc, "m") },
-                      ],
-                    },
-                    {
-                      title: "2. Propriedades do Fluido",
-                      rows: [
-                        { label: "Viscosidade dinâmica (μ)", value: `${br(String(results.viscosity * 1000))} × 10⁻³ N.s/m²` },
-                        { label: "Massa específica (ρ)", value: br(String(results.density), "kg/m³") },
-                      ],
-                    },
-                    {
-                      title: "3. Lateral",
-                      rows: [
-                        { label: "Nº emissores (Nel)", value: br(String(results.nel)) },
-                        { label: "Vazão lateral (Ql)", value: br(String(results.ql), "L/h") },
-                        { label: "Velocidade", value: br(String(results.velLat), "m/s") },
-                        { label: "Reynolds", value: br(String(results.reLat)) },
-                        { label: "Fator de atrito (f)", value: br(String(results.fLat)) },
-                        { label: "Hf lateral", value: br(String(results.hfLat), "m") },
-                        { label: "Hf eq. (com conexões)", value: br(String(results.hfeqLat), "m") },
-                        { label: "F Christiansen", value: br(String(results.fchLat)) },
-                        { label: "Fa Scaloppi", value: br(String(results.fscpLat)) },
-                        { label: "Hf corrigida lateral", value: br(String(results.hflcrg), "m") },
-                        { label: "Razão Δz/Hf lateral", value: br(String(results.rLat)) },
-                      ],
-                    },
-                    {
-                      title: "4. Terciária",
-                      rows: [
-                        { label: "Nº laterais (Nltc)", value: br(String(results.nltc)) },
-                        { label: "Vazão terciária (Qtc)", value: br(String(results.qtc), "L/h") },
-                        { label: "Velocidade", value: br(String(results.velTc), "m/s") },
-                        { label: "Reynolds", value: br(String(results.reTc)) },
-                        { label: "Fator de atrito (f)", value: br(String(results.fTc)) },
-                        { label: "Hf terciária", value: br(String(results.hfTc), "m") },
-                        { label: "Hf eq. terciária", value: br(String(results.hfeqTc), "m") },
-                        { label: "F Christiansen", value: br(String(results.fchTc)) },
-                        { label: "Fa Scaloppi", value: br(String(results.fscpTc)) },
-                        { label: "Hf corrigida terciária", value: br(String(results.hftcor), "m") },
-                        { label: "Razão Δz/Hf terciária", value: br(String(results.rTc)) },
-                      ],
-                    },
-                    {
-                      title: "5. Subunidade — Pressões e Uniformidade",
-                      highlightLast: true,
-                      rows: [
-                        { label: "H início lateral média", value: br(String(results.hIniLatMedia), "m.c.a.") },
-                        { label: "H início terciária", value: br(String(results.hIniTerc), "m.c.a.") },
-                        { label: "H final terciária", value: br(String(results.hFinalTerc), "m.c.a.") },
-                        { label: "Variação na terciária", value: br(String(results.varTerc), "m.c.a.") },
-                        { label: "H início lateral acoplada", value: br(String(results.hIniLatAcop), "m.c.a.") },
-                        { label: "H final lateral acoplada", value: br(String(results.hFinLatAcop), "m.c.a.") },
-                        { label: "H mínima lateral acoplada", value: br(String(results.hMinLatAcop), "m.c.a.") },
-                        { label: "Variação na lateral", value: br(String(results.varLat), "m.c.a.") },
-                        { label: "Pressão máxima (Hmax)", value: br(String(results.hMax), "m.c.a.") },
-                        { label: "Pressão mínima (Hmin)", value: br(String(results.hMin), "m.c.a.") },
-                        { label: "Variação na subunidade", value: br(String(results.varSub), "m.c.a.") },
-                        { label: "Variação admissível terciária", value: br(String(results.varAdmTerc), "m.c.a.") },
-                        { label: "Vazão máxima", value: br(String(results.qMax), "L/h") },
-                        { label: "Vazão mínima", value: br(String(results.qMin), "L/h") },
-                        { label: "Localização Hmin terciária", value: results.locMinTerc },
-                        { label: "Localização Hmin lateral", value: results.locMinLat },
-                        { label: "Situação", value: results.situacao },
-                        { label: "Projeto adequado?", value: results.projectOk ? "Sim" : "Não" },
-                        { label: "Uniformidade de aplicação", value: br(String(results.uniformity), "%") },
-                      ],
-                    },
-                  ],
-                });
-              }}
-              className="px-4 py-3 rounded-xl border border-border bg-muted text-foreground font-semibold font-body flex items-center justify-center gap-2 hover:border-primary hover:text-primary transition-colors"
-              title="Imprimir / Salvar PDF"
-            >
-              <Printer size={16} />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ── TAB: TERCIÁRIA (RESULTS) ── */}
-      {subTab === "terciaria" && (
-        <div className="p-6 space-y-4">
           {!results ? (
-            <p className="text-sm text-muted-foreground font-body text-center py-8">
-              Preencha os dados na aba "Lateral" e clique em Calcular.
+            <p className="text-sm text-muted-foreground font-body text-center py-6">
+              Preencha os dados na aba "Dados" e clique em Calcular.
             </p>
           ) : (
             <>
-              <h3 className="font-display font-semibold text-foreground text-sm">Propriedades do Fluido</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <ResCard label="Viscosidade dinâmica" value={`${results.viscosity} × 10⁻³ N.s/m²`} />
-                <ResCard label="Massa específica" value={`${results.density} kg/m³`} />
-              </div>
+              <Section title="Cálculos para Lateral">
+                <div className="grid grid-cols-2 gap-3">
+                  <ResCard label="Vazão no início da lateral (L/h)" value={fmt(results.ql, 2)} />
+                  <ResCard label="Decréscimo de carga Eq. (m)" value={fmt(results.hfeqLat, 2)} />
+                  <ResCard label="Velocidade da água (m/s)" value={fmt(results.velLat, 2)} />
+                  <ResCard label="m do Regime de fluxo" value={fmt(results.mLat, 2)} />
+                  <ResCard label="Número de Reynolds" value={fmt(results.reLat, 0)} />
+                  <ResCard label="Fator de correção (F)" value={fmt(results.fscpLat, 4)} />
+                  <ResCard label="f (Colebrook)" value={fmt(results.fLat, 4)} />
+                  <ResCard label="Decréscimo corrigido - Hf (m)" value={fmt(results.hflcrg, 3)} highlight />
+                  <ResCard label="Decréscimo de carga (m)" value={fmt(results.hfLat, 2)} />
+                  <ResCard label="Relação DZ/Hf" value={fmt(results.rLat, 2)} />
+                </div>
+              </Section>
 
-              <h3 className="font-display font-semibold text-foreground text-sm mt-4">Lateral</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <ResCard label="Nº Emissores (Nel)" value={String(results.nel)} />
-                <ResCard label="Vazão Lateral (L/h)" value={String(results.ql)} />
-                <ResCard label="Velocidade (m/s)" value={String(results.velLat)} />
-                <ResCard label="Nº Reynolds" value={String(results.reLat)} />
-                <ResCard label="Fator de Atrito (f)" value={String(results.fLat)} />
-                <ResCard label="Hf Lateral (m)" value={String(results.hfLat)} />
-                <ResCard label="Hf c/ conexão (m)" value={String(results.hfeqLat)} />
-                <ResCard label="Expoente m" value={String(results.m)} />
-                <ResCard label="F Christiansen" value={String(results.fchLat)} />
-                <ResCard label="F Scaloppi" value={String(results.fscpLat)} />
-              </div>
-              <div className="equation-block px-5 py-4">
-                <p className="text-xs text-muted-foreground font-body mb-1">Hf Corrigido Lateral</p>
-                <p className="font-display text-2xl font-bold text-primary">{results.hflcrg} <span className="text-base font-body font-normal">m.c.a.</span></p>
-              </div>
-              <ResCard label="Relação dZ/Hf Lateral" value={String(results.rLat)} />
-
-              <h3 className="font-display font-semibold text-foreground text-sm mt-4">Terciária</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <ResCard label="Nº Laterais (Nltc)" value={String(results.nltc)} />
-                <ResCard label="Vazão Terciária (L/h)" value={String(results.qtc)} />
-                <ResCard label="Velocidade (m/s)" value={String(results.velTc)} />
-                <ResCard label="Nº Reynolds" value={String(results.reTc)} />
-                <ResCard label="Fator de Atrito (f)" value={String(results.fTc)} />
-                <ResCard label="Hf Terciária (m)" value={String(results.hfTc)} />
-                <ResCard label="Hf c/ conexão (m)" value={String(results.hfeqTc)} />
-                <ResCard label="F Christiansen" value={String(results.fchTc)} />
-                <ResCard label="F Scaloppi" value={String(results.fscpTc)} />
-              </div>
-              <div className="equation-block px-5 py-4">
-                <p className="text-xs text-muted-foreground font-body mb-1">Hf Corrigido Terciária</p>
-                <p className="font-display text-2xl font-bold text-primary">{results.hftcor} <span className="text-base font-body font-normal">m.c.a.</span></p>
-              </div>
-              <ResCard label="Relação dZ/Hf Terciária" value={String(results.rTc)} />
+              <Section title="Cálculos para Terciária">
+                <div className="grid grid-cols-2 gap-3">
+                  <ResCard label="Número de Laterais" value={fmt(results.nltc, 2)} />
+                  <ResCard label="Decréscimo de carga - Hf (m)" value={fmt(results.hfTc, 2)} />
+                  <ResCard label="Vazão no início da terciária (L/h)" value={fmt(results.qtc, 2)} />
+                  <ResCard label="Decréscimo de carga Eq. (m)" value={fmt(results.hfeqTc, 2)} />
+                  <ResCard label="Velocidade da água (m/s)" value={fmt(results.velTc, 2)} />
+                  <ResCard label="m do Regime de fluxo" value={fmt(results.mTc, 2)} />
+                  <ResCard label="Número de Reynolds" value={fmt(results.reTc, 0)} />
+                  <ResCard label="Fator de correção (F)" value={fmt(results.fscpTc, 4)} />
+                  <ResCard label="f (Colebrook)" value={fmt(results.fTc, 4)} />
+                  <ResCard label="Decréscimo corrigido - Hf (m)" value={fmt(results.hftcor, 3)} highlight />
+                  <div className="hidden sm:block" />
+                  <ResCard label="Relação DZ/Hf" value={fmt(results.rTc, 2)} />
+                </div>
+              </Section>
             </>
           )}
         </div>
       )}
 
-      {/* ── TAB: SUBUNIDADE (RESULTS) ── */}
-      {subTab === "subunidade" && (
-        <div className="p-6 space-y-4">
+      {/* ── TAB: ANÁLISE DA UE ── */}
+      {subTab === "analise" && (
+        <div className="p-6 space-y-5">
           {!results ? (
             <p className="text-sm text-muted-foreground font-body text-center py-8">
-              Preencha os dados na aba "Lateral" e clique em Calcular.
+              Preencha os dados na aba "Dados" e clique em Calcular.
             </p>
           ) : (
             <>
-              {/* Situation description */}
               <div className="bg-primary/10 border border-primary/30 rounded-xl px-4 py-3">
                 <p className="text-xs font-semibold text-primary font-body">{results.situacao}</p>
               </div>
 
-              <h3 className="font-display font-semibold text-foreground text-sm">Coeficientes i e j</h3>
-              <div className="grid grid-cols-4 gap-3">
-                <ResCard label="i (Lateral)" value={String(results.ilat)} />
-                <ResCard label="j (Lateral)" value={String(results.jlat)} />
-                <ResCard label="i (Terciária)" value={String(results.itc)} />
-                <ResCard label="j (Terciária)" value={String(results.jtc)} />
-              </div>
-
-              <h3 className="font-display font-semibold text-foreground text-sm mt-4">Pressões na Subunidade</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <ResCard label="H Início Lateral Média" value={`${results.hIniLatMedia} m.c.a.`} />
-                <ResCard label="H Início Terciária" value={`${results.hIniTerc} m.c.a.`} />
-                <ResCard label="H Final Terciária" value={`${results.hFinalTerc} m.c.a.`} />
-                <ResCard label="Variação na Terciária" value={`${results.varTerc} m.c.a.`} />
-                <ResCard label="H Início Lat. (ponto mín. Tc)" value={`${results.hIniLatAcop} m.c.a.`} />
-                <ResCard label="H Final Lat. (ponto mín. Tc)" value={`${results.hFinLatAcop} m.c.a.`} />
-                <ResCard label="H Mín. Lateral" value={`${results.hMinLatAcop} m.c.a.`} />
-                <ResCard label="Variação na Lateral" value={`${results.varLat} m.c.a.`} />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="equation-block px-4 py-3">
-                  <p className="text-xs text-muted-foreground font-body mb-1">Pressão Máxima</p>
-                  <p className="font-display text-xl font-bold text-primary">{results.hMax} <span className="text-sm font-body font-normal">m.c.a.</span></p>
+              <Section title="Distribuição das Cargas de Pressão na Subunidade">
+                <div className="grid grid-cols-2 gap-3">
+                  <ResCard label="Pressão no início da lateral média (m)" value={fmt(results.hIniLatMedia, 2)} />
+                  <ResCard label="Pressão no início da terciária (m)" value={fmt(results.hIniTerc, 2)} />
+                  <ResCard label="Pressão no final da terciária (m)" value={fmt(results.hFinalTerc, 2)} />
+                  <ResCard label="Variação Pressão na terciária (m)" value={fmt(results.varTerc, 2)} />
                 </div>
-                <div className="equation-block px-4 py-3">
-                  <p className="text-xs text-muted-foreground font-body mb-1">Pressão Mínima</p>
-                  <p className="font-display text-xl font-bold text-primary">{results.hMin} <span className="text-sm font-body font-normal">m.c.a.</span></p>
+                <div className="grid grid-cols-1 gap-3 mt-3">
+                  <ResCard label="Pressão no início da lateral acoplada no ponto de pressão mínima da terciária (m)" value={fmt(results.hIniLatAcop, 2)} />
+                  <ResCard label="Pressão no final da lateral acoplada no ponto de pressão mínima da terciária (m)" value={fmt(results.hFinLatAcop, 2)} />
+                  <ResCard label="Pressão mínima na lateral acoplada no ponto de pressão mínima da terciária (m)" value={fmt(results.hMinLatAcop, 2)} />
+                  <ResCard label="Var. da pressão na lateral acoplada no ponto de pressão mínima da terciária (m)" value={fmt(results.varLat, 2)} />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <ResCard label="Variação na Subunidade" value={`${results.varSub} m.c.a.`} />
-                <ResCard label="Var. Admissível Terciária" value={`${results.varAdmTerc} m.c.a.`} />
-              </div>
-
-              {/* Location of min pressures */}
-              <div className="bg-destructive/10 border border-destructive/30 rounded-xl px-4 py-3 space-y-1">
-                <p className="text-xs font-body"><span className="font-semibold text-destructive">Pressão mín. Terciária:</span> <span className="text-foreground">{results.locMinTerc}</span></p>
-                <p className="text-xs font-body"><span className="font-semibold text-destructive">Pressão mín. Lateral:</span> <span className="text-foreground">{results.locMinLat}</span></p>
-              </div>
-
-              <h3 className="font-display font-semibold text-foreground text-sm mt-4">Vazão e Uniformidade</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <ResCard label="Vazão Máxima" value={`${results.qMax} L/h`} />
-                <ResCard label="Vazão Mínima" value={`${results.qMin} L/h`} />
-              </div>
-
-              <div className="equation-block px-5 py-4">
-                <p className="text-xs text-muted-foreground font-body mb-1">Uniformidade de Emissão</p>
-                <p className="font-display text-2xl font-bold text-primary">{results.uniformity} <span className="text-base font-body font-normal">%</span></p>
-              </div>
+                <div className="grid grid-cols-2 gap-3 mt-3">
+                  <ResCard label="Pressão máxima na subunidade (m)" value={fmt(results.hMax, 2)} highlight />
+                  <div className="rounded-xl p-3 bg-destructive/10 border border-destructive/30">
+                    <p className="text-xs font-body font-semibold text-destructive">Local da pressão mínima na terciária:</p>
+                    <p className="font-semibold font-body mt-0.5 text-sm text-foreground">{results.locMinTerc}</p>
+                  </div>
+                  <ResCard label="Pressão mínima na subunidade (m)" value={fmt(results.hMin, 2)} highlight />
+                  <div className="rounded-xl p-3 bg-destructive/10 border border-destructive/30">
+                    <p className="text-xs font-body font-semibold text-destructive">Local da pressão mínima na lateral:</p>
+                    <p className="font-semibold font-body mt-0.5 text-sm text-foreground">{results.locMinLat}</p>
+                  </div>
+                  <ResCard label="Variação da pressão na subunidade (m)" value={fmt(results.varSub, 2)} />
+                  <div className="hidden sm:block" />
+                  <ResCard label="Vazão máxima na subunidade (L/h)" value={fmt(results.qMax, 3)} />
+                  <div className="hidden sm:block" />
+                  <ResCard label="Vazão mínima na subunidade (L/h)" value={fmt(results.qMin, 3)} />
+                  <ResCard label="Var. da pressão admissível na terciária (m)" value={fmt(results.varAdmTerc, 2)} />
+                </div>
+                <div className="equation-block px-5 py-4 mt-3">
+                  <p className="text-xs text-muted-foreground font-body mb-1">Uniformidade de Emissão</p>
+                  <p className="font-display text-2xl font-bold text-primary">{fmt(results.uniformity, 2)} <span className="text-base font-body font-normal">%</span></p>
+                </div>
+              </Section>
 
               <div className={`rounded-xl px-4 py-3 text-sm font-semibold font-body text-center ${
                 results.projectOk
@@ -996,21 +849,64 @@ export default function SubunidadeCalculator() {
 
 /* ── Helper components ── */
 
-function FieldLabel({ label }: { label: string }) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 font-body">
-      {label}
-    </label>
+    <fieldset className="rounded-xl border border-border p-4 pt-3">
+      <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body px-2">
+        {title}
+      </legend>
+      {children}
+    </fieldset>
   );
 }
 
-function NumInput({ label, value, onChange, placeholder, hideSpinner }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; hideSpinner?: boolean }) {
+function OrientationRow({ value, onChange }: { value: Orientation; onChange: (o: Orientation) => void }) {
+  const opts: { v: Orientation; l: string }[] = [
+    { v: "nivel", l: "Em nível" },
+    { v: "ascendente", l: "Ascendente" },
+    { v: "descendente", l: "Descendente" },
+  ];
+  return (
+    <div className="flex gap-4">
+      {opts.map(o => (
+        <label key={o.v} className="flex items-center gap-2 cursor-pointer text-sm font-body text-foreground">
+          <input
+            type="radio"
+            checked={value === o.v}
+            onChange={() => onChange(o.v)}
+            className="accent-[hsl(var(--primary))] w-4 h-4"
+          />
+          {o.l}
+        </label>
+      ))}
+    </div>
+  );
+}
+
+function NumInput({ label, value, onChange, disabled }: { label: string; value: string; onChange: (v: string) => void; disabled?: boolean }) {
   return (
     <div>
       <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">{label}</label>
-      <input type="number" value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-        className={`w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground ${hideSpinner ? "no-spinner" : ""}`}
+      <input type="number" value={value} onChange={e => onChange(e.target.value)} disabled={disabled}
+        className={`w-full px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
         style={{ borderColor: "hsl(var(--border))" }} />
+    </div>
+  );
+}
+
+function RugInput({ value, onChange, custom, onToggle }: { value: string; onChange: (v: string) => void; custom: boolean; onToggle: () => void }) {
+  return (
+    <div>
+      <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 font-body">Rugosidade do tubo (mm)</label>
+      <div className="flex gap-2">
+        <input type="number" value={value} onChange={e => { if (custom) onChange(e.target.value); }} readOnly={!custom}
+          className={`flex-1 px-3 py-2 rounded-lg border text-sm font-body bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 no-spinner ${!custom ? "cursor-default" : ""}`}
+          style={{ borderColor: "hsl(var(--border))" }} />
+        <button type="button" onClick={onToggle}
+          className={`px-3 py-2 rounded-lg border text-xs font-semibold font-body transition-all ${
+            custom ? "gradient-primary text-primary-foreground border-transparent" : "bg-muted text-muted-foreground border-border hover:border-primary"
+          }`}>{custom ? "Lista" : "✏️"}</button>
+      </div>
     </div>
   );
 }
